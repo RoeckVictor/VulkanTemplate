@@ -46,19 +46,16 @@ namespace VulkanTutorial
 
 	void Model::Bind(VkCommandBuffer commandBuffer)
 	{
-		// [COMMENT] Bind the vertex buffer to the command buffer
 		VkBuffer vertexBuffers[] = { vertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-		// [COMMENT] Bind the index buffer to the command buffer
 		if (hasIndexBuffer)
 			vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 	}
 
 	void Model::Draw(VkCommandBuffer commandBuffer)
 	{
-		// [COMMENT] Draw the model, if we have an ibo, use vkCmdDrawIndexed, otherwise use vkCmdDraw
 		if (hasIndexBuffer)
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
 		else
@@ -67,15 +64,11 @@ namespace VulkanTutorial
 
 	void Model::CreateVertexBuffer(const std::vector<Vertex>& vertices)
 	{
-		// [COMMENT] Get the number of vertices in the model
 		vertexCount = static_cast<uint32_t>(vertices.size());
-		// [COMMENT] Get the size of the vertex data in bytes
 		uint32_t vertexSize = sizeof(vertices[0]);
-		// [COMMENT] Calculate the size of the vertex buffer in bytes
 		VkDeviceSize bufferSize = vertexSize * vertexCount;
 		
 
-		// [COMMENT] Create a staging buffer to copy the vertex data to
 		Buffer stagingBuffer
 		{
 			device, vertexSize, vertexCount,
@@ -83,37 +76,29 @@ namespace VulkanTutorial
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT 
 		};
 
-		// [COMMENT] Map the staging buffer and write the vertex data to it
 		stagingBuffer.map();
 		stagingBuffer.writeToBuffer((void*)vertices.data());
 
-		// [COMMENT] Create the actual vertex buffer
 		vertexBuffer = std::make_unique<Buffer>(
 			device, vertexSize, vertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		);
 
-		// [COMMENT] Copy the data from the staging buffer to the vertex buffer
 		device.CopyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 	}
 
 	void Model::CreateIndexBuffer(const std::vector<uint32_t>& indices)
 	{
-		// [COMMENT] Get the number of indices in the model
 		indexCount = static_cast<uint32_t>(indices.size());
-		// [COMMENT] If we have no indices, we won't use an index buffer
 		hasIndexBuffer = indexCount > 0;
 
 		if (!hasIndexBuffer)
 			return;
 
-		// [COMMENT] Get the size of the index data in bytes
 		uint32_t indexSize = sizeof(indices[0]);
-		// [COMMENT] Calculate the size of the index buffer in bytes
 		VkDeviceSize bufferSize = indexSize * indexCount;
 
-		// [COMMENT] Create a staging buffer to copy the index data to
 		Buffer stagingBuffer
 		{
 			device, indexSize, indexCount,
@@ -121,17 +106,14 @@ namespace VulkanTutorial
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 		};
 
-		// [COMMENT] Map the staging buffer and write the index data to it
 		stagingBuffer.map();
 		stagingBuffer.writeToBuffer((void*)indices.data());
 
-		// [COMMENT] Create the actual index buffer
 		indexBuffer = std::make_unique<Buffer>(
 			device, indexSize, indexCount,
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		// [COMMENT] Copy the data from the staging buffer to the index buffer
 		device.CopyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 	}
 

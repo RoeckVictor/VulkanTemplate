@@ -23,7 +23,6 @@ namespace VulkanTutorial
 
 	VkPushConstantRange DefaultRenderSystem::CreatePushConstantRange()
 	{
-		// [COMMENT] The pipeline layout allows us to pass uniform values and push constants to shaders
 		VkPushConstantRange pushConstantRange = {};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		pushConstantRange.offset = 0;
@@ -47,10 +46,8 @@ namespace VulkanTutorial
 
 	void DefaultRenderSystem::Render(FrameInfo& frameInfo)
 	{
-		// [COMMENT] Bind the right command buffer for each frame
 		pipeline->BindCommandBuffer(frameInfo.commandBuffer);
 
-		// [COMMENT] Bind the right descriptor set for each frame
 		vkCmdBindDescriptorSets(
 			frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
 			0, 1, &frameInfo.descriptorSet, 0, nullptr

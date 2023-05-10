@@ -39,13 +39,10 @@ namespace VulkanTutorial
 
 	void App::MainLoop()
 	{
-		// [COMMENT] Loop until we close the window
 		while (window.IsOpen())
 		{
-			// [COMMENT] Poll for events from the window (e.g. keyboard or mouse input)
 			window.PollEvents();
 
-			// [COMMENT] Draw the current frame on the window
 			DrawFrame();
 		}
 	}
@@ -56,7 +53,6 @@ namespace VulkanTutorial
 
 	void App::Cleanup()
 	{
-		// [COMMENT] Wait for the logical device to finish before destroying resources
 		vkDeviceWaitIdle(device.device());
 	}
 }

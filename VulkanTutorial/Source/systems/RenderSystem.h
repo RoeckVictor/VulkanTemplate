@@ -24,7 +24,6 @@ namespace VulkanTutorial
 		virtual void Render(FrameInfo& frameInfo);
 
 	protected:
-		// [COMMENT] Creates the pipeline layout, used to pass uniforms to the shader
 		virtual VkPushConstantRange CreatePushConstantRange();
 		void CreatePipelineLayout(VkDescriptorSetLayout descriptorSetLayouts);
 		virtual void CreatePipeline(VkRenderPass renderPass);

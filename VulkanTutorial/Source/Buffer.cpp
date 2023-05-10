@@ -51,7 +51,6 @@ namespace VulkanTutorial
     Buffer::~Buffer() 
     {
         unmap();
-        // [COMMENT] Destroy and free the memory
         vkDestroyBuffer(device.device(), buffer, nullptr);
         vkFreeMemory(device.device(), memory, nullptr);
     }

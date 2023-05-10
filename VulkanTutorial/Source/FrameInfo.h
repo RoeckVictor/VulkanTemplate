@@ -32,7 +32,6 @@ namespace VulkanTutorial
 		float radius;
 	};
 
-	// [COMMENT] The data we want to pass to the shaders through a uniform buffer
 	struct UniformBufferObject
 	{
 		glm::mat4 projection{ 1.0f };

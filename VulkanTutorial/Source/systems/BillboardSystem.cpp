@@ -24,7 +24,6 @@ namespace VulkanTutorial
 
 	VkPushConstantRange BillboardSystem::CreatePushConstantRange()
 	{
-		// [COMMENT] The pipeline layout allows us to pass uniform values and push constants to shaders
 		VkPushConstantRange pushConstantRange = {};
 		pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		pushConstantRange.offset = 0;

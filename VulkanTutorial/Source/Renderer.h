@@ -35,17 +35,14 @@ namespace VulkanTutorial
 			return currentFrameIndex; 
 		}
 
-		// [COMMENT] Begins the frame and returns the command buffer to record to
 		VkCommandBuffer BeginFrame();
 		void EndFrame();
 		void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
 		void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
 	private:
-		// [COMMENT] Creates a command buffer for each frames in flight	
 		void CreateCommandBuffers();
 		void FreeCommandBuffers();
-		// [COMMENT] Recreates the swap chain (eg. when the window is resized)
 		void RecreateSwapchain();
 
 		Window& window;
