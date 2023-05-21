@@ -10,6 +10,7 @@
 #include "Device.h"
 #include "Buffer.h"
 #include "Texture.h"
+#include "Descriptors.h"
 
 namespace VulkanTutorial 
 {
@@ -54,8 +55,9 @@ namespace VulkanTutorial
 		{
 			std::vector<Vertex> vertices{};
 			std::vector<uint32_t> indices{};
+			std::string texturepath;
 
-			void LoadModel(const std::string& filepath);
+			void LoadModel(const std::string& filepath, std::string texturepath);
 		};
 	
 		Model(Device& device, const Data& builder);
@@ -68,6 +70,8 @@ namespace VulkanTutorial
 
 		void Bind(VkCommandBuffer commandBuffer);
 		void Draw(VkCommandBuffer commandBuffer);
+
+		Texture texture;
 
 	private:
 		void CreateVertexBuffer(const std::vector<Vertex>& vertices);

@@ -26,7 +26,8 @@ namespace std
 namespace VulkanTutorial
 {
 	Model::Model(Device& device, const Data& builder)
-		: device(device)
+		: device(device),
+		  texture(builder.texturepath, device)
 	{
 		CreateVertexBuffer(builder.vertices);
 		CreateIndexBuffer(builder.indices);
@@ -39,7 +40,7 @@ namespace VulkanTutorial
 	std::unique_ptr<Model> Model::CreateModelFromFile(Device& device, const std::string& filepath, const std::string& texturepath)
 	{
 		Data data{};
-		data.LoadModel(filepath);
+		data.LoadModel(filepath, texturepath);
 
 		return std::make_unique<Model>(device, data);
 	}
@@ -117,7 +118,7 @@ namespace VulkanTutorial
 		device.CopyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 	}
 
-	void Model::Data::LoadModel(const std::string& filepath)
+	void Model::Data::LoadModel(const std::string& filepath, std::string texpath)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -178,5 +179,7 @@ namespace VulkanTutorial
 				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
+
+		texturepath = texpath;
 	}
 }
