@@ -79,34 +79,53 @@ namespace VulkanTutorial
 			uniformBuffers[i]->map();
 		}
 
-		uint32_t maxObjectsPerFrame = 3;
+		uint32_t maxObjectsPerFrame = 4;
 		uint32_t maxSets = SwapChain::MAX_FRAMES_IN_FLIGHT * maxObjectsPerFrame;
 
+		// Create the descriptor pool
 		globalPool = DescriptorPool::Builder(device)
 			.SetMaxSets(maxSets)
 			.AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxSets)
 			.AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxSets)
 			.Build();
-
-		globalSetLayout = DescriptorSetLayout::Builder(device)
+		
+		// Create the descriptor set layouts
+		globalSetLayouts.push_back(DescriptorSetLayout::Builder(device)
 			.AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-			.AddBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
-			.Build();
+			.Build());
 
+		globalSetLayouts.push_back(DescriptorSetLayout::Builder(device)
+			.AddBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
+			.Build());
+
+		// Create the descriptor sets
 		globalDescriptorSets.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 		for (int i = 0; i < globalDescriptorSets.size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = uniformBuffers[i]->descriptorInfo();
-			VkDescriptorImageInfo imageInfo = defaultTexture.GetImageInfo();
 
-			DescriptorWriter(*globalSetLayout, *globalPool)
+			DescriptorWriter(*globalSetLayouts[0], *globalPool)
 				.WriteBuffer(0, &bufferInfo)
-				.WriteImage(1, &imageInfo)
 				.Build(globalDescriptorSets[i]);
 		}
 
-		renderSystems.push_back(new DefaultRenderSystem(device, renderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout()));
-		renderSystems.push_back(new BillboardSystem(device, renderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout()));
+		for (auto& keyValue : gameObjects)
+		{
+			GameObject& obj = keyValue.second;
+
+			if (obj.model == nullptr) continue;
+
+			obj.model->CreateTextureSet(*globalSetLayouts[1], *globalPool);
+		}
+
+		std::vector<VkDescriptorSetLayout> setLayouts;
+		for (int i = 0; i < globalSetLayouts.size(); i++)
+			setLayouts.push_back(globalSetLayouts[i]->GetDescriptorSetLayout());
+
+		renderSystems.push_back(new DefaultRenderSystem(device, renderer.GetSwapChainRenderPass(), setLayouts));
+		BillboardSystem billboardSystem(device, renderer.GetSwapChainRenderPass(), setLayouts);
+		renderSystems.push_back(new BillboardSystem(device, renderer.GetSwapChainRenderPass(), setLayouts));
+		static_cast<BillboardSystem*>(renderSystems[1])->CreateTextureSet(*globalSetLayouts[1], *globalPool);
 
 		camera.SetViewTarget(glm::vec3(-1.0f, -2.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -129,7 +148,6 @@ namespace VulkanTutorial
 		{
 			int frameIndex = renderer.GetFrameIndex();
 
-			DescriptorWriter descriptorWriter(*globalSetLayout, *globalPool);
 			FrameInfo frameInfo
 			{
 				frameIndex,
@@ -137,11 +155,7 @@ namespace VulkanTutorial
 				commandBuffer,
 				camera,
 				globalDescriptorSets[frameIndex],
-				descriptorWriter,
-				gameObjects,
-				*globalSetLayout,
-				*globalPool,
-				*uniformBuffers[frameIndex]
+				gameObjects
 			};
 
 			UniformBufferObject ubo{};

@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <array>
+#include <iostream>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -10,7 +11,7 @@
 
 namespace VulkanTutorial
 {
-	RenderSystem::RenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout)
+	RenderSystem::RenderSystem(Device& device, VkRenderPass renderPass, std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
 		: device(device)
 	{
 		// CreatePipelineLayout(globalSetLayout);
@@ -27,14 +28,15 @@ namespace VulkanTutorial
 		return VkPushConstantRange();
 	}
 
-	void RenderSystem::CreatePipelineLayout(VkDescriptorSetLayout descriptorSetLayout)
+	void RenderSystem::CreatePipelineLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
 	{
 		VkPushConstantRange pushConstantRange = CreatePushConstantRange();
 
+		VkDescriptorSetLayout setLayouts[] = { descriptorSetLayouts[0], descriptorSetLayouts[1] }; // TODO CHANGE WITH LOOP
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+		pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+		pipelineLayoutInfo.pSetLayouts = setLayouts;
 		pipelineLayoutInfo.pushConstantRangeCount = 1;
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 

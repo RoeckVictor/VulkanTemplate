@@ -17,13 +17,8 @@ namespace VulkanTutorial
 		float frameTime;
 		VkCommandBuffer commandBuffer;
 		Camera& camera;
-		VkDescriptorSet descriptorSet;
-		DescriptorWriter descriptorWriter;
+		VkDescriptorSet globalDescriptorSet;
 		std::unordered_map<unsigned int, GameObject> &gameObjects;
-
-		DescriptorSetLayout& globalSetLayout;
-		DescriptorPool& globalPool;
-		Buffer& uniformBuffer;
 	};
 
 	struct PointLight

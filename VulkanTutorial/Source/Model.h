@@ -68,9 +68,11 @@ namespace VulkanTutorial
 
 		static std::unique_ptr<Model> CreateModelFromFile(Device& device, const std::string& filepath, const std::string& texturepath = "");
 
+		void CreateTextureSet(DescriptorSetLayout& setLayout, DescriptorPool& pool);
 		void Bind(VkCommandBuffer commandBuffer);
 		void Draw(VkCommandBuffer commandBuffer);
 
+		VkDescriptorSet textureSet{ VK_NULL_HANDLE }; //texture defaulted to null
 		Texture texture;
 
 	private:

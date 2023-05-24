@@ -11,10 +11,10 @@
 
 namespace VulkanTutorial
 {
-	DefaultRenderSystem::DefaultRenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout)
-	: RenderSystem(device, renderPass, descriptorSetLayout)
+	DefaultRenderSystem::DefaultRenderSystem(Device& device, VkRenderPass renderPass, std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
+	: RenderSystem(device, renderPass, descriptorSetLayouts)
 	{
-		CreatePipelineLayout(descriptorSetLayout);
+		CreatePipelineLayout(descriptorSetLayouts);
 		CreatePipeline(renderPass);
 	}
 
@@ -45,10 +45,14 @@ namespace VulkanTutorial
 		pipeline = std::make_unique<Pipeline>(device, "Resources/Shaders/texture_test.vert.spv", "Resources/Shaders/texture_test.frag.spv", pipelineConfig);
 	}
 
-	/*
 	void DefaultRenderSystem::Render(FrameInfo& frameInfo)
 	{
 		pipeline->BindCommandBuffer(frameInfo.commandBuffer);
+
+		vkCmdBindDescriptorSets(
+			frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+			0, 1, &frameInfo.globalDescriptorSet, 0, nullptr
+		);
 
 		for (auto& keyValue : frameInfo.gameObjects)
 		{
@@ -56,62 +60,9 @@ namespace VulkanTutorial
 
 			if (obj.model == nullptr) continue;
 
-			PushConstantData push = {};
-			push.modelMatrix = obj.transform.transform();
-			push.normalMatrix = obj.transform.normalMatrix();
-
-			vkCmdPushConstants(frameInfo.commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstantData), &push);
-
-			Texture& texture = obj.model->texture;
-			VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
-			frameInfo.descriptorWriter
-				.WriteImage(1, &imageInfo)
-				.Overwrite(frameInfo.descriptorSet);
-
 			vkCmdBindDescriptorSets(
 				frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
-				0, 1, &frameInfo.descriptorSet, 0, nullptr
-			);
-
-			obj.model->Bind(frameInfo.commandBuffer);
-			obj.model->Draw(frameInfo.commandBuffer);
-		}
-	}
-	*/
-
-	void DefaultRenderSystem::Render(FrameInfo& frameInfo)
-	{
-		frameInfo.globalPool.resetPool();
-
-		pipeline->BindCommandBuffer(frameInfo.commandBuffer);
-
-		for (auto& keyValue : frameInfo.gameObjects)
-		{
-			GameObject& obj = keyValue.second;
-
-			if (obj.model == nullptr) continue;
-
-			// Create a new descriptor set for this object
-			VkDescriptorSet descriptorSet;
-			if (!frameInfo.globalPool.AllocateDescriptor(frameInfo.globalSetLayout.GetDescriptorSetLayout(), descriptorSet)) {
-				throw std::runtime_error("Failed to allocate descriptor set ");
-			}
-
-			// Update the new descriptor set with the relevant buffer and image information
-			VkDescriptorBufferInfo bufferInfo = frameInfo.uniformBuffer.descriptorInfo();
-			Texture& texture = obj.model->texture;
-			VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
-
-			DescriptorWriter(frameInfo.globalSetLayout, frameInfo.globalPool)
-				.WriteBuffer(0, &bufferInfo)
-				.WriteImage(1, &imageInfo)
-				.Overwrite(descriptorSet);
-
-
-			// Bind the new descriptor set
-			vkCmdBindDescriptorSets(
-				frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
-				0, 1, &descriptorSet, 0, nullptr
+				1, 1, &obj.model->textureSet, 0, nullptr
 			);
 
 			PushConstantData push = {};

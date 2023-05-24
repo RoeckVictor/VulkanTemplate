@@ -118,6 +118,15 @@ namespace VulkanTutorial
 		device.CopyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 	}
 
+	void Model::CreateTextureSet(DescriptorSetLayout& setLayout, DescriptorPool& pool)
+	{
+		VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
+
+		DescriptorWriter(setLayout, pool)
+			.WriteImage(0, &imageInfo)
+			.Build(textureSet);
+	}
+
 	void Model::Data::LoadModel(const std::string& filepath, std::string texpath)
 	{
 		tinyobj::attrib_t attrib;
