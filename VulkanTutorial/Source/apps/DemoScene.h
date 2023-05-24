@@ -38,12 +38,12 @@ namespace VulkanTutorial
 		Camera camera{};
 		
 		std::unique_ptr<DescriptorPool> globalPool{};
+		std::unique_ptr<DescriptorSetLayout> globalSetLayout;
 		std::vector<VkDescriptorSet> globalDescriptorSets;
 		std::vector<std::unique_ptr<Buffer>> uniformBuffers;
 
 		std::vector<RenderSystem*> renderSystems;
 
-		// [TODELETE] global texture lol
-		Texture texture;
+		Texture defaultTexture;
 	};
 }

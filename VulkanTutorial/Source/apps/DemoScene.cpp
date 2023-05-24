@@ -13,32 +13,27 @@ namespace VulkanTutorial
 	DemoScene::DemoScene()
 	: App("Demo Scene"),
 	  viewerObject(GameObject::CreateGameObject()),
-	  texture("Resources/Textures/uv_checker.png", device)
+	  defaultTexture("Resources/Textures/uv_checker.png", device)
 	{
-		globalPool = DescriptorPool::Builder(device)
-			.SetMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.Build();
 	}
 
 	void DemoScene::LoadGameObjects()
 	{
-		std::shared_ptr<Model> modelSmooth = Model::CreateModelFromFile(device, "Resources/Models/smooth_vase.obj");
+		std::shared_ptr<Model> modelSmooth = Model::CreateModelFromFile(device, "Resources/Models/smooth_vase.obj", "Resources/Textures/uv_checker.png");
 		GameObject gameObjSmooth = GameObject::CreateGameObject();
 		gameObjSmooth.model = modelSmooth;
 		gameObjSmooth.transform.translation = {0.5f, 0.5f, 0.0f};
 		gameObjSmooth.transform.scale = glm::vec3(3.0f);
 		gameObjects.emplace(gameObjSmooth.GetId(), std::move(gameObjSmooth));
 
-		std::shared_ptr<Model> modelFlat = Model::CreateModelFromFile(device, "Resources/Models/flat_vase.obj");
+		std::shared_ptr<Model> modelFlat = Model::CreateModelFromFile(device, "Resources/Models/flat_vase.obj", "Resources/Textures/viking_room.png"); 
 		GameObject gameObjFlat = GameObject::CreateGameObject();
 		gameObjFlat.model = modelFlat;
 		gameObjFlat.transform.translation = { -0.5f, 0.5f, 0.0f };
 		gameObjFlat.transform.scale = glm::vec3(3.0f);
 		gameObjects.emplace(gameObjFlat.GetId(), std::move(gameObjFlat));
 
-		std::shared_ptr<Model> modelFloor = Model::CreateModelFromFile(device, "Resources/Models/quad.obj");
+		std::shared_ptr<Model> modelFloor = Model::CreateModelFromFile(device, "Resources/Models/quad.obj", "Resources/Textures/PointLight.png");
 		GameObject gameObjFloor = GameObject::CreateGameObject();
 		gameObjFloor.model = modelFloor;
 		gameObjFloor.transform.translation = { 0.0f, 0.5f, 0.0f };
@@ -84,7 +79,16 @@ namespace VulkanTutorial
 			uniformBuffers[i]->map();
 		}
 
-		auto globalSetLayout = DescriptorSetLayout::Builder(device)
+		uint32_t maxObjectsPerFrame = 3;
+		uint32_t maxSets = SwapChain::MAX_FRAMES_IN_FLIGHT * maxObjectsPerFrame;
+
+		globalPool = DescriptorPool::Builder(device)
+			.SetMaxSets(maxSets)
+			.AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxSets)
+			.AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxSets)
+			.Build();
+
+		globalSetLayout = DescriptorSetLayout::Builder(device)
 			.AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 			.AddBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 			.Build();
@@ -93,8 +97,7 @@ namespace VulkanTutorial
 		for (int i = 0; i < globalDescriptorSets.size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = uniformBuffers[i]->descriptorInfo();
-
-			VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
+			VkDescriptorImageInfo imageInfo = defaultTexture.GetImageInfo();
 
 			DescriptorWriter(*globalSetLayout, *globalPool)
 				.WriteBuffer(0, &bufferInfo)
@@ -125,6 +128,8 @@ namespace VulkanTutorial
 		if (VkCommandBuffer commandBuffer = renderer.BeginFrame())
 		{
 			int frameIndex = renderer.GetFrameIndex();
+
+			DescriptorWriter descriptorWriter(*globalSetLayout, *globalPool);
 			FrameInfo frameInfo
 			{
 				frameIndex,
@@ -132,7 +137,11 @@ namespace VulkanTutorial
 				commandBuffer,
 				camera,
 				globalDescriptorSets[frameIndex],
-				gameObjects
+				descriptorWriter,
+				gameObjects,
+				*globalSetLayout,
+				*globalPool,
+				*uniformBuffers[frameIndex]
 			};
 
 			UniformBufferObject ubo{};

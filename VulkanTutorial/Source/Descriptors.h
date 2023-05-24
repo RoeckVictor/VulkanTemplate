@@ -64,7 +64,6 @@ namespace VulkanTutorial
         DescriptorPool(const DescriptorPool&) = delete;
         DescriptorPool& operator=(const DescriptorPool&) = delete;
 
-        // 
         bool AllocateDescriptor(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const;
 
         void FreeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;

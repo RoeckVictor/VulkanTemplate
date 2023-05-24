@@ -20,6 +20,8 @@ layout(set = 0, binding = 0) uniform UniformBufferObject
 	int numLights;
 } ubo;
 
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
+
 layout(push_constant) uniform Push
 {
 	vec4 position;
@@ -30,5 +32,8 @@ layout(push_constant) uniform Push
 
 void main()
 {
-    outColor = vec4(push.color.xyz, 1.0);
+	vec4 tex = texture(texSampler, fragOffset);
+	if (tex.a < 0.1)
+		discard;
+    outColor = vec4(push.color.xyz, 1.0) * texture(texSampler, fragOffset);
 }

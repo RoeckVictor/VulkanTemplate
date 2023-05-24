@@ -7,7 +7,7 @@ namespace VulkanTutorial
 	class DefaultRenderSystem : public RenderSystem
 	{
 	public:
-		DefaultRenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayouts);
+		DefaultRenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayout);
 		~DefaultRenderSystem();
 
 		DefaultRenderSystem(const DefaultRenderSystem&) = delete;
