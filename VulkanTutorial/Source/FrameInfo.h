@@ -2,6 +2,8 @@
 
 #include "Camera.h"
 #include "GameObject.h"
+#include "Descriptors.h"
+#include "Renderer.h"
 
 #include <vulkan/vulkan.h>
 
@@ -15,7 +17,7 @@ namespace VulkanTutorial
 		float frameTime;
 		VkCommandBuffer commandBuffer;
 		Camera& camera;
-		VkDescriptorSet descriptorSet;
+		VkDescriptorSet globalDescriptorSet;
 		std::unordered_map<unsigned int, GameObject> &gameObjects;
 	};
 

@@ -3,6 +3,7 @@
 // std
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
 
 namespace VulkanTutorial 
 {
@@ -102,9 +103,10 @@ namespace VulkanTutorial
 
         // Might want to create a "DescriptorPoolManager" class that handles this case, and builds
         // a new pool whenever an old pool fills up. But this is beyond our current scope
-        if (vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptor) != VK_SUCCESS)
+        auto test = vkAllocateDescriptorSets(device.device(), &allocInfo, &descriptor);
+        if (test != VK_SUCCESS)
             return false;
-
+            
         return true;
     }
 

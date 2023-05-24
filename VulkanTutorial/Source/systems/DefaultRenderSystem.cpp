@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <array>
+#include <iostream>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -10,7 +11,7 @@
 
 namespace VulkanTutorial
 {
-	DefaultRenderSystem::DefaultRenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayouts)
+	DefaultRenderSystem::DefaultRenderSystem(Device& device, VkRenderPass renderPass, std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
 	: RenderSystem(device, renderPass, descriptorSetLayouts)
 	{
 		CreatePipelineLayout(descriptorSetLayouts);
@@ -50,7 +51,7 @@ namespace VulkanTutorial
 
 		vkCmdBindDescriptorSets(
 			frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
-			0, 1, &frameInfo.descriptorSet, 0, nullptr
+			0, 1, &frameInfo.globalDescriptorSet, 0, nullptr
 		);
 
 		for (auto& keyValue : frameInfo.gameObjects)
@@ -58,6 +59,11 @@ namespace VulkanTutorial
 			GameObject& obj = keyValue.second;
 
 			if (obj.model == nullptr) continue;
+
+			vkCmdBindDescriptorSets(
+				frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+				1, 1, &obj.model->textureSet, 0, nullptr
+			);
 
 			PushConstantData push = {};
 			push.modelMatrix = obj.transform.transform();

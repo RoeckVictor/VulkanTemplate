@@ -15,7 +15,7 @@ namespace VulkanTutorial
 	class RenderSystem 
 	{
 	public:
-		RenderSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayouts);
+		RenderSystem(Device& device, VkRenderPass renderPass, std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 		~RenderSystem();
 
 		RenderSystem(const RenderSystem&) = delete;
@@ -25,7 +25,7 @@ namespace VulkanTutorial
 
 	protected:
 		virtual VkPushConstantRange CreatePushConstantRange();
-		void CreatePipelineLayout(VkDescriptorSetLayout descriptorSetLayouts);
+		void CreatePipelineLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 		virtual void CreatePipeline(VkRenderPass renderPass);
 
 		Device& device;

@@ -68,7 +68,7 @@ namespace VulkanTutorial
 			uniformBuffers[i]->map();
 		}
 
-		auto globalSetLayout = DescriptorSetLayout::Builder(device)
+		globalSetLayout = DescriptorSetLayout::Builder(device)
 			.AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 			.AddBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1)
 			.Build();
@@ -109,6 +109,7 @@ namespace VulkanTutorial
 		if (VkCommandBuffer commandBuffer = renderer.BeginFrame())
 		{
 			int frameIndex = renderer.GetFrameIndex();
+			DescriptorWriter descriptorWriter(*globalSetLayout, *globalPool);
 			FrameInfo frameInfo
 			{
 				frameIndex,
@@ -116,6 +117,7 @@ namespace VulkanTutorial
 				commandBuffer,
 				camera,
 				globalDescriptorSets[frameIndex],
+				descriptorWriter,
 				gameObjects
 			};
 

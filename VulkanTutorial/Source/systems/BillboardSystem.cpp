@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <array>
 #include <cassert>
+#include <iostream>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -11,8 +12,9 @@
 
 namespace VulkanTutorial
 {
-	BillboardSystem::BillboardSystem(Device& device, VkRenderPass renderPass, VkDescriptorSetLayout descriptorSetLayouts)
-	: RenderSystem(device, renderPass, descriptorSetLayouts)
+	BillboardSystem::BillboardSystem(Device& device, VkRenderPass renderPass, std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
+	: RenderSystem(device, renderPass, descriptorSetLayouts),
+	  texture("Resources/Textures/PointLight.png", device)
 	{
 		CreatePipelineLayout(descriptorSetLayouts);
 		CreatePipeline(renderPass);
@@ -48,17 +50,17 @@ namespace VulkanTutorial
 
 	void BillboardSystem::Render(FrameInfo& frameInfo)
 	{
+
 		pipeline->BindCommandBuffer(frameInfo.commandBuffer);
 
 		vkCmdBindDescriptorSets(
-			frameInfo.commandBuffer,
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipelineLayout,
-			0,
-			1,
-			&frameInfo.descriptorSet,
-			0,
-			nullptr
+			frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+			0, 1, &frameInfo.globalDescriptorSet, 0, nullptr
+		);
+
+		vkCmdBindDescriptorSets(
+			frameInfo.commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+			1, 1, &textureSet, 0, nullptr
 		);
 
 		for (auto& kv : frameInfo.gameObjects)
@@ -83,5 +85,14 @@ namespace VulkanTutorial
 
 			vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
 		}
+	}
+
+	void BillboardSystem::CreateTextureSet(DescriptorSetLayout& setLayout, DescriptorPool& pool)
+	{
+		VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
+
+		DescriptorWriter(setLayout, pool)
+			.WriteImage(0, &imageInfo)
+			.Build(textureSet);
 	}
 }

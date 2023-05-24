@@ -21,8 +21,6 @@
   <ItemGroup>
     <ClCompile Include="Source\apps\App.cpp" />
     <ClCompile Include="Source\apps\DemoScene.cpp" />
-    <ClCompile Include="Source\apps\DepthTest.cpp" />
-    <ClCompile Include="Source\apps\SimpleModelApp.cpp" />
     <ClCompile Include="Source\Buffer.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Descriptors.cpp" />
@@ -43,8 +41,6 @@
   <ItemGroup>
     <ClInclude Include="Source\apps\App.h" />
     <ClInclude Include="Source\apps\DemoScene.h" />
-    <ClInclude Include="Source\apps\DepthTest.h" />
-    <ClInclude Include="Source\apps\SimpleModelApp.h" />
     <ClInclude Include="Source\Buffer.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Descriptors.h" />
