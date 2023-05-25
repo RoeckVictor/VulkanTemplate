@@ -115,7 +115,7 @@ namespace VulkanTutorial
         vkFreeDescriptorSets(device.device(), descriptorPool, static_cast<uint32_t>(descriptors.size()), descriptors.data());
     }
 
-    void DescriptorPool::resetPool() 
+    void DescriptorPool::ResetPool() 
     {
         vkResetDescriptorPool(device.device(), descriptorPool, 0);
     }

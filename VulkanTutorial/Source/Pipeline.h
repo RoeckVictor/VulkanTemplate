@@ -43,6 +43,8 @@ namespace VulkanTutorial
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 		void BindCommandBuffer(VkCommandBuffer commandBuffer);
 
+		VkSampleCountFlagBits GetMsaaSamples() const { return msaaSamples; }
+
 	private:
 		static std::vector<char> ReadFile(const std::string& path);
 

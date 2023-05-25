@@ -31,6 +31,7 @@ namespace VulkanTutorial
 		void Setup() override;
 		void DrawFrame() override;
 		void Cleanup() override;
+		void InitImgui();
 
 		std::chrono::steady_clock::time_point currentTime;
 		Keyboard cameraController{};

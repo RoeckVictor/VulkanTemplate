@@ -23,6 +23,8 @@ namespace VulkanTutorial
 
 		virtual void Render(FrameInfo& frameInfo);
 
+		Pipeline& GetPipeline() { return *pipeline; }
+
 	protected:
 		virtual VkPushConstantRange CreatePushConstantRange();
 		void CreatePipelineLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);

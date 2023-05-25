@@ -68,7 +68,9 @@ namespace VulkanTutorial
 
         void FreeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
 
-        void resetPool();
+        void ResetPool();
+
+        VkDescriptorPool GetDescriptorPool() const { return descriptorPool; }
 
     private:
         Device& device;

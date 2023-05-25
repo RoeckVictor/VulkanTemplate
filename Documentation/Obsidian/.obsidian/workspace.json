@@ -15,14 +15,25 @@
               "state": {
                 "file": "Vulkan Architecture.canvas",
                 "viewState": {
-                  "x": 2911.9793532233502,
-                  "y": -1897.908344104448,
+                  "x": 1921.6814080059798,
+                  "y": -1628.285239426945,
                   "zoom": -1.333333333333333
                 }
               }
             }
+          },
+          {
+            "id": "ca2bf4da5baa2942",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.3.4"
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -149,7 +160,7 @@
       "graph:Open graph view": false
     }
   },
-  "active": "83ddaa331103060b",
+  "active": "ca2bf4da5baa2942",
   "lastOpenFiles": [
     "Pasted image 20230521150837.png",
     "Pasted image 20230521150747.png",

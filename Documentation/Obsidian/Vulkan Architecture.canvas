@@ -29,10 +29,10 @@
 		{"type":"file","file":"Model.md","id":"25712e03d2b33d93","x":1700,"y":3520,"width":400,"height":400},
 		{"type":"file","file":"Input.md","id":"764cfb5017379ed5","x":2660,"y":3520,"width":400,"height":400},
 		{"type":"file","file":"Camera.md","id":"b8ca3605cf675740","x":2180,"y":3520,"width":400,"height":400},
-		{"type":"file","file":"Nomenclature.md","id":"7a77f33410ee0893","x":420,"y":-2240,"width":1020,"height":1200},
-		{"type":"text","text":"# Ideas\n\n- Use one descriptor set layout and descriptor set per model","id":"ce4cac55e1fa9dcf","x":1600,"y":-2240,"width":693,"height":560},
 		{"type":"file","file":"Vulkan.md","id":"374392dc784a16e5","x":-700,"y":-2240,"width":1020,"height":1200},
-		{"id":"b62aecef9ff794da","x":2400,"y":-2240,"width":855,"height":560,"type":"file","file":"Pasted image 20230521150837.png"}
+		{"type":"file","file":"Pasted image 20230521150837.png","id":"b62aecef9ff794da","x":2400,"y":-2240,"width":855,"height":560},
+		{"type":"file","file":"Nomenclature.md","id":"7a77f33410ee0893","x":420,"y":-2240,"width":1020,"height":1200},
+		{"type":"text","text":"# Ideas\n\n- Use one descriptor set layout and descriptor set per model","id":"ce4cac55e1fa9dcf","x":1600,"y":-2240,"width":693,"height":560}
 	],
 	"edges":[
 		{"id":"3c46b43d994b47ea","fromNode":"db26db07a943e6f7","fromSide":"bottom","toNode":"41e57e8e721413d5","toSide":"top"},
