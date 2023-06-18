@@ -29,7 +29,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-[Ii]ntermediate/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -434,3 +433,13 @@ FodyWeavers.xsd
 *.out
 *.app
 # ----- !CPP GITIGNORE -----
+
+# ----- MYFIRSTENGINE GITIGNORE -----
+[Ii]ntermediate/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*/imgui.ini
+!Libs/Premake/*
+# ----- !MYFIRSTENGINE GITIGNORE -----
