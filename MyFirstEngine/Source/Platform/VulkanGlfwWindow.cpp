@@ -1,5 +1,5 @@
 #include "Mfepch.h"
-#include "VulkanWindow.h"
+#include "VulkanGlfwWindow.h"
 #include "MyFirstEngine/Log.h"
 
 #include "MyFirstEngine/Events/ApplicationEvent.h"
@@ -17,20 +17,20 @@ namespace MyFirstEngine
 
 	Window* Window::Create(const WindowInfo& info)
 	{
-		return new VulkanWindow(info);
+		return new VulkanGlfwWindow(info);
 	}
 
-	VulkanWindow::VulkanWindow(const WindowInfo& info)
+	VulkanGlfwWindow::VulkanGlfwWindow(const WindowInfo& info)
 	{
 		Init(info);
 	}
 
-	VulkanWindow::~VulkanWindow()
+	VulkanGlfwWindow::~VulkanGlfwWindow()
 	{
 		Shutdown();
 	}
 
-	void VulkanWindow::Init(const WindowInfo& info)
+	void VulkanGlfwWindow::Init(const WindowInfo& info)
 	{
 		data.title = info.title;
 		data.width = info.width;
@@ -143,32 +143,32 @@ namespace MyFirstEngine
 		});
 	}
 
-	void VulkanWindow::Shutdown()
+	void VulkanGlfwWindow::Shutdown()
 	{
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
 
-	void VulkanWindow::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
+	void VulkanGlfwWindow::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
 	{
-		VulkanWindow* newWindow = reinterpret_cast<VulkanWindow*>(glfwGetWindowUserPointer(window));
+		VulkanGlfwWindow* newWindow = reinterpret_cast<VulkanGlfwWindow*>(glfwGetWindowUserPointer(window));
 		newWindow->framebufferResized = true;
 		newWindow->data.width = width;
 		newWindow->data.height = height;
 	}
 
-	void VulkanWindow::OnUpdate()
+	void VulkanGlfwWindow::OnUpdate()
 	{
 		glfwPollEvents();
 	}
 
-	void VulkanWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+	void VulkanGlfwWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
 	{
 		VkResult success = glfwCreateWindowSurface(instance, window, nullptr, surface);
 		MFE_CORE_ASSERT(success == VK_SUCCESS, "Failed to create window surface");
 	}
 
-	bool VulkanWindow::IsOpen() const
+	bool VulkanGlfwWindow::IsOpen() const
 	{
 		return !glfwWindowShouldClose(window);
 	}

@@ -165,6 +165,8 @@
     <ClInclude Include="Source\MyFirstEngine\Events\KeyEvent.h" />
     <ClInclude Include="Source\MyFirstEngine\Events\MouseEvent.h" />
     <ClInclude Include="Source\MyFirstEngine\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="Source\MyFirstEngine\Input.h" />
+    <ClInclude Include="Source\MyFirstEngine\KeyCodes.h" />
     <ClInclude Include="Source\MyFirstEngine\Layer.h" />
     <ClInclude Include="Source\MyFirstEngine\LayerStack.h" />
     <ClInclude Include="Source\MyFirstEngine\Log.h" />
@@ -184,7 +186,8 @@
     <ClInclude Include="Source\MyFirstEngine\Renderer\systems\DefaultRenderSystem.h" />
     <ClInclude Include="Source\MyFirstEngine\Renderer\systems\RenderSystem.h" />
     <ClInclude Include="Source\MyFirstEngine\Window.h" />
-    <ClInclude Include="Source\Platform\VulkanWindow.h" />
+    <ClInclude Include="Source\Platform\GlfwInput.h" />
+    <ClInclude Include="Source\Platform\VulkanGlfwWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Mfepch.cpp">
@@ -208,7 +211,8 @@
     <ClCompile Include="Source\MyFirstEngine\Renderer\systems\BillboardSystem.cpp" />
     <ClCompile Include="Source\MyFirstEngine\Renderer\systems\DefaultRenderSystem.cpp" />
     <ClCompile Include="Source\MyFirstEngine\Renderer\systems\RenderSystem.cpp" />
-    <ClCompile Include="Source\Platform\VulkanWindow.cpp" />
+    <ClCompile Include="Source\Platform\GlfwInput.cpp" />
+    <ClCompile Include="Source\Platform\VulkanGlfwWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Libs\Glfw\GLFW.vcxproj">

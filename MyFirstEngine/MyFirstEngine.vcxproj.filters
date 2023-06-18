@@ -47,6 +47,9 @@
     <ClInclude Include="Source\MyFirstEngine\ImGui\ImGuiLayer.h">
       <Filter>MyFirstEngine\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MyFirstEngine\Input.h">
+      <Filter>MyFirstEngine</Filter>
+    </ClInclude>
     <ClInclude Include="Source\MyFirstEngine\Layer.h">
       <Filter>MyFirstEngine</Filter>
     </ClInclude>
@@ -104,9 +107,13 @@
     <ClInclude Include="Source\MyFirstEngine\Window.h">
       <Filter>MyFirstEngine</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\VulkanWindow.h">
+    <ClInclude Include="Source\Platform\GlfwInput.h">
       <Filter>Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Platform\VulkanGlfwWindow.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyFirstEngine\KeyCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Mfepch.cpp" />
@@ -164,7 +171,10 @@
     <ClCompile Include="Source\MyFirstEngine\Renderer\systems\RenderSystem.cpp">
       <Filter>MyFirstEngine\Renderer\systems</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\VulkanWindow.cpp">
+    <ClCompile Include="Source\Platform\GlfwInput.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\VulkanGlfwWindow.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
   </ItemGroup>

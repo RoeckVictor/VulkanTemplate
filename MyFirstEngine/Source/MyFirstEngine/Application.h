@@ -3,7 +3,7 @@
 #include "Core.h"
 
 #include "Window.h"
-#include "Platform/VulkanWindow.h"
+#include "Platform/VulkanGlfwWindow.h"
 #include "LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
@@ -31,7 +31,7 @@ namespace MyFirstEngine
 		void PushOverlay(Layer* overlay);
 
 		inline static Application& GetInstance() { return *instance; }
-		inline VulkanWindow& GetWindow() { return *window; }
+		inline VulkanGlfwWindow& GetWindow() { return *window; }
 		inline Device& GetDevice() { return device; }
 		inline Renderer& GetRenderer() { return renderer; }
 		inline DescriptorPool& GetGlobalPool() { return *globalPool; }
@@ -39,7 +39,7 @@ namespace MyFirstEngine
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
-		VulkanWindow* window;
+		VulkanGlfwWindow* window;
 		Device device;
 		Renderer renderer;
 

@@ -2,15 +2,14 @@
 #include "Application.h"
 
 #include "Log.h"
-
-#include <GLFW/glfw3.h>
+#include "Input.h"
 
 namespace MyFirstEngine
 {
 	Application* Application::instance = nullptr;
 
 	Application::Application()
-		: window((VulkanWindow*)VulkanWindow::Create()),
+		: window((VulkanGlfwWindow*)VulkanGlfwWindow::Create()),
 		  device(*window),
 		  renderer(*window, device)
 	{

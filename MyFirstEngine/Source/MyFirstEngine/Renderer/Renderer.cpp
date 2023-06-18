@@ -6,7 +6,7 @@
 
 namespace MyFirstEngine
 {
-	Renderer::Renderer(VulkanWindow& window, Device& device)
+	Renderer::Renderer(VulkanGlfwWindow& window, Device& device)
 		: window(window),
 		  device(device),
 		  isFrameStarted(false),

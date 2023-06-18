@@ -7,11 +7,11 @@
 
 namespace MyFirstEngine
 {
-	class VulkanWindow : public Window
+	class VulkanGlfwWindow : public Window
 	{
 	public:
-		VulkanWindow(const WindowInfo& info);
-		virtual ~VulkanWindow();
+		VulkanGlfwWindow(const WindowInfo& info);
+		virtual ~VulkanGlfwWindow();
 
 		void OnUpdate() override;
 
@@ -26,7 +26,7 @@ namespace MyFirstEngine
 		bool WasResized() { return framebufferResized; };
 		void ResetResized() { framebufferResized = false; };
 
-		GLFWwindow* GetGLFWindow() const { return window; };
+		void* GetNativeWindow() const { return window; };
 
 	private:
 		virtual void Init(const WindowInfo& info);

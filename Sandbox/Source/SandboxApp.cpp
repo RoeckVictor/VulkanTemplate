@@ -10,7 +10,6 @@ public:
 
 	void OnUpdate() override
 	{
-		MFE_INFO("ExampleLayer::Update");
 	}
 
 	void OnEvent(MyFirstEngine::Event& event) override

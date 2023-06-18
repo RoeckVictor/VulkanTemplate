@@ -36,7 +36,7 @@ namespace MyFirstEngine
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		
-		ImGui_ImplGlfw_InitForVulkan(Application::GetInstance().GetWindow().GetGLFWindow(), true);
+		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow()), true);
 		
 		ImGui_ImplVulkan_InitInfo info;
 		info.DescriptorPool = Application::GetInstance().GetGlobalPool().GetDescriptorPool();

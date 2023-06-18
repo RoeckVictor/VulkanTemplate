@@ -5,7 +5,7 @@
 #include <vector>
 #include <cassert>
 
-#include "Platform/VulkanWindow.h"
+#include "Platform/VulkanGlfwWindow.h"
 #include "Device.h"
 #include "Swapchain.h"
 
@@ -14,7 +14,7 @@ namespace MyFirstEngine
 	class Renderer
 	{
 	public:
-		Renderer(VulkanWindow& window, Device& device);
+		Renderer(VulkanGlfwWindow& window, Device& device);
 		~Renderer();
 
 		Renderer(const Renderer&) = delete;
@@ -45,7 +45,7 @@ namespace MyFirstEngine
 		void FreeCommandBuffers();
 		void RecreateSwapchain();
 
-		VulkanWindow& window;
+		VulkanGlfwWindow& window;
 		Device& device;
 		std::unique_ptr<SwapChain> swapchain;
 		std::vector<VkCommandBuffer> commandBuffers;

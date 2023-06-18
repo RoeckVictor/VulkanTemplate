@@ -44,7 +44,7 @@ namespace MyFirstEngine
 	}
 
 	// class member functions
-	Device::Device(VulkanWindow& window)
+	Device::Device(VulkanGlfwWindow& window)
 		: window{ window }
 	{
 		CreateInstance();

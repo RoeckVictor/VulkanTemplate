@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Platform/VulkanWindow.h"
+#include "Platform/VulkanGlfwWindow.h"
 
 // std lib headers
 #include <string>
@@ -35,7 +35,7 @@ namespace MyFirstEngine
 		const bool enableValidationLayers = true;
 #endif
 
-		Device(VulkanWindow& window);
+		Device(VulkanGlfwWindow& window);
 		~Device();
 
 		// Not copyable or movable
@@ -87,7 +87,7 @@ namespace MyFirstEngine
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-		VulkanWindow& window;
+		VulkanGlfwWindow& window;
 		VkCommandPool commandPool;
 
 		VkDevice device_;

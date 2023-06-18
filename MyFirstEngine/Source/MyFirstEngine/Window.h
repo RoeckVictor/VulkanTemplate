@@ -28,6 +28,8 @@ namespace MyFirstEngine
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
+		virtual void* GetNativeWindow() const = 0;
+
 		static Window* Create(const WindowInfo& info = WindowInfo());
 	};
 }
