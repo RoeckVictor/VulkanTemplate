@@ -16,7 +16,8 @@ IncludeDirs	= {}
 IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/include"
 IncludeDirs["ImGui"] = "MyFirstEngine/Libs/ImGui"
 IncludeDirs["VulkanSDK"] = "MyFirstEngine/Libs/VulkanSDK/1.3.243.0"
-IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm"
+IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm/glm/glm"
+IncludeDirs["Spdlog"] = "MyFirstEngine/Libs/Spdlog/spdlog/include"
 IncludeDirs["Other"] = "MyFirstEngine/Libs/Other"
 
 group "Dependencies"
@@ -46,9 +47,10 @@ project "MyFirstEngine"
 	{		
 		"%{prj.name}/Source",
 		"%{prj.name}/Source/MyFirstEngine/Renderer",
-		"%{prj.name}/Libs/Spdlog/include",
+		"%{IncludeDirs.Spdlog}",
 		"%{IncludeDirs.GLFW}",
 		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.ImGui}/imgui",
 		"%{IncludeDirs.VulkanSDK}/Include",
 		"%{IncludeDirs.Glm}",
 		"%{IncludeDirs.Other}"
@@ -113,7 +115,7 @@ project "Sandbox"
 
 	includedirs
 	{
-		"MyFirstEngine/Libs/Spdlog/include",
+		"%{IncludeDirs.Spdlog}",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",
 		"%{IncludeDirs.VulkanSDK}/Include"

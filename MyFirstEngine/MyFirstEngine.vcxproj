@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>Mfepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MFE_PLATFORM_WINDOWS;MFE_BUILD_DLL;MFE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\ImGui\imgui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm\glm\glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -104,7 +104,7 @@
       <PrecompiledHeaderFile>Mfepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MFE_PLATFORM_WINDOWS;MFE_BUILD_DLL;MFE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\ImGui\imgui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm\glm\glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -132,7 +132,7 @@
       <PrecompiledHeaderFile>Mfepch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MFE_PLATFORM_WINDOWS;MFE_BUILD_DLL;MFE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Source\MyFirstEngine\Renderer;Libs\Spdlog\spdlog\include;Libs\Glfw\include;Libs\ImGui;Libs\ImGui\imgui;Libs\VulkanSDK\1.3.243.0\Include;Libs\Glm\glm\glm;Libs\Other;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

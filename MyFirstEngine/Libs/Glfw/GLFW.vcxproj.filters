@@ -12,60 +12,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\GLFW\glfw3.h">
+    <ClInclude Include="glfw\include\GLFW\glfw3.h">
       <Filter>include\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="include\GLFW\glfw3native.h">
+    <ClInclude Include="glfw\include\GLFW\glfw3native.h">
       <Filter>include\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="src\glfw_config.h">
+    <ClInclude Include="glfw\src\glfw_config.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\context.c">
+    <ClCompile Include="glfw\src\context.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\egl_context.c">
+    <ClCompile Include="glfw\src\egl_context.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\init.c">
+    <ClCompile Include="glfw\src\init.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\input.c">
+    <ClCompile Include="glfw\src\input.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\monitor.c">
+    <ClCompile Include="glfw\src\monitor.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\osmesa_context.c">
+    <ClCompile Include="glfw\src\osmesa_context.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\vulkan.c">
+    <ClCompile Include="glfw\src\vulkan.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\wgl_context.c">
+    <ClCompile Include="glfw\src\wgl_context.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_init.c">
+    <ClCompile Include="glfw\src\win32_init.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_joystick.c">
+    <ClCompile Include="glfw\src\win32_joystick.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_monitor.c">
+    <ClCompile Include="glfw\src\win32_monitor.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_thread.c">
+    <ClCompile Include="glfw\src\win32_thread.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_time.c">
+    <ClCompile Include="glfw\src\win32_time.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\win32_window.c">
+    <ClCompile Include="glfw\src\win32_window.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\window.c">
+    <ClCompile Include="glfw\src\window.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
