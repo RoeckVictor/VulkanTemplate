@@ -1,0 +1,13 @@
+[submodule "MyFirstEngine/Libs/Glfw/glfw"]
+	path = MyFirstEngine/Libs/Glfw/glfw
+	url = git@github.com:glfw/glfw.git
+[submodule "MyFirstEngine/Libs/Glm/glm"]
+	path = MyFirstEngine/Libs/Glm/glm
+	url = git@github.com:g-truc/glm.git
+[submodule "MyFirstEngine/Libs/Spdlog/spdlog"]
+	path = MyFirstEngine/Libs/Spdlog/spdlog
+	url = git@github.com:gabime/spdlog.git
+[submodule "MyFirstEngine/Libs/ImGui/imgui"]
+	path = MyFirstEngine/Libs/ImGui/imgui
+	url = git@github.com:ocornut/imgui.git
+	branch = docking
