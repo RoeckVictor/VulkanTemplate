@@ -436,4 +436,10 @@ FodyWeavers.xsd
 
 # ----- MYFIRSTENGINE GITIGNORE -----
 [Ii]ntermediate/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*/imgui.ini
+!Libs/Premake/*
 # ----- !MYFIRSTENGINE GITIGNORE -----
