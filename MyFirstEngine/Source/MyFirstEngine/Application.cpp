@@ -11,7 +11,8 @@ namespace MyFirstEngine
 	Application::Application()
 		: window((VulkanGlfwWindow*)VulkanGlfwWindow::Create()),
 		  device(*window),
-		  renderer(*window, device)
+		  renderer(*window, device),
+		  imguiLayer(new ImGuiLayer())
 	{
 		MFE_CORE_ASSERT(!instance, "Application already exists!");
 		instance = this;
@@ -24,6 +25,8 @@ namespace MyFirstEngine
 			.Build();
 
 		globalSetLayouts.push_back(DescriptorSetLayout::Builder(device).Build());
+
+		PushOverlay(imguiLayer);
 	}
 
 	Application::~Application()
@@ -36,6 +39,11 @@ namespace MyFirstEngine
 		{
 			for (Layer* layer : layerStack)
 				layer->OnUpdate();
+
+			imguiLayer->Begin();
+			for (Layer* layer : layerStack)
+				layer->OnImGuiRender();
+			imguiLayer->End();
 
 			window->OnUpdate();
 		}

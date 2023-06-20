@@ -4,7 +4,7 @@
 
 namespace MyFirstEngine
 {
-	class MFE_API Input
+	class Input
 	{
 	public:
 		inline static bool IsKeyPressed(int keycode) { return instance->IsKeyPressedImpl(keycode); }

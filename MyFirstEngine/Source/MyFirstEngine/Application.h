@@ -15,9 +15,11 @@
 #include "Renderer/Texture.h"
 #include "Renderer/systems/RenderSystem.h"
 
+#include "ImGui/ImGuiLayer.h"
+
 namespace MyFirstEngine
 {
-	class MFE_API Application
+	class Application
 	{
 	public:
 		Application();
@@ -40,6 +42,7 @@ namespace MyFirstEngine
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		VulkanGlfwWindow* window;
+		ImGuiLayer* imguiLayer;
 		Device device;
 		Renderer renderer;
 

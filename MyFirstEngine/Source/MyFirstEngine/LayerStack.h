@@ -7,7 +7,7 @@
 
 namespace MyFirstEngine
 {
-	class MFE_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack();
@@ -23,6 +23,6 @@ namespace MyFirstEngine
 
 	private:
 		std::vector<Layer*> layers;
-		std::vector<Layer*>::iterator layerInsert;
+		unsigned int layerInsertIndex = 0;
 	};
 }

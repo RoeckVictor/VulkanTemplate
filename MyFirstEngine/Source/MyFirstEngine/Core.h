@@ -1,11 +1,7 @@
 #pragma once
 
 #ifdef MFE_PLATFORM_WINDOWS
-	#ifdef MFE_BUILD_DLL
-		#define MFE_API __declspec(dllexport)
-	#else
-		#define MFE_API __declspec(dllimport)
-	#endif
+
 #else
 	#error MyFirstEngine only supports Windows!
 #endif

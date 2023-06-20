@@ -14,7 +14,7 @@ namespace MyFirstEngine
 		unsigned int height = 720;
 	};
 
-	class MFE_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

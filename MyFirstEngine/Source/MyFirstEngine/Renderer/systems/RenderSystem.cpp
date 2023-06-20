@@ -36,7 +36,7 @@ namespace MyFirstEngine
 		VkDescriptorSetLayout setLayouts[] = { descriptorSetLayouts[0], descriptorSetLayouts[1] }; // TODO CHANGE WITH LOOP
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+		pipelineLayoutInfo.setLayoutCount = (uint32_t)descriptorSetLayouts.size();
 		pipelineLayoutInfo.pSetLayouts = setLayouts;
 		pipelineLayoutInfo.pushConstantRangeCount = 1;
 		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;

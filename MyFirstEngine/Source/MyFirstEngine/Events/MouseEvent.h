@@ -4,7 +4,7 @@
 
 namespace MyFirstEngine 
 {
-	class MFE_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float x, float y) : m_MouseX(x), m_MouseY(y) {}
@@ -27,7 +27,7 @@ namespace MyFirstEngine
 		float m_MouseX, m_MouseY;
 	};
 
-	class MFE_API MouseScrolledEvent : public Event
+	class MouseScrolledEvent : public Event
 	{
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset) : m_XOffset(xOffset), m_YOffset(yOffset) {}
@@ -50,7 +50,7 @@ namespace MyFirstEngine
 		float m_XOffset, m_YOffset;
 	};
 
-	class MFE_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
 	public: 
 		inline int GetMouseButton() const { return m_Button; }
@@ -62,7 +62,7 @@ namespace MyFirstEngine
 		int m_Button;
 	};
 
-	class MFE_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonPressedEvent(int button) : MouseButtonEvent(button) {}
@@ -79,7 +79,7 @@ namespace MyFirstEngine
 		virtual const char* GetName() const override { return "MouseButtonPressed"; } 
 	};
 
-	class MFE_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonReleasedEvent(int button) : MouseButtonEvent(button) {}

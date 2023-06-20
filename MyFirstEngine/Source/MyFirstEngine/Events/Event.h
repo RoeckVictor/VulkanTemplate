@@ -34,7 +34,7 @@ namespace MyFirstEngine
 		EventCategoryMouseButton	= BIT(4)
 	};
 
-	class MFE_API Event
+	class Event
 	{
 		friend class EventDispatcher;
 

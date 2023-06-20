@@ -4,7 +4,7 @@
 
 namespace MyFirstEngine 
 {
-	class MFE_API KeyEvent : public Event
+	class KeyEvent : public Event
 	{
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
@@ -15,7 +15,7 @@ namespace MyFirstEngine
 		int m_KeyCode;
 	};
 
-	class MFE_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
 	public:
 		KeyPressedEvent(int keycode, int repeatCount) : KeyEvent(keycode), m_RepeatCount(repeatCount) {}
@@ -37,7 +37,7 @@ namespace MyFirstEngine
 		int m_RepeatCount;
 	};
 
-	class MFE_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode) : KeyEvent(keycode) {}
@@ -53,7 +53,7 @@ namespace MyFirstEngine
 		virtual const char* GetName() const override { return "KeyReleased"; }
 	};
 
-	class MFE_API KeyTypedEvent : public KeyEvent
+	class KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(int keycode) : KeyEvent(keycode) {}

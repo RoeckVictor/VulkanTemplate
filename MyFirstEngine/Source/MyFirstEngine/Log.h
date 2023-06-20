@@ -6,7 +6,7 @@
 
 namespace MyFirstEngine
 {
-	class MFE_API Log
+	class Log
 	{
 	public:
 		static void Init();

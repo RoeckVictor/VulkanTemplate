@@ -4,7 +4,7 @@
 
 namespace MyFirstEngine 
 {
-	class MFE_API WindowResizeEvent : public Event
+	class WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
@@ -27,7 +27,7 @@ namespace MyFirstEngine
 		unsigned int m_Width, m_Height;
 	};
 
-	class MFE_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() {}
@@ -38,7 +38,7 @@ namespace MyFirstEngine
 		virtual int GetCategoryFlags() const override { return (EventCategoryApplication); }
 	};
 
-	class MFE_API AppTickEvent : public Event
+	class AppTickEvent : public Event
 	{
 	public:
 		AppTickEvent() {}
@@ -49,7 +49,7 @@ namespace MyFirstEngine
 		virtual int GetCategoryFlags() const override { return (EventCategoryApplication); }
 	};
 
-	class MFE_API AppUpdateEvent : public Event
+	class AppUpdateEvent : public Event
 	{
 	public:
 		AppUpdateEvent() {}
@@ -60,7 +60,7 @@ namespace MyFirstEngine
 		virtual int GetCategoryFlags() const override { return (EventCategoryApplication); }
 	};
 
-	class MFE_API AppRenderEvent : public Event
+	class AppRenderEvent : public Event
 	{
 	public:
 		AppRenderEvent() {}

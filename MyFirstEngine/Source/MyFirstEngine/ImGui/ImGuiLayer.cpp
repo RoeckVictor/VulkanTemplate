@@ -32,9 +32,11 @@ namespace MyFirstEngine
 		SetImguiStyle();
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		// I can't get this to work, need to find more info on multi-viewport support for Vulkan
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow()), true);
 		
@@ -45,6 +47,7 @@ namespace MyFirstEngine
 		info.PhysicalDevice = Application::GetInstance().GetDevice().physicalDevice();
 		info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
 		info.MsaaSamples = VK_SAMPLE_COUNT_8_BIT;
+
 		ImGui_ImplVulkan_Init(&info);
 		
 		VkCommandBuffer commandBuffer = Application::GetInstance().GetDevice().BeginSingleTimeCommands();
@@ -55,38 +58,50 @@ namespace MyFirstEngine
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
+	void ImGuiLayer::OnImGuiRender()
+	{
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
+	}
+
+	void ImGuiLayer::Begin()
+	{
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::End()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::GetInstance();
+		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+
+		VkCommandBuffer commandBuffer = Application::GetInstance().GetRenderer().BeginFrame();
+		Application::GetInstance().GetRenderer().BeginSwapChainRenderPass(commandBuffer);
+
+		ImGui::Render();
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer, 0, nullptr);
+
+		/* I can't get this to work, need to find more info on multi-viewport support for Vulkan
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backupCurrentContext);
+		}
+		*/
+
+		Application::GetInstance().GetRenderer().EndSwapChainRenderPass(commandBuffer);
+		Application::GetInstance().GetRenderer().EndFrame();
+	}
+
 	void ImGuiLayer::OnDetach()
 	{
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-	}
-
-	void ImGuiLayer::OnUpdate()
-	{
-		if (VkCommandBuffer commandBuffer = Application::GetInstance().GetRenderer().BeginFrame())
-		{
-			Application::GetInstance().GetRenderer().BeginSwapChainRenderPass(commandBuffer);
-
-			ImGuiIO& io = ImGui::GetIO();
-			Application& app = Application::GetInstance();
-			io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
-
-			float time = (float)glfwGetTime();
-			io.DeltaTime = time - this->time;
-			this->time = time;
-
-			ImGui_ImplVulkan_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-
-			ImGui::ShowDemoWindow();
-
-			ImGui::Render();
-			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer, 0, nullptr);
-			Application::GetInstance().GetRenderer().EndSwapChainRenderPass(commandBuffer);
-			Application::GetInstance().GetRenderer().EndFrame();
-		}
 	}
 
 	void ImGuiLayer::SetImguiStyle()
@@ -146,59 +161,5 @@ namespace MyFirstEngine
 		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.92f, 0.18f, 0.29f, 0.43f);
 		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.20f, 0.22f, 0.27f, 0.9f);
 		// style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.20f, 0.22f, 0.27f, 0.73f);
-	}
-
-	void ImGuiLayer::OnEvent(Event& event)
-	{
-		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<MouseButtonPressedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
-		dispatcher.Dispatch<MouseButtonReleasedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
-		dispatcher.Dispatch<MouseMovedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
-		dispatcher.Dispatch<MouseScrolledEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnMouseScrolledEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
-		dispatcher.Dispatch<KeyReleasedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
-		dispatcher.Dispatch<KeyTypedEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
-		dispatcher.Dispatch<WindowResizeEvent>(MFE_BIND_EVENT_FN(ImGuiLayer::OnWindowResizeEvent));
-	}
-
-	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnMouseScrolledEvent(MouseScrolledEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
-	{
-
-		return false;
-	}
-
-	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent & e)
-	{
-		return false;
-	}
-
-	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
-	{
-		return false;
 	}
 }
