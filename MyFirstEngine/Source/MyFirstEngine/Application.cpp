@@ -10,21 +10,11 @@ namespace MyFirstEngine
 
 	Application::Application()
 		: window((VulkanGlfwWindow*)VulkanGlfwWindow::Create()),
-		  device(*window),
-		  renderer(*window, device),
 		  imguiLayer(new ImGuiLayer())
 	{
 		MFE_CORE_ASSERT(!instance, "Application already exists!");
 		instance = this;
 		window->SetEventCallback(MFE_BIND_EVENT_FN(Application::OnEvent));
-
-		globalPool = DescriptorPool::Builder(device)
-			.SetMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.SetPoolFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
-			.Build();
-
-		globalSetLayouts.push_back(DescriptorSetLayout::Builder(device).Build());
 
 		PushOverlay(imguiLayer);
 	}

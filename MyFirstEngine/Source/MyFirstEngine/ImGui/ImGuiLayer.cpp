@@ -15,6 +15,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "MyFirstEngine/Renderer/VulkanContext.h"
+
 namespace MyFirstEngine
 {
 	ImGuiLayer::ImGuiLayer()
@@ -39,22 +41,23 @@ namespace MyFirstEngine
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow()), true);
-		
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+
 		ImGui_ImplVulkan_InitInfo info;
-		info.DescriptorPool = Application::GetInstance().GetGlobalPool().GetDescriptorPool();
-		info.RenderPass = Application::GetInstance().GetRenderer().GetSwapChainRenderPass();
-		info.Device = Application::GetInstance().GetDevice().device();
-		info.PhysicalDevice = Application::GetInstance().GetDevice().physicalDevice();
+		info.DescriptorPool = graphicsContext->GetGlobalPool().GetDescriptorPool();
+		info.RenderPass = graphicsContext->GetRenderer().GetSwapChainRenderPass();
+		info.Device = graphicsContext->GetDevice().device();
+		info.PhysicalDevice = graphicsContext->GetDevice().physicalDevice();
 		info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
 		info.MsaaSamples = VK_SAMPLE_COUNT_8_BIT;
 
 		ImGui_ImplVulkan_Init(&info);
 		
-		VkCommandBuffer commandBuffer = Application::GetInstance().GetDevice().BeginSingleTimeCommands();
+		VkCommandBuffer commandBuffer = graphicsContext->GetDevice().BeginSingleTimeCommands();
 		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-		Application::GetInstance().GetDevice().EndSingleTimeCommands(commandBuffer);
+		graphicsContext->GetDevice().EndSingleTimeCommands(commandBuffer);
 		
-		vkDeviceWaitIdle(Application::GetInstance().GetDevice().device());
+		vkDeviceWaitIdle(graphicsContext->GetDevice().device());
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
@@ -73,12 +76,14 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::End()
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		VulkanGlfwWindow& window = static_cast<VulkanGlfwWindow&>(Application::GetInstance().GetWindow());
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(window.GetGraphicsContext());
 
-		VkCommandBuffer commandBuffer = Application::GetInstance().GetRenderer().BeginFrame();
-		Application::GetInstance().GetRenderer().BeginSwapChainRenderPass(commandBuffer);
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)window.GetWidth(), (float)window.GetHeight());
+
+		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().BeginFrame();
+		graphicsContext->GetRenderer().BeginSwapChainRenderPass(commandBuffer);
 
 		ImGui::Render();
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer, 0, nullptr);
@@ -93,8 +98,8 @@ namespace MyFirstEngine
 		}
 		*/
 
-		Application::GetInstance().GetRenderer().EndSwapChainRenderPass(commandBuffer);
-		Application::GetInstance().GetRenderer().EndFrame();
+		graphicsContext->GetRenderer().EndSwapChainRenderPass(commandBuffer);
+		graphicsContext->GetRenderer().EndFrame();
 	}
 
 	void ImGuiLayer::OnDetach()

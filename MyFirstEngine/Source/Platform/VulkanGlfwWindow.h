@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MyFirstEngine/Window.h"
+#include "MyFirstEngine/Renderer/GraphicsContext.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -27,6 +28,7 @@ namespace MyFirstEngine
 		void ResetResized() { framebufferResized = false; };
 
 		void* GetNativeWindow() const { return window; };
+		GraphicsContext* GetGraphicsContext() const { return graphicsContext; };
 
 	private:
 		virtual void Init(const WindowInfo& info);
@@ -34,6 +36,7 @@ namespace MyFirstEngine
 		static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 		GLFWwindow* window;
+		GraphicsContext* graphicsContext;
 
 		struct WindowData
 		{

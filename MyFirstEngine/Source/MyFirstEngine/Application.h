@@ -8,13 +8,6 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
-#include "Renderer/Device.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Descriptors.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/Texture.h"
-#include "Renderer/systems/RenderSystem.h"
-
 #include "ImGui/ImGuiLayer.h"
 
 namespace MyFirstEngine
@@ -34,23 +27,15 @@ namespace MyFirstEngine
 
 		inline static Application& GetInstance() { return *instance; }
 		inline VulkanGlfwWindow& GetWindow() { return *window; }
-		inline Device& GetDevice() { return device; }
-		inline Renderer& GetRenderer() { return renderer; }
-		inline DescriptorPool& GetGlobalPool() { return *globalPool; }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		VulkanGlfwWindow* window;
 		ImGuiLayer* imguiLayer;
-		Device device;
-		Renderer renderer;
 
 		bool isRunning = true;
 		LayerStack layerStack;
-
-		std::unique_ptr<DescriptorPool> globalPool{};
-		std::vector<std::unique_ptr<DescriptorSetLayout>> globalSetLayouts;
 
 		static Application* instance;
 	};

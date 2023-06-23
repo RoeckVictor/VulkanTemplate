@@ -6,6 +6,8 @@
 #include "MyFirstEngine/Events/KeyEvent.h"
 #include "MyFirstEngine/Events/MouseEvent.h"
 
+#include "MyFirstEngine/Renderer/VulkanContext.h"
+
 namespace MyFirstEngine
 {
 	static bool isGLFWInitialized = false;
@@ -53,6 +55,9 @@ namespace MyFirstEngine
 		window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(window, &data);
 		glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+
+		graphicsContext = new VulkanContext(this);
+		graphicsContext->Init();
 
 		// Set GLFW callbacks
 		glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
@@ -160,6 +165,7 @@ namespace MyFirstEngine
 	void VulkanGlfwWindow::OnUpdate()
 	{
 		glfwPollEvents();
+		graphicsContext->SwapBuffers();
 	}
 
 	void VulkanGlfwWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
