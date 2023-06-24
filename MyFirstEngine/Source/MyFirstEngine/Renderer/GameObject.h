@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Model.h"
+#include "Material.h"
 
 namespace MyFirstEngine
 {
@@ -31,6 +32,8 @@ namespace MyFirstEngine
 		GameObject(GameObject&&) = default;
 		GameObject& operator=(GameObject&&) = default;
 
+		void Render();
+
 		static GameObject CreateGameObject();
 		static GameObject MakePointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.0f));
 		unsigned int GetId() const { return id; }
@@ -39,10 +42,10 @@ namespace MyFirstEngine
 		glm::vec3 color{};
 		TransformComponent transform{};
 
-		std::shared_ptr<Model> model{};
-		std::unique_ptr<PointLightComponent> pointLight = nullptr;
-
 		
+		std::shared_ptr<Model> model{};
+		std::shared_ptr<Material> material;
+		std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
 	private:
 		GameObject(unsigned int objId) : id(objId) {}

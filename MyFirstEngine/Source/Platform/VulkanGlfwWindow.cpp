@@ -162,10 +162,15 @@ namespace MyFirstEngine
 		newWindow->data.height = height;
 	}
 
-	void VulkanGlfwWindow::OnUpdate()
+	void VulkanGlfwWindow::BeginUpdate()
 	{
 		glfwPollEvents();
-		graphicsContext->SwapBuffers();
+		graphicsContext->BeginFrame();
+	}
+
+	void VulkanGlfwWindow::EndUpdate()
+	{
+		graphicsContext->EndFrame();
 	}
 
 	void VulkanGlfwWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)

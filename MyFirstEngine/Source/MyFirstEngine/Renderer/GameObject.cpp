@@ -65,6 +65,13 @@ namespace MyFirstEngine
 		};
 	}
 
+	void GameObject::Render()
+	{
+		material->Bind();
+		model->Bind();
+		model->Draw();
+	}
+
 	GameObject GameObject::CreateGameObject()
 	{
 		static unsigned int currentId = 0;

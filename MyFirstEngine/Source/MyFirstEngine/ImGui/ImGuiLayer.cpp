@@ -78,12 +78,10 @@ namespace MyFirstEngine
 	{
 		VulkanGlfwWindow& window = static_cast<VulkanGlfwWindow&>(Application::GetInstance().GetWindow());
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(window.GetGraphicsContext());
+		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2((float)window.GetWidth(), (float)window.GetHeight());
-
-		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().BeginFrame();
-		graphicsContext->GetRenderer().BeginSwapChainRenderPass(commandBuffer);
 
 		ImGui::Render();
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer, 0, nullptr);
@@ -97,9 +95,6 @@ namespace MyFirstEngine
 			glfwMakeContextCurrent(backupCurrentContext);
 		}
 		*/
-
-		graphicsContext->GetRenderer().EndSwapChainRenderPass(commandBuffer);
-		graphicsContext->GetRenderer().EndFrame();
 	}
 
 	void ImGuiLayer::OnDetach()

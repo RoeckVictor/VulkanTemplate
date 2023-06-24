@@ -7,16 +7,14 @@
 
 namespace MyFirstEngine
 {
-	Pipeline::Pipeline(Device& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfig& config)
+	Pipeline::Pipeline(Device& device, VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config)
 		: device(device)
 	{
-		CreateGraphicsPipeline(vertPath, fragPath, config);
+		CreateGraphicsPipeline(vertShader, fragShader, config);
 	}
 
 	Pipeline::~Pipeline()
 	{
-		vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
-		vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
 		vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
 	}
 
@@ -93,18 +91,12 @@ namespace MyFirstEngine
 		configInfo.attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
 	}
 
-	void Pipeline::CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfig& config)
+	void Pipeline::CreateGraphicsPipeline(VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config)
 	{
-		auto vertCode = ReadFile(vertPath);
-		auto fragCode = ReadFile(fragPath);
-
-		CreateShaderModule(vertCode, &vertShaderModule);
-		CreateShaderModule(fragCode, &fragShaderModule);
-
 		VkPipelineShaderStageCreateInfo vertShaderStage = {};
 		vertShaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertShaderStage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertShaderStage.module = vertShaderModule;
+		vertShaderStage.module = vertShader;
 		vertShaderStage.pName = "main";
 		vertShaderStage.flags = 0;
 		vertShaderStage.pNext = nullptr;
@@ -113,7 +105,7 @@ namespace MyFirstEngine
 		VkPipelineShaderStageCreateInfo fragShaderStage = {};
 		fragShaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		fragShaderStage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragShaderStage.module = fragShaderModule;
+		fragShaderStage.module = fragShader;
 		fragShaderStage.pName = "main";
 		fragShaderStage.flags = 0;
 		fragShaderStage.pNext = nullptr;

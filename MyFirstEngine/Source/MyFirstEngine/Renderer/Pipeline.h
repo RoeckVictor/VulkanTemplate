@@ -32,14 +32,14 @@ namespace MyFirstEngine
 	class Pipeline
 	{
 	public:
-		Pipeline(Device &device, const std::string& vertPath, const std::string& fragPath, const PipelineConfig& config);
+		Pipeline(Device &device, VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config);
 		~Pipeline();
 
 		Pipeline(const Pipeline&) = delete;
 		Pipeline& operator=(const Pipeline&) = delete;
 
 		static void DefaultConfigInfo(PipelineConfig& configInfo);
-		void CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfig& config);
+		void CreateGraphicsPipeline(VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config);
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 		void BindCommandBuffer(VkCommandBuffer commandBuffer);
 
@@ -50,8 +50,6 @@ namespace MyFirstEngine
 
 		Device& device;
 		VkPipeline graphicsPipeline;
-		VkShaderModule vertShaderModule;
-		VkShaderModule fragShaderModule;
 
 		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 	};

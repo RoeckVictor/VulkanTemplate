@@ -1,6 +1,8 @@
 #include "Mfepch.h"
 #include "Model.h"
 #include "Utils.h"
+#include "VulkanContext.h"
+#include "MyFirstEngine/Application.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tinyobjloader/tiny_obj_loader.h>
@@ -27,8 +29,7 @@ namespace std
 namespace MyFirstEngine
 {
 	Model::Model(Device& device, const Data& builder)
-		: device(device),
-		  texture(builder.texturepath, device)
+		: device(device)
 	{
 		CreateVertexBuffer(builder.vertices);
 		CreateIndexBuffer(builder.indices);
@@ -38,16 +39,19 @@ namespace MyFirstEngine
 	{
 	}
 
-	std::unique_ptr<Model> Model::CreateModelFromFile(Device& device, const std::string& filepath, const std::string& texturepath)
+	std::unique_ptr<Model> Model::CreateModelFromFile(Device& device, const std::string& filepath)
 	{
 		Data data{};
-		data.LoadModel(filepath, texturepath);
+		data.LoadModel(filepath);
 
 		return std::make_unique<Model>(device, data);
 	}
 
-	void Model::Bind(VkCommandBuffer commandBuffer)
+	void Model::Bind()
 	{
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
+
 		VkBuffer vertexBuffers[] = { vertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -56,8 +60,11 @@ namespace MyFirstEngine
 			vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 	}
 
-	void Model::Draw(VkCommandBuffer commandBuffer)
+	void Model::Draw()
 	{
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
+
 		if (hasIndexBuffer)
 			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
 		else
@@ -119,16 +126,7 @@ namespace MyFirstEngine
 		device.CopyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 	}
 
-	void Model::CreateTextureSet(DescriptorSetLayout& setLayout, DescriptorPool& pool)
-	{
-		VkDescriptorImageInfo imageInfo = texture.GetImageInfo();
-
-		DescriptorWriter(setLayout, pool)
-			.WriteImage(0, &imageInfo)
-			.Build(textureSet);
-	}
-
-	void Model::Data::LoadModel(const std::string& filepath, std::string texpath)
+	void Model::Data::LoadModel(const std::string& filepath)
 	{
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -189,7 +187,5 @@ namespace MyFirstEngine
 				indices.push_back(uniqueVertices[vertex]);
 			}
 		}
-
-		texturepath = texpath;
 	}
 }

@@ -14,7 +14,8 @@ namespace MyFirstEngine
 		VulkanGlfwWindow(const WindowInfo& info);
 		virtual ~VulkanGlfwWindow();
 
-		void OnUpdate() override;
+		void BeginUpdate() override;
+		void EndUpdate() override;
 
 		void SetEventCallback(const EventCallbackFn& callback) override { data.eventCallback = callback; }
 

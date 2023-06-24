@@ -55,9 +55,8 @@ namespace MyFirstEngine
 		{
 			std::vector<Vertex> vertices{};
 			std::vector<uint32_t> indices{};
-			std::string texturepath;
 
-			void LoadModel(const std::string& filepath, std::string texturepath);
+			void LoadModel(const std::string& filepath);
 		};
 	
 		Model(Device& device, const Data& builder);
@@ -66,21 +65,16 @@ namespace MyFirstEngine
 		Model(const Model&) = delete;
 		Model& operator=(const Model&) = delete;
 
-		static std::unique_ptr<Model> CreateModelFromFile(Device& device, const std::string& filepath, const std::string& texturepath = "");
+		static std::unique_ptr<Model> CreateModelFromFile(Device& device, const std::string& filepath);
 
-		void CreateTextureSet(DescriptorSetLayout& setLayout, DescriptorPool& pool);
-		void Bind(VkCommandBuffer commandBuffer);
-		void Draw(VkCommandBuffer commandBuffer);
-
-		VkDescriptorSet textureSet{ VK_NULL_HANDLE }; //texture defaulted to null
-		Texture texture;
+		void Bind();
+		void Draw();
 
 	private:
 		void CreateVertexBuffer(const std::vector<Vertex>& vertices);
 		void CreateIndexBuffer(const std::vector<uint32_t>& indices);
 
 		Device& device;
-
 		std::unique_ptr<Buffer> vertexBuffer;
 		uint32_t vertexCount;
 
