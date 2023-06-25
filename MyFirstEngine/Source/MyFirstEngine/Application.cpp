@@ -5,11 +5,12 @@
 #include "Input.h"
 
 // TODELETE
-#include "MyFirstEngine/Renderer/GameObject.h"
-#include "MyFirstEngine/Renderer/VulkanContext.h"
 #include "MyFirstEngine/Renderer/Model.h"
-#include "MyFirstEngine/Renderer/Material.h"
-#include "MyFirstEngine/Renderer/Camera.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/GameObject.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanModel.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/Material.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/Camera.h"
 
 namespace MyFirstEngine
 {
@@ -47,12 +48,19 @@ namespace MyFirstEngine
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(GetWindow().GetGraphicsContext());
 
 		GameObject gameObjTest = GameObject::CreateGameObject();
-		gameObjTest.model = Model::CreateModelFromFile(graphicsContext->GetDevice(), "../Resources/Models/smooth_vase.obj");
-		gameObjTest.material = Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/diffuse.vert.spv", "../Resources/Shaders/diffuse.frag.spv");
+
+		// std::unique_ptr<Model> model = Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj");
+		std::vector<Model::Vertex> vertices;
+		std::vector<uint32_t> indices;
+		std::unique_ptr<Model> model = Model::CreateModelFromData(vertices, indices);
+		gameObjTest.model = std::shared_ptr<VulkanModel>(dynamic_cast<VulkanModel*>(model.release()));
+
+		gameObjTest.material = Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
-		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
 		glm::mat4 normalMatrix{ 1.0f };
+		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
 		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
+		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
 		gameObjTest.material->CreatePipeline();
 		
 		gameObjTest.transform.translation = { 0.0f, 0.5f, 1.0f };

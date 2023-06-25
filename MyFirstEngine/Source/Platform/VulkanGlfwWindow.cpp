@@ -6,7 +6,7 @@
 #include "MyFirstEngine/Events/KeyEvent.h"
 #include "MyFirstEngine/Events/MouseEvent.h"
 
-#include "MyFirstEngine/Renderer/VulkanContext.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
 
 namespace MyFirstEngine
 {

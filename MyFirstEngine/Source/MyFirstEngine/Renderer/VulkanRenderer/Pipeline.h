@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Device.h"
-#include "Model.h"
+#include "VulkanModel.h"
 
 namespace MyFirstEngine
 {

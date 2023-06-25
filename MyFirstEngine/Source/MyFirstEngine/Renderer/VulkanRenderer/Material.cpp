@@ -87,8 +87,9 @@ namespace MyFirstEngine
 	void Material::CreatePipeline()
 	{
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
-
 		VkRenderPass renderPass = graphicsContext->GetRenderer().GetSwapChainRenderPass();
+		
+		CreateTexturesSet();
 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		for (int i = 0; i < graphicsContext->GetGlobalSetLayout().size(); i++)
@@ -149,9 +150,11 @@ namespace MyFirstEngine
 		return buffer;
 	}
 
-	void Material::CreateTexturesSet(DescriptorSetLayout& setLayout, DescriptorPool& pool)
+	void Material::CreateTexturesSet()
 	{
-		DescriptorWriter descriptorWritter = DescriptorWriter(setLayout, pool);
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+
+		DescriptorWriter descriptorWritter = DescriptorWriter(*graphicsContext->GetGlobalSetLayout()[1], graphicsContext->GetGlobalPool());
 		for (auto texture : textures)
 		{
 			VkDescriptorImageInfo imageInfo = texture.second->GetImageInfo();

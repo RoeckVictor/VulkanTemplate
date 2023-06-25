@@ -60,5 +60,5 @@ void main()
 	}
 
     vec3 lightValue = ambientLight + diffuseLight + specularLight;
-    // outColor = vec4(lightValue * fragColor, 1.0);
+    outColor = vec4(lightValue * fragColor, 1.0);
 }

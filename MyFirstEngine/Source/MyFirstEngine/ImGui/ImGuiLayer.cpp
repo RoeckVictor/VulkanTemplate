@@ -15,7 +15,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "MyFirstEngine/Renderer/VulkanContext.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
 
 namespace MyFirstEngine
 {

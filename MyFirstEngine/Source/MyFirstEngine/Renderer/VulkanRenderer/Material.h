@@ -44,7 +44,7 @@ namespace MyFirstEngine
 
 	private:
 		std::vector<char> Material::ReadShaderFile(const std::string& path);
-		void CreateTexturesSet(DescriptorSetLayout& setLayout, DescriptorPool& pool);
+		void CreateTexturesSet();
 		uint32_t GetPushConstantsSize() const;
 
 		VkShaderModule vertShaderModule;

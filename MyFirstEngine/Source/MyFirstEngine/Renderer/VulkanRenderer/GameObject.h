@@ -5,7 +5,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "Model.h"
+#include "VulkanModel.h"
 #include "Material.h"
 
 namespace MyFirstEngine
@@ -43,7 +43,7 @@ namespace MyFirstEngine
 		TransformComponent transform{};
 
 		
-		std::shared_ptr<Model> model{};
+		std::shared_ptr<VulkanModel> model{};
 		std::shared_ptr<Material> material;
 		std::unique_ptr<PointLightComponent> pointLight = nullptr;
 

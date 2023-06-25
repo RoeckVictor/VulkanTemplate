@@ -10,7 +10,7 @@
 #include "GraphicsContext.h"
 
 #include "Device.h"
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 #include "Descriptors.h"
 #include "Buffer.h"
 #include "Texture.h"
@@ -46,7 +46,7 @@ namespace MyFirstEngine
 		virtual void EndFrame() override;
 
 		inline Device& GetDevice() { return device; }
-		inline Renderer& GetRenderer() { return renderer; }
+		inline VulkanRenderer& GetRenderer() { return renderer; }
 		inline DescriptorPool& GetGlobalPool() { return *globalPool; }
 		inline VkDescriptorSet GetGlobalSet(uint32_t index) { return globalDescriptorSets[index]; }
 		inline Buffer& GetUniformBuffer(uint32_t index) { return *uniformBuffers[index]; }
@@ -56,7 +56,7 @@ namespace MyFirstEngine
 		VulkanGlfwWindow* window;
 
 		Device device;
-		Renderer renderer;
+		VulkanRenderer renderer;
 
 		std::unique_ptr<DescriptorPool> globalPool{};
 		std::vector<std::unique_ptr<DescriptorSetLayout>> globalSetLayouts;

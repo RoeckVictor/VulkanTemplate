@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "GameObject.h"
 #include "Descriptors.h"
-#include "Renderer.h"
+#include "VulkanRenderer.h"
 
 #include <vulkan/vulkan.h>
 
