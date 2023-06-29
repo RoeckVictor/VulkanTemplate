@@ -5,9 +5,11 @@
 #include "Input.h"
 
 // TODELETE
+#include "MyFirstEngine/Renderer/Vertex.h"
 #include "MyFirstEngine/Renderer/Model.h"
 #include "MyFirstEngine/Renderer/VulkanRenderer/GameObject.h"
 #include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanVertex.h"
 #include "MyFirstEngine/Renderer/VulkanRenderer/VulkanModel.h"
 #include "MyFirstEngine/Renderer/VulkanRenderer/Material.h"
 #include "MyFirstEngine/Renderer/VulkanRenderer/Camera.h"
@@ -49,10 +51,33 @@ namespace MyFirstEngine
 
 		GameObject gameObjTest = GameObject::CreateGameObject();
 
-		// std::unique_ptr<Model> model = Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj");
-		std::vector<Model::Vertex> vertices;
-		std::vector<uint32_t> indices;
-		std::unique_ptr<Model> model = Model::CreateModelFromData(vertices, indices);
+		VertexLayout vertexLayout = {
+			{"Position", VertexDataType::Float3, sizeof(glm::vec3)},
+			{"Color", VertexDataType::Float3, sizeof(glm::vec3)},
+			{"Normal", VertexDataType::Float3, sizeof(glm::vec3)},
+			{"TexCoord", VertexDataType::Float2, sizeof(glm::vec2)}
+		};
+
+		// VertexArray vertices = VertexArray(vertexLayout);
+		// glm::vec3 pos1 = { -0.5f, -0.5f, 0.0f };
+		// glm::vec3 col1 = { 1.0f, 0.0f, 0.0f };
+		// glm::vec3 norm1 = { -0.5f, -0.5f, 0.0f };
+		// glm::vec2 uv1 = { 0.0f, 0.0f };
+		// vertices.data.push_back({ &pos1, &col1, &norm1, &uv1 });
+		// glm::vec3 pos2 = { 0.5f, -0.5f, 0.0f };
+		// glm::vec3 col2 = { 0.0f, 1.0f, 0.0f };
+		// glm::vec3 norm2 = { 0.5f, -0.5f, 0.0 };
+		// glm::vec2 uv2 = { 1.0f, 0.0f };
+		// vertices.data.push_back({ &pos2, &col2, &norm2, &uv2 });
+		// glm::vec3 pos3 = { 0.5f, 0.5f, 0.0f };
+		// glm::vec3 col3 = { 0.0f, 0.0f, 1.0f };
+		// glm::vec3 norm3 = { 0.5f, 0.5f, 0.0f };
+		// glm::vec2 uv3 = { 1.0f, 1.0f };
+		// vertices.data.push_back({ &pos3, &col3, &norm3, &uv3 });
+		// 
+		// std::vector<uint32_t> indices = {0, 1, 2};
+		// std::unique_ptr<Model> model = Model::CreateModelFromData(vertices, indices);
+		std::unique_ptr<Model> model = Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
 		gameObjTest.model = std::shared_ptr<VulkanModel>(dynamic_cast<VulkanModel*>(model.release()));
 
 		gameObjTest.material = Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
@@ -61,7 +86,8 @@ namespace MyFirstEngine
 		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
 		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
 		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
-		gameObjTest.material->CreatePipeline();
+		VulkanVertexArray vertexArray = VulkanVertexArray(vertexLayout);
+		gameObjTest.material->CreatePipeline(vertexArray.GetBindingDescriptions(), vertexArray.GetAttributeDescriptions());
 		
 		gameObjTest.transform.translation = { 0.0f, 0.5f, 1.0f };
 		gameObjTest.transform.scale = glm::vec3(3.0f);

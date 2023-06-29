@@ -15,12 +15,12 @@
 namespace std 
 {
 	template<>
-	struct hash<MyFirstEngine::VulkanModel::VulkanVertex>
+	struct hash<std::vector<void*>>
 	{
-		size_t operator()(MyFirstEngine::VulkanModel::VulkanVertex const& vertex) const
+		size_t operator()(std::vector<void*> const& vertex) const
 		{
 			size_t seed = 0;
-			MyFirstEngine::HashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			MyFirstEngine::HashCombine(seed, vertex);
 			return seed;
 		}
 	};
@@ -39,31 +39,21 @@ namespace MyFirstEngine
 	{
 	}
 
-	std::unique_ptr<Model> VulkanModel::CreateModelFromFile(const std::string& filepath)
+	std::unique_ptr<Model> VulkanModel::CreateModelFromFile(const std::string& filepath, const VertexLayout layout)
 	{
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
-		VulkanModelData data{};
+		VulkanModelData data{VulkanVertexArray(layout)};
 		data.LoadModel(filepath);
 
 		return std::make_unique<VulkanModel>(graphicsContext->GetDevice(), data);
 	}
 
-	std::unique_ptr<Model> VulkanModel::CreateModelFromData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+	std::unique_ptr<Model> VulkanModel::CreateModelFromData(const VulkanVertexArray vertices, const std::vector<uint32_t>& indices)
 	{
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
-		VulkanModelData data{};
-		std::vector<VulkanVertex> vulkanVertices(vertices.size());
-		for (size_t i = 0; i < vertices.size(); i++)
-		{
-			vulkanVertices[i].position = vertices[i].position;
-			vulkanVertices[i].color = vertices[i].color;
-			vulkanVertices[i].normal = vertices[i].normal;
-			vulkanVertices[i].uv = vertices[i].uv;
-		}
-		data.vertices = vulkanVertices;
-		data.indices = indices;
+		VulkanModelData data{ vertices, indices };
 
 		return std::make_unique<VulkanModel>(graphicsContext->GetDevice(), data);
 	}
@@ -92,10 +82,10 @@ namespace MyFirstEngine
 			vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
 	}
 
-	void VulkanModel::CreateVertexBuffer(const std::vector<VulkanVertex>& vertices)
+	void VulkanModel::CreateVertexBuffer(const VulkanVertexArray vertices)
 	{
-		vertexCount = static_cast<uint32_t>(vertices.size());
-		uint32_t vertexSize = sizeof(vertices[0]);
+		vertexCount = vertices.count;
+		uint32_t vertexSize = vertices.layout.GetStride();
 		VkDeviceSize bufferSize = vertexSize * vertexCount;
 		
 
@@ -107,7 +97,7 @@ namespace MyFirstEngine
 		};
 
 		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void*)vertices.data());
+		stagingBuffer.writeToBuffer((void*)vertices.data.data());
 
 		vertexBuffer = std::make_unique<Buffer>(
 			device, vertexSize, vertexCount,
@@ -157,53 +147,76 @@ namespace MyFirstEngine
 		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str()))
 			throw std::runtime_error(warn + err);
 
-		vertices.clear();
+		vertices.data.clear();
 		indices.clear();
 
-		std::unordered_map<VulkanVertex, uint32_t> uniqueVertices{};
+		std::unordered_map<std::vector<void*>, uint32_t> uniqueVertices{};
+
+		int vertexAttribs[] = {-1, -1, -1, -1};
+		for(int i=0; i < vertices.layout.GetElements().size(); i++)
+		{
+			// Can't switch on strings
+			std::string elementName = vertices.layout.GetElements()[i].name;
+			if(elementName == "Position")
+				vertexAttribs[0] = i;
+			else if(elementName == "Color")
+				vertexAttribs[1] = i;
+			else if(elementName == "Normal")
+				vertexAttribs[2] = i;
+			else if(elementName == "TexCoord")
+				vertexAttribs[3] = i;
+		}
 
 		for (const auto& shape : shapes)
 		{
 			for (const auto& index : shape.mesh.indices)
 			{
-				VulkanVertex vertex{};
+				std::vector<void*> vertex{};
+				vertex.resize(vertices.layout.GetElements().size());
 
-				if (index.vertex_index >= 0)
+				if (vertexAttribs[0] >= 0 && index.vertex_index >= 0)
 				{
-					vertex.position = {
+					glm::vec3 position = {
 						attrib.vertices[3 * index.vertex_index + 0],
 						attrib.vertices[3 * index.vertex_index + 1],
 						attrib.vertices[3 * index.vertex_index + 2]
 					};
+					vertex[vertexAttribs[0]] = &position;
 
-					vertex.color = {
-						attrib.colors[index.vertex_index + 0],
-						attrib.colors[index.vertex_index + 1],
-						attrib.colors[index.vertex_index + 2]
-					};
+					if(vertexAttribs[1] >= 0)
+					{
+						glm::vec3 color = {
+							attrib.colors[index.vertex_index + 0],
+							attrib.colors[index.vertex_index + 1],
+							attrib.colors[index.vertex_index + 2]
+						};
+						vertex[vertexAttribs[1]] = &color;
+					}
 				}
 
-				if (index.normal_index >= 0)
+				if (vertexAttribs[2] >= 0 && index.normal_index >= 0)
 				{
-					vertex.normal = {
+					glm::vec3 normal = {
 						attrib.normals[3 * index.normal_index + 0],
 						attrib.normals[3 * index.normal_index + 1],
 						attrib.normals[3 * index.normal_index + 2]
 					};
+					vertex[vertexAttribs[2]] = &normal;
 				}
 
-				if (index.texcoord_index >= 0)
+				if (vertexAttribs[3] >= 0 && index.texcoord_index >= 0)
 				{
-					vertex.uv = {
+					glm::vec2 uv = {
 						attrib.texcoords[2 * index.texcoord_index + 0],
 						1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
 					};
+					vertex[vertexAttribs[3]] = &uv;
 				}
 
 				if (uniqueVertices.count(vertex) == 0)
 				{
-					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-					vertices.push_back(vertex);
+					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.count);
+					vertices.data.push_back(vertex);
 				}
 				indices.push_back(uniqueVertices[vertex]);
 			}

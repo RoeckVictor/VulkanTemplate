@@ -54,12 +54,13 @@ namespace MyFirstEngine
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(window, &data);
-		glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+		// glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
 
 		graphicsContext = new VulkanContext(this);
 		graphicsContext->Init();
 
 		// Set GLFW callbacks
+		/*
 		glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -69,6 +70,7 @@ namespace MyFirstEngine
 			WindowResizeEvent event(width, height);
 			data.eventCallback(event);
 		});
+		*/
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window)
 		{

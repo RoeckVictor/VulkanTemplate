@@ -84,7 +84,8 @@ namespace MyFirstEngine
 		return size;
 	}
 
-	void Material::CreatePipeline()
+	void Material::CreatePipeline(std::vector<VkVertexInputBindingDescription> bindingDescriptions, 
+								  std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 	{
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkRenderPass renderPass = graphicsContext->GetRenderer().GetSwapChainRenderPass();
@@ -112,6 +113,8 @@ namespace MyFirstEngine
 
 		PipelineConfig pipelineConfig{};
 		Pipeline::DefaultConfigInfo(pipelineConfig);
+		pipelineConfig.bindingDescriptions = bindingDescriptions;
+		pipelineConfig.attributeDescriptions = attributeDescriptions;
 		pipelineConfig.renderPass = renderPass;
 		pipelineConfig.pipelineLayout = pipelineLayout;
 		pipelineConfig.multisampling.rasterizationSamples = device.GetMaxUsableSampleCount();

@@ -8,26 +8,15 @@
 #include <string>
 #include <memory>
 
+#include "Vertex.h"
+
 namespace MyFirstEngine
 {
 	class Model
 	{
 	public:
-		struct Vertex
-		{
-			glm::vec3 position{};
-			glm::vec3 color{};
-			glm::vec3 normal{};
-			glm::vec2 uv{};
-
-			bool operator==(const Vertex& other) const
-			{
-				return position == other.position && color == other.color && normal == other.normal && uv == other.uv;
-			}
-		};
-
-		static std::unique_ptr<Model> CreateModelFromFile(const std::string& filepath);
-		static std::unique_ptr<Model> CreateModelFromData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+		static std::unique_ptr<Model> CreateModelFromFile(const std::string& filepath, const VertexLayout layout);
+		static std::unique_ptr<Model> CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices);
 
 		virtual void Bind() const = 0;
 		virtual void Draw() const = 0;

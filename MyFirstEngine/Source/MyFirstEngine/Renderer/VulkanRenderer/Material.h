@@ -38,7 +38,8 @@ namespace MyFirstEngine
 		void AddMat4(const std::string& name, const glm::mat4& value) { mat4s[name] = value; }
 
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
-		void CreatePipeline();
+		void CreatePipeline(std::vector<VkVertexInputBindingDescription> bindingDescriptions,
+			std::vector<VkVertexInputAttributeDescription> attributeDescriptions);
 
 		static std::unique_ptr<Material> CreateMatFromFile(Device& device, const std::string& vertPath, const std::string& fragPath);
 

@@ -86,9 +86,6 @@ namespace MyFirstEngine
 		configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicState.size());
 		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicState.data();
 		configInfo.dynamicStateInfo.flags = 0;
-
-		configInfo.bindingDescriptions = VulkanModel::VulkanVertex::GetBindingDescriptions();
-		configInfo.attributeDescriptions = VulkanModel::VulkanVertex::GetAttributeDescriptions();
 	}
 
 	void Pipeline::CreateGraphicsPipeline(VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config)

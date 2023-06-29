@@ -8,4 +8,11 @@ namespace MyFirstEngine
 		seed ^= std::hash<T>{}(v)+0x9e3779b9 + (seed << 6) + (seed >> 2);
 		(HashCombine(seed, rest), ...);
 	};
+
+	template <typename T>
+	void HashCombine(std::size_t& seed, const std::vector<T>& vec) {
+		for (const auto& element : vec) {
+			HashCombine(seed, element);
+		}
+	}
 }
