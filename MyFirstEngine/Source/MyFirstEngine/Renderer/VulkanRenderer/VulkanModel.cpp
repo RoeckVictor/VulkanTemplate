@@ -15,12 +15,12 @@
 namespace std 
 {
 	template<>
-	struct hash<std::vector<void*>>
+	struct hash<std::vector<MyFirstEngine::VertexAttribute>>
 	{
-		size_t operator()(std::vector<void*> const& vertex) const
+		size_t operator()(std::vector<MyFirstEngine::VertexAttribute> const& vertex) const
 		{
 			size_t seed = 0;
-			MyFirstEngine::HashCombine(seed, vertex);
+			MyFirstEngine::HashCombine(seed, vertex[0].GetData<glm::vec3>());
 			return seed;
 		}
 	};
@@ -87,7 +87,10 @@ namespace MyFirstEngine
 		vertexCount = vertices.count;
 		uint32_t vertexSize = vertices.layout.GetStride();
 		VkDeviceSize bufferSize = vertexSize * vertexCount;
-		
+
+		MFE_WARN("Vertex size: {0}", vertexSize);
+		MFE_WARN("Vertex count: {0}", vertexCount);
+		MFE_WARN("Buffer size: {0}", bufferSize);
 
 		Buffer stagingBuffer
 		{
@@ -97,7 +100,7 @@ namespace MyFirstEngine
 		};
 
 		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void*)vertices.data.data());
+		stagingBuffer.writeToBuffer(vertices.GetDataBuffer());
 
 		vertexBuffer = std::make_unique<Buffer>(
 			device, vertexSize, vertexCount,
@@ -150,7 +153,7 @@ namespace MyFirstEngine
 		vertices.data.clear();
 		indices.clear();
 
-		std::unordered_map<std::vector<void*>, uint32_t> uniqueVertices{};
+		std::unordered_map<std::vector<VertexAttribute>, uint32_t> uniqueVertices{};
 
 		int vertexAttribs[] = {-1, -1, -1, -1};
 		for(int i=0; i < vertices.layout.GetElements().size(); i++)
@@ -171,52 +174,53 @@ namespace MyFirstEngine
 		{
 			for (const auto& index : shape.mesh.indices)
 			{
-				std::vector<void*> vertex{};
+				std::vector<VertexAttribute> vertex{};
 				vertex.resize(vertices.layout.GetElements().size());
 
 				if (vertexAttribs[0] >= 0 && index.vertex_index >= 0)
 				{
-					glm::vec3 position = {
+					glm::vec3* position = new glm::vec3 {
 						attrib.vertices[3 * index.vertex_index + 0],
 						attrib.vertices[3 * index.vertex_index + 1],
 						attrib.vertices[3 * index.vertex_index + 2]
 					};
-					vertex[vertexAttribs[0]] = &position;
+					vertex[vertexAttribs[0]] = VertexAttribute(position, sizeof(glm::vec3));
 
 					if(vertexAttribs[1] >= 0)
 					{
-						glm::vec3 color = {
+						glm::vec3* color = new glm::vec3 {
 							attrib.colors[index.vertex_index + 0],
 							attrib.colors[index.vertex_index + 1],
 							attrib.colors[index.vertex_index + 2]
 						};
-						vertex[vertexAttribs[1]] = &color;
+						vertex[vertexAttribs[1]] = VertexAttribute(color, sizeof(glm::vec3));
 					}
 				}
 
 				if (vertexAttribs[2] >= 0 && index.normal_index >= 0)
 				{
-					glm::vec3 normal = {
+					glm::vec3* normal = new glm::vec3 {
 						attrib.normals[3 * index.normal_index + 0],
 						attrib.normals[3 * index.normal_index + 1],
 						attrib.normals[3 * index.normal_index + 2]
 					};
-					vertex[vertexAttribs[2]] = &normal;
+					vertex[vertexAttribs[2]] = VertexAttribute(normal, sizeof(glm::vec3));
 				}
 
 				if (vertexAttribs[3] >= 0 && index.texcoord_index >= 0)
 				{
-					glm::vec2 uv = {
+					glm::vec2* uv = new glm::vec2 {
 						attrib.texcoords[2 * index.texcoord_index + 0],
 						1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
 					};
-					vertex[vertexAttribs[3]] = &uv;
+					vertex[vertexAttribs[3]] = VertexAttribute(uv, sizeof(glm::vec2));
 				}
 
-				if (uniqueVertices.count(vertex) == 0)
+				if (uniqueVertices.find(vertex) == uniqueVertices.end())
 				{
 					uniqueVertices[vertex] = static_cast<uint32_t>(vertices.count);
 					vertices.data.push_back(vertex);
+					vertices.count++;
 				}
 				indices.push_back(uniqueVertices[vertex]);
 			}

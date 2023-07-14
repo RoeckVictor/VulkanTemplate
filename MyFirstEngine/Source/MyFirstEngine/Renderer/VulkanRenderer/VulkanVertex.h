@@ -53,5 +53,20 @@ namespace MyFirstEngine
 
 			return attributeDescriptions;
 		}
+
+		void* GetDataBuffer() const
+		{
+			std::vector<std::vector<void*>> dataBuffer;
+			for (uint32_t i = 0; i < data.size(); i++)
+			{
+				std::vector<void*> vertexData;
+				for (uint32_t j = 0; j < data[i].size(); j++)
+				{
+					vertexData.push_back(data[i][j].GetDataPointer());
+				}
+				dataBuffer.push_back(vertexData);
+			}
+			return dataBuffer.data();
+		}
 	};
 }

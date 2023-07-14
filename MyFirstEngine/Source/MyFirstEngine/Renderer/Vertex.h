@@ -59,11 +59,51 @@ namespace MyFirstEngine
 		uint32_t stride;
 	};
 
+	class VertexAttribute
+	{
+	public:
+		VertexAttribute() : data(), dataSize(0){}
+
+		VertexAttribute(void* data, size_t dataSize)
+			: data(data),
+			  dataSize(dataSize)
+		{
+		}
+
+		template <typename T>
+		T GetData() const { return *(T*)data; }
+
+		void* GetDataPointer() const { return data; }
+
+		bool operator==(const VertexAttribute& other) const
+		{
+			if (dataSize != other.dataSize)
+				return false;
+
+			// Cast data pointers to the appropriate type
+			char* dataPtr = static_cast<char*>(data);
+			char* otherDataPtr = static_cast<char*>(other.data);
+
+			// Compare the data byte by byte
+			for (size_t i = 0; i < dataSize; ++i)
+			{
+				if (dataPtr[i] != otherDataPtr[i])
+					return false;
+			}
+
+			return true;
+		}
+
+	private:
+		size_t dataSize;
+		void* data;
+	};
+
 	struct VertexArray
 	{
 		VertexLayout layout;
 		uint32_t count;
-		std::vector<std::vector<void*>> data;
+		std::vector<std::vector<VertexAttribute>> data;
 
 		VertexArray(const VertexLayout& layout)
 			: layout(layout),
@@ -71,7 +111,7 @@ namespace MyFirstEngine
 		{
 			for (uint32_t i = 0; i < layout.GetElements().size(); i++)
 			{
-				data.push_back(std::vector<void*>{});
+				data.push_back(std::vector<VertexAttribute>{});
 			}
 		}
 	};
