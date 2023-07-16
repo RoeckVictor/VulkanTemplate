@@ -44,33 +44,54 @@ namespace MyFirstEngine
 			);
 		}
 
-		std::vector<void*> push = {};
-		for (auto& pushConstant : pushConstants)
+		std::vector<char> pushConstantData;
+		for (const auto& pushConstant : pushConstants)
 		{
-			push.push_back(pushConstant.data);
+			for (size_t i = 0; i < pushConstant.size; ++i)
+			{
+				pushConstantData.push_back(static_cast<char*>(pushConstant.data)[i]);
+			}
 		}
 
-		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, GetPushConstantsSize(), push.data());
+		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, GetPushConstantsSize(), pushConstantData.data());
 	}
+
 
 	void MyFirstEngine::Material::Unbind() const
 	{
 
 	}
 
-	void Material::AddPushConstant(size_t size, void* data)
+	void Material::AddPushConstant(const std::string& name, size_t size, void* data)
 	{
 		PushConstant pushConstant;
+		pushConstant.name = name;
 		pushConstant.size = size;
 		pushConstant.data = data;
 		pushConstants.push_back(pushConstant);
 	}
 
-	void Material::RemovePushConstant(size_t index)
+	void Material::UpdatePushConstant(const std::string& name, void* data)
 	{
-		if (index < pushConstants.size()) 
+		for (auto& pushConstant : pushConstants)
 		{
-			pushConstants.erase(pushConstants.begin() + index);
+			if (pushConstant.name == name)
+			{
+				pushConstant.data = data;
+				return;
+			}
+		}
+	}
+
+	void Material::RemovePushConstant(const std::string& name)
+	{
+		for (int i = 0; i < pushConstants.size(); i++)
+		{
+			if (pushConstants[i].name == name)
+			{
+				pushConstants.erase(pushConstants.begin() + i);
+				return;
+			}
 		}
 	}
 

@@ -25,13 +25,11 @@ namespace MyFirstEngine
 		std::string name;
 		VertexDataType type;
 		uint32_t size;
-		uint32_t offset;
 
 		VertexElement(const std::string& name, VertexDataType type, uint32_t size)
 			: name(name),
 			type(type),
-			size(size),
-			offset(0)
+			size(size)
 		{
 		}
 	};
@@ -42,12 +40,9 @@ namespace MyFirstEngine
 		VertexLayout(const std::initializer_list<VertexElement>& elements)
 			: elements(elements)
 		{
-			uint32_t offset = 0;
 			stride = 0;
 			for (VertexElement element : elements)
 			{
-				element.offset = offset;
-				offset += element.size;
 				stride += element.size;
 			}
 		}
@@ -74,6 +69,8 @@ namespace MyFirstEngine
 		T GetData() const { return *(T*)data; }
 
 		void* GetDataPointer() const { return data; }
+
+		size_t GetDataSize() const { return dataSize; }
 
 		bool operator==(const VertexAttribute& other) const
 		{

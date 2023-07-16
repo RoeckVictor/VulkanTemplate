@@ -37,17 +37,11 @@ namespace MyFirstEngine
 	{
 		// TODELETE
 
-		struct UniformBufferObject
-		{
-			glm::mat4 projection{ 1.0f };
-			glm::mat4 view{ 1.0f };
-			glm::mat4 inverseView{ 1.0f };
-			glm::vec4 ambientColor{ 1.0f, 1.0f, 1.0f, 0.02f };
-			PointLight pointLights[MAX_LIGHTS];
-			int numLights;
-		};
-
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(GetWindow().GetGraphicsContext());
+
+		GameObject viewerObject = GameObject::CreateGameObject();
+
+		std::unordered_map<unsigned int, GameObject> gameObjects;
 
 		GameObject gameObjTest = GameObject::CreateGameObject();
 
@@ -83,17 +77,50 @@ namespace MyFirstEngine
 		gameObjTest.material = Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };
-		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
-		gameObjTest.material->AddPushConstant(sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
+		gameObjTest.material->AddPushConstant("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
+		gameObjTest.material->AddPushConstant("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
 		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
 		VulkanVertexArray vertexArray = VulkanVertexArray(vertexLayout);
 		gameObjTest.material->CreatePipeline(vertexArray.GetBindingDescriptions(), vertexArray.GetAttributeDescriptions());
 		
-		gameObjTest.transform.translation = { 0.0f, 0.5f, 1.0f };
-		gameObjTest.transform.scale = glm::vec3(3.0f);
+		gameObjTest.transform.translation = { 0.0f, 0.36f, 1.2f };
+		gameObjTest.transform.scale = glm::vec3(2.0f);
+
+		gameObjects.emplace(gameObjTest.GetId(), std::move(gameObjTest));
+
+		std::vector<glm::vec3> lightColors = {
+			glm::vec3(1.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f),
+			glm::vec3(1.0f, 1.0f, 1.0f)
+		};
+
+		for (int i = 0; i < lightColors.size(); i++)
+		{
+			auto pointLight = GameObject::MakePointLight();
+			pointLight.color = lightColors[i];
+			auto rotateLight = glm::rotate(
+				glm::mat4(1.0f),
+				(i * glm::two_pi<float>()) / lightColors.size(),
+				{ 0.0f, -1.0f, 0.0f }
+			);
+			pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+			gameObjects.emplace(pointLight.GetId(), std::move(pointLight));
+		}
+
+		struct UniformBufferObject
+		{
+			glm::mat4 projection{ 1.0f };
+			glm::mat4 view{ 1.0f };
+			glm::mat4 inverseView{ 1.0f };
+			glm::vec4 ambientColor{ 1.0f, 1.0f, 1.0f, 0.5f };
+			PointLight pointLights[MAX_LIGHTS];
+			int numLights;
+		};
 
 		Camera camera{};
 		camera.SetViewTarget(glm::vec3(-1.0f, -2.0f, -0.5f), glm::vec3(0.0f, 0.0f, 0.0f));
+		auto currentTime = std::chrono::high_resolution_clock::now();
 		// !TODELETE
 
 		while (isRunning)
@@ -101,6 +128,13 @@ namespace MyFirstEngine
 			window->BeginUpdate();
 
 			// TODELETE
+			auto newTime = std::chrono::high_resolution_clock::now();
+			float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+			currentTime = newTime;
+
+			// cameraController.MoveInPlaneXZ(window.GetWindow(), frameTime, viewerObject);
+			camera.SetViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
 			float aspectRatio = graphicsContext->GetRenderer().GetAspectRatio();
 			camera.SetPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 1000.0f);
 
@@ -109,14 +143,37 @@ namespace MyFirstEngine
 			ubo.view = camera.GetViewMatrix();
 			ubo.inverseView = camera.GetInverseViewMatrix();
 
+			int lightIndex = 0;
+			for (auto& kv : gameObjects)
+			{
+				auto& obj = kv.second;
+				if (obj.pointLight == nullptr)
+					continue;
+
+				assert(lightIndex < MAX_LIGHTS && "Too many point lights");
+
+				lightIndex++;
+			}
+			ubo.numLights = lightIndex;
+
 			graphicsContext->GetUniformBuffer(graphicsContext->GetRenderer().GetFrameIndex()).writeToBuffer(&ubo);
 			graphicsContext->GetUniformBuffer(graphicsContext->GetRenderer().GetFrameIndex()).flush();
 			// !TODELETE
 
 			// TODELETE
-			gameObjTest.material->Bind();
-			gameObjTest.model->Bind();
-			gameObjTest.model->Draw();
+			for (auto& kv : gameObjects)
+			{
+				auto& obj = kv.second;
+				if (obj.model == nullptr)
+					continue;
+
+				obj.material->UpdatePushConstant("ModelMatrix", static_cast<void*>(&obj.transform.transform()));
+				obj.material->UpdatePushConstant("NormalMatrix", static_cast<void*>(&obj.transform.normalMatrix()));
+
+				obj.material->Bind();
+				obj.model->Bind();
+				obj.model->Draw();
+			}
 			// !TODELETE
 
 			for (Layer* layer : layerStack)

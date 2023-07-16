@@ -100,7 +100,7 @@ namespace MyFirstEngine
 		};
 
 		stagingBuffer.map();
-		stagingBuffer.writeToBuffer(vertices.GetDataBuffer());
+		stagingBuffer.writeToBuffer((void*)vertices.GetDataBuffer().data());
 
 		vertexBuffer = std::make_unique<Buffer>(
 			device, vertexSize, vertexCount,
@@ -168,6 +168,8 @@ namespace MyFirstEngine
 				vertexAttribs[2] = i;
 			else if(elementName == "TexCoord")
 				vertexAttribs[3] = i;
+
+			MFE_ASSERT(vertexAttribs[0] >= 0, "Vertex layout has no Position attribute");
 		}
 
 		for (const auto& shape : shapes)

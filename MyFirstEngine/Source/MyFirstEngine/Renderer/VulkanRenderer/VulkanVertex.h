@@ -48,25 +48,29 @@ namespace MyFirstEngine
 			for (uint32_t i = 0; i < layout.GetElements().size(); i++)
 			{
 				attributeDescriptions.push_back({ i, 0, VertexDataTypeToVkFormat(layout.GetElements()[i].type), offset });
-				offset += sizeof(layout.GetStride());
+				offset += layout.GetElements()[i].size;
 			}
 
 			return attributeDescriptions;
 		}
 
-		void* GetDataBuffer() const
+		std::vector<char> GetDataBuffer() const
 		{
-			std::vector<std::vector<void*>> dataBuffer;
-			for (uint32_t i = 0; i < data.size(); i++)
+			std::vector<char> buffer;
+
+			for (const auto& vertex : data)
 			{
-				std::vector<void*> vertexData;
-				for (uint32_t j = 0; j < data[i].size(); j++)
+				for (const auto& attribute : vertex)
 				{
-					vertexData.push_back(data[i][j].GetDataPointer());
+					char* attrData = static_cast<char*>(attribute.GetDataPointer());
+					for (size_t i = 0; i < attribute.GetDataSize(); ++i)
+					{
+						buffer.push_back(attrData[i]);
+					}
 				}
-				dataBuffer.push_back(vertexData);
 			}
-			return dataBuffer.data();
+
+			return buffer;
 		}
 	};
 }

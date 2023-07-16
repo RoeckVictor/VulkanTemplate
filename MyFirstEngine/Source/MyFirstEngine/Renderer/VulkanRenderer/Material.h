@@ -13,6 +13,7 @@ namespace MyFirstEngine
 {
 	struct PushConstant 
 	{
+		std::string name;
 		size_t size;
 		void* data;
 	};
@@ -28,8 +29,9 @@ namespace MyFirstEngine
 		void Bind() const;
 		void Unbind() const;
 
-		void AddPushConstant(size_t size, void* data);
-		void RemovePushConstant(size_t index);
+		void AddPushConstant(const std::string& name, size_t size, void* data);
+		void UpdatePushConstant(const std::string& name, void* data);
+		void RemovePushConstant(const std::string& name);
 
 		void AddTexture(const std::string& name, const std::shared_ptr<Texture>& texture) { textures[name] = texture; }
 		void AddFloat(const std::string& name, float value) { floats[name] = value; }
