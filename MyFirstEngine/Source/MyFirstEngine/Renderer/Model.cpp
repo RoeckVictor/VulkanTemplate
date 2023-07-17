@@ -10,8 +10,8 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-			case SelectedAPI::None: return nullptr;
-			case SelectedAPI::Vulkan: return VulkanModel::CreateModelFromFile(filepath, layout);
+			case RendererAPI::SelectedAPI::None: return nullptr;
+			case RendererAPI::SelectedAPI::Vulkan: return VulkanModel::CreateModelFromFile(filepath, layout);
 		}
 
 		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");
@@ -22,8 +22,8 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-			case SelectedAPI::None: return nullptr;
-			case SelectedAPI::Vulkan: return nullptr; // VulkanModel::CreateModelFromData(vertices, indices);
+			case RendererAPI::SelectedAPI::None: return nullptr;
+			case RendererAPI::SelectedAPI::Vulkan: return nullptr; // VulkanModel::CreateModelFromData(vertices, indices);
 		}
 
 		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");

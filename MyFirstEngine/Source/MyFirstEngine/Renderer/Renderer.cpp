@@ -3,5 +3,18 @@
 
 namespace MyFirstEngine
 {
-	SelectedAPI Renderer::selectedAPI = SelectedAPI::Vulkan;
+	void Renderer::BeginScene()
+	{
+
+	}
+
+	void Renderer::EndScene()
+	{
+
+	}
+
+	void Renderer::Submit(const GameObject& object)
+	{
+		RenderCommand::DrawObject(object);
+	}
 }

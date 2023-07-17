@@ -1,19 +1,17 @@
 #pragma once
 
+#include "RenderCommand.h"
+
 namespace MyFirstEngine 
 {
-	enum class SelectedAPI
-	{
-		None = 0,
-		Vulkan = 1
-	};
-
 	class Renderer
 	{
 	public:
-		inline static SelectedAPI GetSelectedAPI() { return selectedAPI; }
+		static void BeginScene();
+		static void EndScene();
 
-	private:
-		static SelectedAPI selectedAPI;
+		static void Submit(const GameObject& object);
+
+		inline static RendererAPI::SelectedAPI GetSelectedAPI() { return RendererAPI::GetSelectedAPI(); }
 	};
 }

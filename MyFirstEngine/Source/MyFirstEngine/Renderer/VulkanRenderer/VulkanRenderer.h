@@ -40,6 +40,8 @@ namespace MyFirstEngine
 		void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
 		void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
+		void SetClearColor(float r, float g, float b, float a) { clearColor = { r, g, b, a }; }
+
 	private:
 		void CreateCommandBuffers();
 		void FreeCommandBuffers();
@@ -53,5 +55,7 @@ namespace MyFirstEngine
 		uint32_t currentImageIndex;
 		int currentFrameIndex;
 		bool isFrameStarted;
+
+		VkClearColorValue clearColor = { 0.01f, 0.01f, 0.01f, 1.0f };
 	};
 }

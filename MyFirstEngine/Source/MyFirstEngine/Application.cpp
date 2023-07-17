@@ -4,6 +4,8 @@
 #include "Log.h"
 #include "Input.h"
 
+#include "MyFirstEngine/Renderer/Renderer.h"
+
 // TODELETE
 #include "MyFirstEngine/Renderer/Vertex.h"
 #include "MyFirstEngine/Renderer/Model.h"
@@ -123,8 +125,12 @@ namespace MyFirstEngine
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		// !TODELETE
 
+		RenderCommand::SetClearColor({0.01f, 0.01f, 0.01f, 1.0f});
+
 		while (isRunning)
 		{
+			Renderer::BeginScene();
+
 			window->BeginUpdate();
 
 			// TODELETE
@@ -170,10 +176,10 @@ namespace MyFirstEngine
 				obj.material->UpdatePushConstant("ModelMatrix", static_cast<void*>(&obj.transform.transform()));
 				obj.material->UpdatePushConstant("NormalMatrix", static_cast<void*>(&obj.transform.normalMatrix()));
 
-				obj.material->Bind();
-				obj.model->Bind();
-				obj.model->Draw();
+				Renderer::Submit(obj);
 			}
+
+			Renderer::EndScene();
 			// !TODELETE
 
 			for (Layer* layer : layerStack)
