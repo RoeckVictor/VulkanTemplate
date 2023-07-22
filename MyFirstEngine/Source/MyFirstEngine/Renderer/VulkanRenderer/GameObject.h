@@ -10,16 +10,18 @@
 
 namespace MyFirstEngine
 {
-	struct TransformComponent {
+	struct TransformComponent 
+	{
 		glm::vec3 translation{};
 		glm::vec3 scale{ 1.0f };
 		glm::vec3 rotation{ 0.0f };
 
-		glm::mat4 transform();
-		glm::mat3 normalMatrix();
+		glm::mat4 transform() const;
+		glm::mat3 normalMatrix() const;
 	};
 
-	struct PointLightComponent {
+	struct PointLightComponent 
+	{
 		float lightIntensity = 1.0f;
 		// glm::vec3 color{};
 	};

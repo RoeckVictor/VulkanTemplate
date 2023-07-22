@@ -15,8 +15,6 @@ namespace MyFirstEngine
 
 	void VulkanRendererAPI::DrawObject(const GameObject& object)
 	{
-		object.material->Bind();
-		object.model->Bind();
 		object.model->Draw();
 	}
 }

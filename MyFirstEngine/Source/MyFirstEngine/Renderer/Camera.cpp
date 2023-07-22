@@ -4,10 +4,13 @@
 #include <cassert>
 #include <limits>
 
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace MyFirstEngine
 {
 	void Camera::SetOrthographicProjection(float left, float right, float top, float bottom, float nearPlane, float farPlane) 
 	{
+		// In Vulkan top and bottom are flipped, this works with Vulkan
 		projectionMatrix = glm::mat4{ 1.0f };
 		projectionMatrix[0][0] = 2.f / (right - left);
 		projectionMatrix[1][1] = 2.f / (bottom - top);
@@ -15,10 +18,14 @@ namespace MyFirstEngine
 		projectionMatrix[3][0] = -(right + left) / (right - left);
 		projectionMatrix[3][1] = -(bottom + top) / (bottom - top);
 		projectionMatrix[3][2] = -nearPlane / (farPlane - nearPlane);
+		// And this probably works with everything else
+		// projectionMatrix = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
 	}
 
-	void Camera::SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane) {
-		assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+	void Camera::SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane) 
+	{
+		MFE_ASSERT(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "Camera aspect ratio equal to 0");
+		// Will probably have the same problem as the orthographic projection
 		const float tanHalfFovy = tan(fovy / 2.f);
 		projectionMatrix = glm::mat4{ 0.0f };
 		projectionMatrix[0][0] = 1.f / (aspect * tanHalfFovy);
@@ -26,6 +33,8 @@ namespace MyFirstEngine
 		projectionMatrix[2][2] = farPlane / (farPlane - nearPlane);
 		projectionMatrix[2][3] = 1.f;
 		projectionMatrix[3][2] = -(farPlane * nearPlane) / (farPlane - nearPlane);
+
+		// glm::perspective(fovy, aspect, nearPlane, farPlane);
 	}
 
 	void Camera::SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) 

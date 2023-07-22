@@ -11,4 +11,9 @@
 
 #include "MyFirstEngine/ImGui/ImGuiLayer.h"
 
+#include "MyFirstEngine/Renderer/Renderer.h"
+#include "MyFirstEngine/Renderer/RenderCommand.h"
+#include "MyFirstEngine/Renderer/Model.h"
+#include "MyFirstEngine/Renderer/Camera.h"
+
 #include "MyFirstEngine/EntryPoint.h"

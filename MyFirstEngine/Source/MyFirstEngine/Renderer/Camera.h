@@ -9,9 +9,9 @@ namespace MyFirstEngine
 	class Camera
 	{
 	public:
-		void SetOrthographicProjection(float left, float right, float bottom, float top, float near, float far);
-		void SetPerspectiveProjection(float fov, float aspectRatio, float near, float far);
-		//void SetViewMatrix(const glm::mat4& viewMatrix) { this->viewMatrix = viewMatrix; };
+		void SetOrthographicProjection(float left, float right, float bottom, float top, float nearPlane, float farPlane);
+		void SetPerspectiveProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
+		void SetViewMatrix(const glm::mat4& viewMatrix) { this->viewMatrix = viewMatrix; };
 		void SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3{0.0f, -1.0f, 0.0f});
 		void SetViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up = glm::vec3{ 0.0f, -1.0f, 0.0f });
 		void SetViewYXZ(glm::vec3 position, glm::vec3 rotation);

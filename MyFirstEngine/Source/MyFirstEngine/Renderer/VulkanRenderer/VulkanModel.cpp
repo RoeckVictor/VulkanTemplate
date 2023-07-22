@@ -88,10 +88,6 @@ namespace MyFirstEngine
 		uint32_t vertexSize = vertices.layout.GetStride();
 		VkDeviceSize bufferSize = vertexSize * vertexCount;
 
-		MFE_WARN("Vertex size: {0}", vertexSize);
-		MFE_WARN("Vertex count: {0}", vertexCount);
-		MFE_WARN("Buffer size: {0}", bufferSize);
-
 		Buffer stagingBuffer
 		{
 			device, vertexSize, vertexCount,

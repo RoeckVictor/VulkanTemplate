@@ -24,7 +24,7 @@ namespace MyFirstEngine
 			uniformBuffers[i] = std::make_unique<Buffer>
 				(
 					device,
-					sizeof(UniformBufferObject),
+					sizeof(Renderer::SceneUBO),
 					1,
 					VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
