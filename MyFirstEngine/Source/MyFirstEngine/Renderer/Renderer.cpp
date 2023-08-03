@@ -30,8 +30,8 @@ namespace MyFirstEngine
 		object.material->UpdatePushConstant("ModelMatrix", static_cast<void*>(&object.transform.transform()));
 		object.material->UpdatePushConstant("NormalMatrix", static_cast<void*>(&object.transform.normalMatrix()));
 
-		object.material->Bind();
-		object.model->Bind();
+		// object.material->Bind();
+		// object.model->Bind();
 		RenderCommand::DrawObject(object);
 	}
 }

@@ -65,7 +65,7 @@ namespace MyFirstEngine
 		};
 	}
 
-	void GameObject::Render()
+	void GameObject::Render() const
 	{
 		material->Bind();
 		model->Bind();

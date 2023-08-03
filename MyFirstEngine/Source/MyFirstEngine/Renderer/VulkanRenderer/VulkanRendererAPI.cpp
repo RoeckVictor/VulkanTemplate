@@ -15,6 +15,6 @@ namespace MyFirstEngine
 
 	void VulkanRendererAPI::DrawObject(const GameObject& object)
 	{
-		object.model->Draw();
+		object.Render();
 	}
 }

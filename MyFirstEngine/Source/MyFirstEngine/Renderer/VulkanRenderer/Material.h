@@ -33,8 +33,10 @@ namespace MyFirstEngine
 		void UpdatePushConstant(const std::string& name, void* data);
 		void RemovePushConstant(const std::string& name);
 
+		// TODO: Create dynamic DescriptorSets depending on the Unform values given to the Material
 		void AddTexture(const std::string& name, const std::shared_ptr<Texture>& texture) { textures[name] = texture; }
 		void AddFloat(const std::string& name, float value) { floats[name] = value; }
+		void AddVec2(const std::string& name, const glm::vec2& value) { vec2s[name] = value; }
 		void AddVec3(const std::string& name, const glm::vec3& value) { vec3s[name] = value; }
 		void AddVec4(const std::string& name, const glm::vec4& value) { vec4s[name] = value; }
 		void AddMat4(const std::string& name, const glm::mat4& value) { mat4s[name] = value; }
@@ -58,6 +60,7 @@ namespace MyFirstEngine
 		VkDescriptorSet textureSet{ VK_NULL_HANDLE };
 
 		std::unordered_map<std::string, float> floats;
+		std::unordered_map<std::string, glm::vec2> vec2s;
 		std::unordered_map<std::string, glm::vec3> vec3s;
 		std::unordered_map<std::string, glm::vec4> vec4s;
 		std::unordered_map<std::string, glm::mat4> mat4s;

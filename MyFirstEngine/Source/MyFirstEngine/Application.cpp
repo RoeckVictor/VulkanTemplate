@@ -26,8 +26,10 @@ namespace MyFirstEngine
 	{
 		while (isRunning)
 		{
+			timeStep.UpdateTime();
+
 			for (Layer* layer : layerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(timeStep);
 
 			imguiLayer->Begin();
 			for (Layer* layer : layerStack)

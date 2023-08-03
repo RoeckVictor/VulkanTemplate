@@ -20,8 +20,8 @@ public:
 			{"TexCoord", MyFirstEngine::VertexDataType::Float2, sizeof(glm::vec2)}
 		};
 
-		std::unique_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
-		gameObjTest.model = std::shared_ptr<MyFirstEngine::VulkanModel>(dynamic_cast<MyFirstEngine::VulkanModel*>(model.release()));
+		std::shared_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
+		gameObjTest.model = model;
 
 		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
@@ -62,13 +62,9 @@ public:
 		MyFirstEngine::RenderCommand::SetClearColor({ 0.01f, 0.01f, 0.01f, 1.0f });
 	}
 
-	void OnUpdate() override
+	void OnUpdate(MyFirstEngine::Timestep timeStep) override
 	{
-		auto newTime = std::chrono::high_resolution_clock::now();
-		float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
-		currentTime = newTime;
-
-		MoveViewerObject(deltaTime, viewerObject);
+		MoveViewerObject(timeStep, viewerObject);
 		camera.SetViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
 		float aspectRatio = graphicsContext->GetRenderer().GetAspectRatio();
@@ -125,8 +121,10 @@ public:
 
 		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_A)) moveDir -= rightDir;
 		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_D)) moveDir += rightDir;
-		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_S)) moveDir -= upDir;
-		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_W)) moveDir += upDir;
+		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_S)) moveDir -= forwardDir;
+		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_W)) moveDir += forwardDir;
+		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_Q)) moveDir -= upDir;
+		if (MyFirstEngine::Input::IsKeyPressed(MFE_KEY_E)) moveDir += upDir;
 
 		if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon())
 			gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);

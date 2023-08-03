@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "VulkanRenderer/GameObject.h"
+#include "GameObject.h"
 
 namespace MyFirstEngine
 {

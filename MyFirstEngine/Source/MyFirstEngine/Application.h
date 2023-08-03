@@ -8,6 +8,8 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
+#include "MyFirstEngine/Engine/Timestep.h"
+
 #include "ImGui/ImGuiLayer.h"
 
 namespace MyFirstEngine
@@ -36,6 +38,7 @@ namespace MyFirstEngine
 
 		bool isRunning = true;
 		LayerStack layerStack;
+		Timestep timeStep;
 
 		static Application* instance;
 	};
