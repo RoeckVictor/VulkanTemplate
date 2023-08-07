@@ -13,7 +13,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDirs	= {}
-IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/include"
+IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/glfw/include"
 IncludeDirs["ImGui"] = "MyFirstEngine/Libs/ImGui"
 IncludeDirs["VulkanSDK"] = "MyFirstEngine/Libs/VulkanSDK/1.3.243.0"
 IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm/glm/glm"
@@ -112,6 +112,7 @@ project "Sandbox"
 	includedirs
 	{
 		"%{IncludeDirs.Spdlog}",
+		"%{IncludeDirs.GLFW}",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",
 		"%{IncludeDirs.VulkanSDK}/Include"

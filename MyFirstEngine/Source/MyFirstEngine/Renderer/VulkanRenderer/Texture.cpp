@@ -4,7 +4,7 @@
 #include <cmath>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb_master/stb_image.h>
 
 MyFirstEngine::Texture::Texture(const std::string& filename, Device& device)
 	: device{ device }
