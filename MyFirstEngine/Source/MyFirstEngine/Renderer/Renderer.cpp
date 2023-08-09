@@ -27,11 +27,9 @@ namespace MyFirstEngine
 
 	void Renderer::Submit(const GameObject& object)
 	{
-		object.material->UpdatePushConstant("ModelMatrix", static_cast<void*>(&object.transform.transform()));
-		object.material->UpdatePushConstant("NormalMatrix", static_cast<void*>(&object.transform.normalMatrix()));
+		object.material->AddUniform("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&object.transform.transform()), true);
+		object.material->AddUniform("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&object.transform.normalMatrix()), true);
 
-		// object.material->Bind();
-		// object.model->Bind();
 		RenderCommand::DrawObject(object);
 	}
 }

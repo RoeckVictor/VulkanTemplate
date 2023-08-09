@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Model.h"
-#include "VulkanRenderer/Material.h"
+#include "VulkanRenderer/VulkanMaterial.h"
 
 namespace MyFirstEngine
 {

@@ -10,7 +10,7 @@ public:
 		viewerObject(MyFirstEngine::GameObject::CreateGameObject()),
 		currentTime(std::chrono::high_resolution_clock::now()),
 		gameObjects()
-	{
+	{	
 		MyFirstEngine::GameObject gameObjTest = MyFirstEngine::GameObject::CreateGameObject();
 
 		MyFirstEngine::VertexLayout vertexLayout = {
@@ -23,14 +23,14 @@ public:
 		std::shared_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
 		gameObjTest.model = model;
 
-		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
+		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };
-		gameObjTest.material->AddPushConstant("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
-		gameObjTest.material->AddPushConstant("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
+		gameObjTest.material->AddUniform("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix), true);
+		gameObjTest.material->AddUniform("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix), true);
 		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
 		MyFirstEngine::VulkanVertexArray vertexArray = MyFirstEngine::VulkanVertexArray(vertexLayout);
-		gameObjTest.material->CreatePipeline(vertexArray.GetBindingDescriptions(), vertexArray.GetAttributeDescriptions());
+		gameObjTest.material->CreatePipeline(vertexArray);
 
 		gameObjTest.transform.translation = { 0.0f, 0.36f, 1.2f };
 		gameObjTest.transform.scale = glm::vec3(2.0f);
