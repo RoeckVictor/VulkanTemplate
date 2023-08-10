@@ -20,8 +20,8 @@ namespace MyFirstEngine
 			if (obj.pointLight == nullptr)
 				continue;
 
-			sceneUBO->pointLights[numLights].color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
 			sceneUBO->pointLights[numLights].position = obj.transform.translation;
+			sceneUBO->pointLights[numLights].color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
 			numLights++;
 		}
 		sceneUBO->numLights = numLights;
@@ -39,8 +39,16 @@ namespace MyFirstEngine
 
 	void Renderer::Submit(const GameObject& object)
 	{
-		object.material->UpdateUniform(0, static_cast<void*>(&object.transform.transform()), true);
-		object.material->UpdateUniform(1, static_cast<void*>(&object.transform.normalMatrix()), true);
+		if(object.pointLight == nullptr)
+		{
+			object.material->UpdateUniform(0, static_cast<void*>(&object.transform.transform()), true);
+			object.material->UpdateUniform(1, static_cast<void*>(&object.transform.normalMatrix()), true);
+		}
+		else
+		{
+			object.material->UpdateUniform(0, static_cast<void*>(&glm::vec4(object.transform.translation, 1.0)));
+			object.material->UpdateUniform(1, static_cast<void*>(&glm::vec4(object.color, object.pointLight->lightIntensity)));
+		}
 
 		RenderCommand::DrawObject(object);
 	}

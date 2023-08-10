@@ -23,7 +23,7 @@ namespace MyFirstEngine
 		switch (Renderer::GetSelectedAPI())
 		{
 			case RendererAPI::SelectedAPI::None: return nullptr;
-			case RendererAPI::SelectedAPI::Vulkan: return nullptr; // VulkanModel::CreateModelFromData(vertices, indices);
+			case RendererAPI::SelectedAPI::Vulkan: return VulkanModel::CreateModelFromData(vertices, indices);
 		}
 
 		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");

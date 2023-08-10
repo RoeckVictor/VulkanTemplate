@@ -35,7 +35,7 @@ namespace MyFirstEngine
 		VulkanModel& operator=(const VulkanModel&) = delete;
 
 		static std::unique_ptr<Model> CreateModelFromFile(const std::string& filepath, const VertexLayout layout);
-		static std::unique_ptr<Model> CreateModelFromData(const VulkanVertexArray vertices, const std::vector<uint32_t>& indices);
+		static std::unique_ptr<Model> CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices);
 
 		void Bind() const override;
 		void Draw() const override;

@@ -70,6 +70,18 @@ public:
 		float aspectRatio = graphicsContext->GetRenderer().GetAspectRatio();
 		camera.SetPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 1000.0f);
 
+		// -- TODELETE --
+		for (auto& kv : gameObjects)
+		{
+			auto& obj = kv.second;
+			if (obj.pointLight == nullptr)
+				continue;
+
+			auto rotateLight = glm::rotate(glm::mat4(1.0f), timeStep.GetSeconds(), { 0.0f, -11.0f, 0.0f });
+			obj.transform.translation = glm::vec3(rotateLight * glm::vec4(obj.transform.translation, 1.0f));
+		}
+		// -- !TODELETE --
+
 		MyFirstEngine::Renderer::BeginScene(camera, gameObjects);
 
 		for (auto& kv : gameObjects)

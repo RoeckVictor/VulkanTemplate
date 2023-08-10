@@ -121,7 +121,6 @@ namespace MyFirstEngine
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 		MFE_ASSERT(deviceCount != 0, "failed to find GPUs with Vulkan support!");
-		MFE_INFO("Device count: {0}", deviceCount);
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
@@ -138,7 +137,6 @@ namespace MyFirstEngine
 		MFE_ASSERT(physicalDevice_ != VK_NULL_HANDLE, "failed to find a suitable GPU!");
 
 		vkGetPhysicalDeviceProperties(physicalDevice_, &properties);
-		MFE_INFO("Physical device: {0}", properties.deviceName);
 	}
 
 	void Device::CreateLogicalDevice() 

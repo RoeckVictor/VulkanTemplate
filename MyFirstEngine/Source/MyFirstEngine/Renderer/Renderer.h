@@ -23,7 +23,7 @@ namespace MyFirstEngine
 		struct PointLight
 		{
 			glm::vec3 position{};
-			glm::vec4 color{};
+			alignas(16) glm::vec4 color{};
 		};
 
 		struct SceneUBO
