@@ -26,9 +26,9 @@ public:
 		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };
-		gameObjTest.material->AddUniform("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix), true);
-		gameObjTest.material->AddUniform("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix), true);
-		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
+		gameObjTest.material->AddUniform(0, "ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix), true);
+		gameObjTest.material->AddUniform(1, "NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix), true);
+		gameObjTest.material->AddTexture(0, "AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
 		MyFirstEngine::VulkanVertexArray vertexArray = MyFirstEngine::VulkanVertexArray(vertexLayout);
 		gameObjTest.material->CreatePipeline(vertexArray);
 
@@ -70,7 +70,7 @@ public:
 		float aspectRatio = graphicsContext->GetRenderer().GetAspectRatio();
 		camera.SetPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 1000.0f);
 
-		MyFirstEngine::Renderer::BeginScene(camera);
+		MyFirstEngine::Renderer::BeginScene(camera, gameObjects);
 
 		for (auto& kv : gameObjects)
 		{

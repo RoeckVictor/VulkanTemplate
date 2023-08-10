@@ -21,14 +21,15 @@ namespace MyFirstEngine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		void AddUniform(const std::string& name, size_t size, void* data, const bool isPushConstant = false);
-		void RemoveUniform(const std::string& name, const bool isPushConstant = false);
+		void AddUniform(const uint32_t id, const std::string& name, size_t size, void* data, const bool isPushConstant = false);
+		void UpdateUniform(const uint32_t id, void* data, const bool isPushConstant = false);
+		void RemoveUniform(const uint32_t id, const bool isPushConstant = false);
 
-		void AddTexture(const std::string& name, const std::shared_ptr<Texture>& texture) { textures[name] = texture; }
+		void AddTexture(const uint32_t id, const std::string& name, const std::shared_ptr<Texture>& texture) { textures[id] = texture; }
 
 	protected:
-		std::unordered_map<std::string, Uniform> uniforms;
-		std::unordered_map<std::string, Uniform> pushConstants;
-		std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
+		std::unordered_map<uint32_t, Uniform> uniforms;
+		std::unordered_map<uint32_t, Uniform> pushConstants;
+		std::unordered_map<uint32_t, std::shared_ptr<Texture>> textures;
 	};
 }

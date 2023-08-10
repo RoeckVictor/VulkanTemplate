@@ -11,7 +11,7 @@ namespace MyFirstEngine
 	class Renderer
 	{
 	public:
-		static void BeginScene(Camera& camera);
+		static void BeginScene(Camera& camera, const std::unordered_map<unsigned int, MyFirstEngine::GameObject>& gameObjects);
 		static void EndScene();
 
 		static void Submit(const GameObject& object);
@@ -22,7 +22,7 @@ namespace MyFirstEngine
 
 		struct PointLight
 		{
-			glm::vec4 position{};
+			glm::vec3 position{};
 			glm::vec4 color{};
 		};
 
