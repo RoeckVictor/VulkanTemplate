@@ -1,5 +1,6 @@
 #include "Mfepch.h"
 #include "GameObject.h"
+#include "Utils.h"
 
 #include "VulkanRenderer/VulkanContext.h"
 
@@ -97,10 +98,10 @@ namespace MyFirstEngine
 		gameObj.model = model;
 
 		gameObj.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
-		gameObj.material->AddUniform(0, "position", sizeof(glm::vec4), static_cast<void*>(&glm::vec4(gameObj.transform.translation, 1.0)), true);
-		gameObj.material->AddUniform(1, "color", sizeof(glm::vec4), static_cast<void*>(&glm::vec4(gameObj.color, intensity)), true);
-		gameObj.material->AddUniform(2, "radius", sizeof(float), static_cast<void*>(&radius), true);
-		gameObj.material->AddTexture(0, "AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
+		gameObj.material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.transform.translation, 1.0)), true);
+		gameObj.material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.color, intensity)), true);
+		gameObj.material->AddUniform(2, "radius", ConvertToBytes(radius), true);
+		gameObj.material->AddTexture(0, "AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/PointLight.png", graphicsContext->GetDevice()));
 		gameObj.material->CreatePipeline(vertices);
 
 		return gameObj;

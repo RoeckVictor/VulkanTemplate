@@ -8,8 +8,7 @@ namespace MyFirstEngine
 	struct Uniform
 	{
 		std::string name;
-		size_t size;
-		void* data;
+		std::vector<uint8_t> data;
 	};
 
 	class Material
@@ -21,8 +20,8 @@ namespace MyFirstEngine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		void AddUniform(const uint32_t id, const std::string& name, size_t size, void* data, const bool isPushConstant = false);
-		void UpdateUniform(const uint32_t id, void* data, const bool isPushConstant = false);
+		void AddUniform(const uint32_t id, const std::string& name, const std::vector<uint8_t>& data, const bool isPushConstant = false);
+		void UpdateUniform(const uint32_t id, const std::vector<uint8_t>& data, const bool isPushConstant = false);
 		void RemoveUniform(const uint32_t id, const bool isPushConstant = false);
 
 		void AddTexture(const uint32_t id, const std::string& name, const std::shared_ptr<Texture>& texture) { textures[id] = texture; }

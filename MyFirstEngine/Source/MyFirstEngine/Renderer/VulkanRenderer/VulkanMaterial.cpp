@@ -47,13 +47,11 @@ namespace MyFirstEngine
 		if (GetPushConstantsSize() == 0)
 			return;
 
-		std::vector<char> pushConstantData;
+
+		std::vector<uint8_t> pushConstantData;
 		for (auto& [key, value] : pushConstants) 
 		{ 
-			for (size_t i = 0; i < value.size; ++i)
-			{
-				pushConstantData.push_back(static_cast<char*>(value.data)[i]);
-			}
+			pushConstantData.insert(pushConstantData.end(), value.data.begin(), value.data.end());
 		}
 
 		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, GetPushConstantsSize(), pushConstantData.data());
@@ -70,8 +68,9 @@ namespace MyFirstEngine
 		uint32_t size = 0;
 		for (auto& [key, value] : pushConstants)
 		{
-			size += static_cast<uint32_t>(value.size);
+			size += static_cast<uint32_t>(value.data.size());
 		}
+
 		return size;
 	}
 
@@ -90,7 +89,8 @@ namespace MyFirstEngine
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
 		pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-		if (GetPushConstantsSize() == 0)
+		uint32_t pushConstantsSize = GetPushConstantsSize();
+		if (pushConstantsSize == 0)
 		{
 			pipelineLayoutInfo.pushConstantRangeCount = 0;
 			pipelineLayoutInfo.pPushConstantRanges = nullptr;
@@ -100,7 +100,7 @@ namespace MyFirstEngine
 			VkPushConstantRange pushConstantRange = {};
 			pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 			pushConstantRange.offset = 0;
-			pushConstantRange.size = GetPushConstantsSize();
+			pushConstantRange.size = pushConstantsSize;
 
 			pipelineLayoutInfo.pushConstantRangeCount = 1;
 			pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;

@@ -1,4 +1,5 @@
 #include <MyFirstEngine.h>
+#include "Utils.h"
 
 class ExampleLayer : public MyFirstEngine::Layer
 {
@@ -26,13 +27,13 @@ public:
 		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };
-		gameObjTest.material->AddUniform(0, "ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix), true);
-		gameObjTest.material->AddUniform(1, "NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix), true);
+		gameObjTest.material->AddUniform(0, "ModelMatrix", MyFirstEngine::ConvertToBytes(modelMatrix), true);
+		gameObjTest.material->AddUniform(1, "NormalMatrix", MyFirstEngine::ConvertToBytes(normalMatrix), true);
 		gameObjTest.material->AddTexture(0, "AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
 		MyFirstEngine::VulkanVertexArray vertexArray = MyFirstEngine::VulkanVertexArray(vertexLayout);
 		gameObjTest.material->CreatePipeline(vertexArray);
 
-		gameObjTest.transform.translation = { 0.0f, 0.36f, 1.2f };
+		gameObjTest.transform.translation = { 0.0f, 0.36f, 0.0f };
 		gameObjTest.transform.scale = glm::vec3(2.0f);
 
 		gameObjects.emplace(gameObjTest.GetId(), std::move(gameObjTest));

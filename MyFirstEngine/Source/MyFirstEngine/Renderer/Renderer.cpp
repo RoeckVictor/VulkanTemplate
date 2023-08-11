@@ -1,5 +1,6 @@
 #include "Mfepch.h"
 #include "Renderer.h"
+#include "Utils.h"
 
 namespace MyFirstEngine
 {
@@ -41,13 +42,13 @@ namespace MyFirstEngine
 	{
 		if(object.pointLight == nullptr)
 		{
-			object.material->UpdateUniform(0, static_cast<void*>(&object.transform.transform()), true);
-			object.material->UpdateUniform(1, static_cast<void*>(&object.transform.normalMatrix()), true);
+			object.material->UpdateUniform(0, ConvertToBytes(object.transform.transform()), true);
+			object.material->UpdateUniform(1, ConvertToBytes(glm::mat4(object.transform.normalMatrix())), true);
 		}
 		else
 		{
-			object.material->UpdateUniform(0, static_cast<void*>(&glm::vec4(object.transform.translation, 1.0)));
-			object.material->UpdateUniform(1, static_cast<void*>(&glm::vec4(object.color, object.pointLight->lightIntensity)));
+			object.material->UpdateUniform(0, ConvertToBytes(glm::vec4(object.transform.translation, 1.0)), true);
+			object.material->UpdateUniform(1, ConvertToBytes(glm::vec4(object.color, object.pointLight->lightIntensity)), true);
 		}
 
 		RenderCommand::DrawObject(object);
