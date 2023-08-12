@@ -2,14 +2,8 @@
 #include "ImGuiLayer.h"
 #include "MyFirstEngine/Application.h"
 
+#include <imgui.h>
 #include <vulkan/vulkan.h>
-#include <imconfig.h>
-#include <imgui_tables.cpp>
-#include <imgui_internal.h>
-#include <imgui.cpp>
-#include <imgui_draw.cpp>
-#include <imgui_widgets.cpp>
-#include <imgui_demo.cpp>
 #include <backends/imgui_impl_glfw.cpp>
 #include <imgui_impl_vulkan_but_better.h>
 

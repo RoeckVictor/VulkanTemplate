@@ -49,17 +49,35 @@ namespace MyFirstEngine
 		return std::make_unique<VulkanModel>(graphicsContext->GetDevice(), data);
 	}
 
-	std::unique_ptr<Model> VulkanModel::CreateModelFromData(const VulkanVertexArray vertices, const std::vector<uint32_t>& indices)
+	std::unique_ptr<Model> VulkanModel::CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices)
 	{
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
-		VulkanModelData data{ vertices, indices };
+		VulkanVertexArray vulkanVertices(vertices.layout);
+		for (const auto& vertex : vertices.data)
+		{
+			std::vector<VertexAttribute> vulkanVertex;
+
+			for (const auto& attribute : vertex)
+			{
+				VertexAttribute vulkanAttribute(attribute.GetDataPointer(), attribute.GetDataSize());
+				vulkanVertex.push_back(vulkanAttribute);
+			}
+
+			vulkanVertices.data.push_back(vulkanVertex);
+		}
+		vulkanVertices.count = vertices.count;
+
+		VulkanModelData data{vulkanVertices, indices};
 
 		return std::make_unique<VulkanModel>(graphicsContext->GetDevice(), data);
 	}
 
 	void VulkanModel::Bind() const
 	{
+		if (vertexBuffer == nullptr)
+			return;
+
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
@@ -87,6 +105,9 @@ namespace MyFirstEngine
 		vertexCount = vertices.count;
 		uint32_t vertexSize = vertices.layout.GetStride();
 		VkDeviceSize bufferSize = vertexSize * vertexCount;
+
+		if (bufferSize == 0)
+			return;
 
 		Buffer stagingBuffer
 		{

@@ -1,4 +1,8 @@
 #include <MyFirstEngine.h>
+#include "Utils.h"
+
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
 
 class ExampleLayer : public MyFirstEngine::Layer
 {
@@ -10,7 +14,7 @@ public:
 		viewerObject(MyFirstEngine::GameObject::CreateGameObject()),
 		currentTime(std::chrono::high_resolution_clock::now()),
 		gameObjects()
-	{
+	{	
 		MyFirstEngine::GameObject gameObjTest = MyFirstEngine::GameObject::CreateGameObject();
 
 		MyFirstEngine::VertexLayout vertexLayout = {
@@ -20,19 +24,18 @@ public:
 			{"TexCoord", MyFirstEngine::VertexDataType::Float2, sizeof(glm::vec2)}
 		};
 
-		std::shared_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
-		gameObjTest.model = model;
+		gameObjTest.model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
 
-		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile(graphicsContext->GetDevice(), "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
+		gameObjTest.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };
-		gameObjTest.material->AddPushConstant("ModelMatrix", sizeof(glm::mat4), static_cast<void*>(&modelMatrix));
-		gameObjTest.material->AddPushConstant("NormalMatrix", sizeof(glm::mat4), static_cast<void*>(&normalMatrix));
-		gameObjTest.material->AddTexture("AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/uv_checker.png", graphicsContext->GetDevice()));
-		MyFirstEngine::VulkanVertexArray vertexArray = MyFirstEngine::VulkanVertexArray(vertexLayout);
-		gameObjTest.material->CreatePipeline(vertexArray.GetBindingDescriptions(), vertexArray.GetAttributeDescriptions());
+		gameObjTest.material->AddUniform(0, "ModelMatrix", MyFirstEngine::ConvertToBytes(modelMatrix), true);
+		gameObjTest.material->AddUniform(1, "NormalMatrix", MyFirstEngine::ConvertToBytes(normalMatrix), true);
+		gameObjTest.material->AddTexture(0, "AlbedoMap", MyFirstEngine::Texture::CreateFromFile("../Resources/Textures/uv_checker.png"));
+		MyFirstEngine::VertexArray vertexArray = MyFirstEngine::VertexArray(vertexLayout);
+		gameObjTest.material->CreatePipeline(vertexArray);
 
-		gameObjTest.transform.translation = { 0.0f, 0.36f, 1.2f };
+		gameObjTest.transform.translation = { 0.0f, 0.36f, 0.0f };
 		gameObjTest.transform.scale = glm::vec3(2.0f);
 
 		gameObjects.emplace(gameObjTest.GetId(), std::move(gameObjTest));
@@ -70,7 +73,21 @@ public:
 		float aspectRatio = graphicsContext->GetRenderer().GetAspectRatio();
 		camera.SetPerspectiveProjection(glm::radians(50.0f), aspectRatio, 0.1f, 1000.0f);
 
-		MyFirstEngine::Renderer::BeginScene(camera);
+		// -- TODELETE --
+		for (auto& kv : gameObjects)
+		{
+			auto& obj = kv.second;
+			if (obj.pointLight == nullptr)
+				continue;
+
+			auto rotateLight = glm::rotate(glm::mat4(1.0f), timeStep.GetSeconds(), { 0.0f, -11.0f, 0.0f });
+			obj.transform.translation = glm::vec3(rotateLight * glm::vec4(obj.transform.translation, 1.0f));
+
+			obj.color = lightColor;
+		}
+		// -- !TODELETE --
+
+		MyFirstEngine::Renderer::BeginScene(camera, gameObjects);
 
 		for (auto& kv : gameObjects)
 		{
@@ -86,7 +103,9 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Light color", glm::value_ptr(lightColor));
+		ImGui::End();
 	}
 
 	void OnEvent(MyFirstEngine::Event& event) override
@@ -136,6 +155,8 @@ private:
 	MyFirstEngine::GameObject viewerObject;
 	std::unordered_map<unsigned int, MyFirstEngine::GameObject> gameObjects;
 	std::chrono::time_point<std::chrono::high_resolution_clock> currentTime;
+
+	glm::vec3 lightColor = { 1.0, 1.0, 1.0 };
 };
 
 class Sandbox : public MyFirstEngine::Application

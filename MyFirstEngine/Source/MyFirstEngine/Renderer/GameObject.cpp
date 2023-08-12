@@ -1,5 +1,6 @@
 #include "Mfepch.h"
 #include "GameObject.h"
+#include "Utils.h"
 
 namespace MyFirstEngine
 {
@@ -81,10 +82,24 @@ namespace MyFirstEngine
 	GameObject GameObject::MakePointLight(float intensity, float radius, glm::vec3 color)
 	{
 		GameObject gameObj = CreateGameObject();
+
 		gameObj.color = color;
 		gameObj.transform.scale.x = radius;
 		gameObj.pointLight = std::make_unique<PointLightComponent>();
 		gameObj.pointLight->lightIntensity = intensity;
+
+		VertexArray vertices = VertexArray(MyFirstEngine::VertexLayout({}));
+		vertices.count = 6;
+		std::shared_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromData(vertices, std::vector<uint32_t>());
+		gameObj.model = model;
+
+		gameObj.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
+		gameObj.material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.transform.translation, 1.0)), true);
+		gameObj.material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.color, intensity)), true);
+		gameObj.material->AddUniform(2, "radius", ConvertToBytes(radius), true);
+		gameObj.material->AddTexture(0, "AlbedoMap", MyFirstEngine::Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
+		gameObj.material->CreatePipeline(vertices);
+
 		return gameObj;
 	}
 }

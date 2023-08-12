@@ -14,7 +14,7 @@
 #include "VulkanRenderer.h"
 #include "Descriptors.h"
 #include "Buffer.h"
-#include "Texture.h"
+#include "VulkanTexture.h"
 
 namespace MyFirstEngine
 {

@@ -15,7 +15,14 @@ namespace MyFirstEngine
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData) 
 	{
-		std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+		switch (messageSeverity)
+		{
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: MFE_CORE_TRACE(pCallbackData->pMessage); break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: MFE_CORE_INFO(pCallbackData->pMessage); break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: MFE_CORE_WARN(pCallbackData->pMessage); break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: MFE_CORE_ERROR(pCallbackData->pMessage); break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT: MFE_CORE_ERROR(pCallbackData->pMessage); break;
+		}
 
 		return VK_FALSE;
 	}
@@ -104,8 +111,7 @@ namespace MyFirstEngine
 			createInfo.pNext = nullptr;
 		}
 
-		if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
-			throw std::runtime_error("failed to create instance!");
+		MFE_ASSERT(vkCreateInstance(&createInfo, nullptr, &instance) == VK_SUCCESS, "failed to create instance!");
 
 		HasGflwRequiredInstanceExtensions();
 	}
@@ -114,10 +120,7 @@ namespace MyFirstEngine
 	{
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-		if (deviceCount == 0)
-			throw std::runtime_error("failed to find GPUs with Vulkan support!");
-
-		std::cout << "Device count: " << deviceCount << std::endl;
+		MFE_ASSERT(deviceCount != 0, "failed to find GPUs with Vulkan support!");
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
@@ -131,11 +134,9 @@ namespace MyFirstEngine
 			}
 		}
 
-		if (physicalDevice_ == VK_NULL_HANDLE) 
-			throw std::runtime_error("failed to find a suitable GPU!");
+		MFE_ASSERT(physicalDevice_ != VK_NULL_HANDLE, "failed to find a suitable GPU!");
 
 		vkGetPhysicalDeviceProperties(physicalDevice_, &properties);
-		std::cout << "physical device: " << properties.deviceName << std::endl;
 	}
 
 	void Device::CreateLogicalDevice() 
