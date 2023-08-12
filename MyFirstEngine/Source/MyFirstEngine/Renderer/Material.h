@@ -1,5 +1,5 @@
 #pragma once
-#include "VulkanRenderer/Texture.h"
+#include "VulkanRenderer/VulkanTexture.h"
 
 #include "Vertex.h"
 

@@ -2,8 +2,6 @@
 #include "GameObject.h"
 #include "Utils.h"
 
-#include "VulkanRenderer/VulkanContext.h"
-
 namespace MyFirstEngine
 {
 	glm::mat4 TransformComponent::transform() const
@@ -83,8 +81,6 @@ namespace MyFirstEngine
 
 	GameObject GameObject::MakePointLight(float intensity, float radius, glm::vec3 color)
 	{
-		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
-
 		GameObject gameObj = CreateGameObject();
 
 		gameObj.color = color;
@@ -101,7 +97,7 @@ namespace MyFirstEngine
 		gameObj.material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.transform.translation, 1.0)), true);
 		gameObj.material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.color, intensity)), true);
 		gameObj.material->AddUniform(2, "radius", ConvertToBytes(radius), true);
-		gameObj.material->AddTexture(0, "AlbedoMap", std::make_unique<MyFirstEngine::Texture>("../Resources/Textures/PointLight.png", graphicsContext->GetDevice()));
+		gameObj.material->AddTexture(0, "AlbedoMap", MyFirstEngine::Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
 		gameObj.material->CreatePipeline(vertices);
 
 		return gameObj;

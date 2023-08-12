@@ -113,6 +113,8 @@ project "Sandbox"
 	{
 		"%{IncludeDirs.Spdlog}",
 		"%{IncludeDirs.GLFW}",
+		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.ImGui}/imgui",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",
 		"%{IncludeDirs.VulkanSDK}/Include"

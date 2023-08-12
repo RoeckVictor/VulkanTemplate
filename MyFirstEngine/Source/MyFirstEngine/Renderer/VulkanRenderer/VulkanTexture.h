@@ -4,16 +4,20 @@
 #include <stdexcept>
 #include <vulkan/vulkan.h>
 
+#include "Texture.h"
+
 #include "Device.h"
 #include "Buffer.h"
 
 namespace MyFirstEngine
 {
-	class Texture
+	class VulkanTexture : public Texture
 	{
 	public:
-		Texture(const std::string& filename, Device& device);
-		~Texture();
+		VulkanTexture(const std::string& filepath);
+		~VulkanTexture();
+
+		static std::shared_ptr<Texture> CreateTextureFromFile(const std::string& filepath);
 
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 		void CreateTextureSampler();

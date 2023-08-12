@@ -158,7 +158,7 @@ namespace MyFirstEngine
 		DescriptorWriter descriptorWritter = DescriptorWriter(*graphicsContext->GetGlobalSetLayout()[1], graphicsContext->GetGlobalPool());
 		for (auto texture : textures)
 		{
-			VkDescriptorImageInfo imageInfo = texture.second->GetImageInfo();
+			VkDescriptorImageInfo imageInfo = static_cast<VulkanTexture*>(texture.second.get())->GetImageInfo();
 			descriptorWritter.WriteImage(0, &imageInfo);
 		}
 		descriptorWritter.Build(textureSet);

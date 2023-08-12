@@ -11,7 +11,7 @@
 
 #include "Device.h"
 #include "Buffer.h"
-#include "Texture.h"
+#include "VulkanTexture.h"
 #include "Descriptors.h"
 #include "VulkanVertex.h"
 
