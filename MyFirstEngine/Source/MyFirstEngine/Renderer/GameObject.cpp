@@ -88,16 +88,17 @@ namespace MyFirstEngine
 		gameObj.pointLight = std::make_unique<PointLightComponent>();
 		gameObj.pointLight->lightIntensity = intensity;
 
-		VertexArray vertices = VertexArray(MyFirstEngine::VertexLayout({}));
+		VertexArray vertices = VertexArray(VertexLayout({}));
 		vertices.count = 6;
-		std::shared_ptr<MyFirstEngine::Model> model = MyFirstEngine::Model::CreateModelFromData(vertices, std::vector<uint32_t>());
+		std::shared_ptr<Model> model = Model::CreateModelFromData(vertices, std::vector<uint32_t>());
 		gameObj.model = model;
 
-		gameObj.material = MyFirstEngine::Material::CreateMatFromFile("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
+		std::shared_ptr<Shader> shader = Shader::CreateShaderFromCompiledFiles("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
+		gameObj.material = Material::CreateMatFromShader(shader);
 		gameObj.material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.transform.translation, 1.0)), true);
 		gameObj.material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.color, intensity)), true);
 		gameObj.material->AddUniform(2, "radius", ConvertToBytes(radius), true);
-		gameObj.material->AddTexture(0, "AlbedoMap", MyFirstEngine::Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
+		gameObj.material->AddTexture(0, "AlbedoMap", Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
 		gameObj.material->CreatePipeline(vertices);
 
 		return gameObj;

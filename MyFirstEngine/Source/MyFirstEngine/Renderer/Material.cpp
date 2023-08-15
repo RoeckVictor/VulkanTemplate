@@ -5,17 +5,15 @@
 
 #include "Renderer.h"
 
-
 namespace MyFirstEngine
 {
-	std::unique_ptr<Material> Material::CreateMatFromFile(const std::string& vertPath, const std::string& fragPath)
+	std::unique_ptr<Material> Material::CreateMatFromShader(const std::shared_ptr<Shader> shader)
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
 		case RendererAPI::SelectedAPI::None: return nullptr;
 		case RendererAPI::SelectedAPI::Vulkan: 
-			VulkanContext* graphicsContext = static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
-			return VulkanMaterial::CreateMatFromFile(graphicsContext->GetDevice(), vertPath, fragPath);
+			return VulkanMaterial::CreateMatFromShader(shader);
 		}
 
 		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");

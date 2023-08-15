@@ -6,14 +6,13 @@
 
 namespace MyFirstEngine
 {
-	MyFirstEngine::VulkanMaterial::VulkanMaterial(Device& device, const std::string& vertPath, const std::string& fragPath)
-		: device(device)
+	MyFirstEngine::VulkanMaterial::VulkanMaterial(const std::shared_ptr<Shader> shader)
+		: device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
 	{
-		auto vertCode = ReadShaderFile(vertPath);
-		auto fragCode = ReadShaderFile(fragPath);
+		this->shader = shader;
 
-		CreateShaderModule(vertCode, &vertShaderModule);
-		CreateShaderModule(fragCode, &fragShaderModule);
+		CreateShaderModule(shader->GetVertCode(), &vertShaderModule);
+		CreateShaderModule(shader->GetFragCode(), &fragShaderModule);
 	}
 
 	MyFirstEngine::VulkanMaterial::~VulkanMaterial()
@@ -130,25 +129,9 @@ namespace MyFirstEngine
 			throw std::runtime_error("Failed to create shader module!");
 	}
 
-	std::unique_ptr<Material> VulkanMaterial::CreateMatFromFile(Device& device, const std::string& vertPath, const std::string& fragPath)
+	std::unique_ptr<Material> VulkanMaterial::CreateMatFromShader(const std::shared_ptr<Shader> shader)
 	{
-		return std::make_unique<VulkanMaterial>(device, vertPath, fragPath);
-	}
-
-	std::vector<char> VulkanMaterial::ReadShaderFile(const std::string& path)
-	{
-		std::ifstream file(path, std::ios::ate | std::ios::binary);
-
-		if (!file.is_open())
-			throw std::runtime_error("Failed to open file: " + path);
-
-		size_t fileSize = (size_t)file.tellg();
-		std::vector<char> buffer(fileSize);
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
-
-		return buffer;
+		return std::make_unique<VulkanMaterial>(shader);
 	}
 
 	void VulkanMaterial::CreateTexturesSet()

@@ -2,6 +2,7 @@
 #include "VulkanRenderer/VulkanTexture.h"
 
 #include "Vertex.h"
+#include "Shader.h"
 
 namespace MyFirstEngine
 {
@@ -14,7 +15,7 @@ namespace MyFirstEngine
 	class Material
 	{
 	public:
-		static std::unique_ptr<Material> CreateMatFromFile(const std::string& vertPath, const std::string& fragPath);
+		static std::unique_ptr<Material> CreateMatFromShader(const std::shared_ptr<Shader> shader);
 
 		virtual void CreatePipeline(VertexArray vertexArray) = 0;
 		virtual void Bind() const = 0;
@@ -30,5 +31,7 @@ namespace MyFirstEngine
 		std::unordered_map<uint32_t, Uniform> uniforms;
 		std::unordered_map<uint32_t, Uniform> pushConstants;
 		std::unordered_map<uint32_t, std::shared_ptr<Texture>> textures;
+
+		std::shared_ptr<Shader> shader;
 	};
 }

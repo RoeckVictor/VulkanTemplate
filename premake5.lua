@@ -50,7 +50,6 @@ project "MyFirstEngine"
 		"%{prj.name}/Source/MyFirstEngine/Renderer",
 		"%{IncludeDirs.Spdlog}",
 		"%{IncludeDirs.GLFW}",
-		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.ImGui}/imgui",
 		"%{IncludeDirs.VulkanSDK}/Include",
 		"%{IncludeDirs.Glm}",
@@ -113,7 +112,6 @@ project "Sandbox"
 	{
 		"%{IncludeDirs.Spdlog}",
 		"%{IncludeDirs.GLFW}",
-		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.ImGui}/imgui",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",

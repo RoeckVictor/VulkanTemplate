@@ -68,10 +68,10 @@ namespace MyFirstEngine
 		vkDestroyDevice(device_, nullptr);
 
 		if (enableValidationLayers)
-			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+			DestroyDebugUtilsMessengerEXT(instance_, debugMessenger, nullptr);
 
-		vkDestroySurfaceKHR(instance, surface_, nullptr);
-		vkDestroyInstance(instance, nullptr);
+		vkDestroySurfaceKHR(instance_, surface_, nullptr);
+		vkDestroyInstance(instance_, nullptr);
 	}
 
 	void Device::CreateInstance() 
@@ -111,7 +111,7 @@ namespace MyFirstEngine
 			createInfo.pNext = nullptr;
 		}
 
-		MFE_ASSERT(vkCreateInstance(&createInfo, nullptr, &instance) == VK_SUCCESS, "failed to create instance!");
+		MFE_ASSERT(vkCreateInstance(&createInfo, nullptr, &instance_) == VK_SUCCESS, "failed to create instance!");
 
 		HasGflwRequiredInstanceExtensions();
 	}
@@ -119,11 +119,11 @@ namespace MyFirstEngine
 	void Device::PickPhysicalDevice() 
 	{
 		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+		vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
 		MFE_ASSERT(deviceCount != 0, "failed to find GPUs with Vulkan support!");
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
-		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+		vkEnumeratePhysicalDevices(instance_, &deviceCount, devices.data());
 
 		for (const auto& device : devices) 
 		{
@@ -199,7 +199,7 @@ namespace MyFirstEngine
 			throw std::runtime_error("failed to create command pool!");
 	}
 
-	void Device::CreateSurface() { window.CreateWindowSurface(instance, &surface_); }
+	void Device::CreateSurface() { window.CreateWindowSurface(instance_, &surface_); }
 
 	bool Device::IsDeviceSuitable(VkPhysicalDevice device) 
 	{
@@ -240,7 +240,7 @@ namespace MyFirstEngine
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessengerCreateInfo(createInfo);
 
-		if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) 
+		if (CreateDebugUtilsMessengerEXT(instance_, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) 
 			throw std::runtime_error("failed to set up debug messenger!");
 	}
 

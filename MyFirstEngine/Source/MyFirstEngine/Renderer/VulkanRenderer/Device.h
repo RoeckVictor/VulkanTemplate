@@ -50,6 +50,7 @@ namespace MyFirstEngine
 		VkSurfaceKHR surface() { return surface_; }
 		VkQueue graphicsQueue() { return graphicsQueue_; }
 		VkQueue presentQueue() { return presentQueue_; }
+		VkInstance instance() { return instance_; }
 
 		SwapChainSupportDetails GetSwapChainSupport() { return QuerySwapChainSupport(physicalDevice_); }
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -84,7 +85,7 @@ namespace MyFirstEngine
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
-		VkInstance instance;
+		VkInstance instance_;
 		VkDebugUtilsMessengerEXT debugMessenger;
 		VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
 		VulkanGlfwWindow& window;

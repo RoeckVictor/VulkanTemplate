@@ -13,10 +13,8 @@ namespace MyFirstEngine
 	class VulkanMaterial : public Material
 	{
 	public:
-		VulkanMaterial(Device& device, const std::string& vertPath, const std::string& fragPath);
+		VulkanMaterial(const std::shared_ptr<Shader> shader);
 		~VulkanMaterial();
-		// VulkanMaterial(const VulkanMaterial&) = delete;
-		// VulkanMaterial& operator=(const VulkanMaterial&) = delete;
 
 		void Bind() const;
 		void Unbind() const;
@@ -24,10 +22,9 @@ namespace MyFirstEngine
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 		void CreatePipeline(VertexArray vertexArray);
 
-		static std::unique_ptr<Material> CreateMatFromFile(Device& device, const std::string& vertPath, const std::string& fragPath);
+		static std::unique_ptr<Material> CreateMatFromShader(const std::shared_ptr<Shader> shader);
 
 	private:
-		std::vector<char> VulkanMaterial::ReadShaderFile(const std::string& path);
 		void CreateTexturesSet();
 		uint32_t GetPushConstantsSize() const;
 

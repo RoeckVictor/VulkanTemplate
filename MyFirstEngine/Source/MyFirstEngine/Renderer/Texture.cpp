@@ -11,8 +11,11 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-		case RendererAPI::SelectedAPI::None: break;
-		case RendererAPI::SelectedAPI::Vulkan: return VulkanTexture::CreateTextureFromFile(filename); break;
+		case RendererAPI::SelectedAPI::None: return nullptr;
+		case RendererAPI::SelectedAPI::Vulkan: return VulkanTexture::CreateTextureFromFile(filename);
 		}
+
+		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");
+		return nullptr;
 	}
 }
