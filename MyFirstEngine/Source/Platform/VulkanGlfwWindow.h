@@ -17,28 +17,21 @@ namespace MyFirstEngine
 		void BeginUpdate() override;
 		void EndUpdate() override;
 
-		void SetEventCallback(const EventCallbackFn& callback) override { data.eventCallback = callback; }
-
 		void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-		VkExtent2D GetExtent() const { return { data.width, data.height }; }
-		unsigned int GetWidth() const override { return data.width; }
-		unsigned int GetHeight() const override { return data.height; }
+
+		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.eventCallback = callback; }
 
 		bool IsOpen() const;
-		bool WasResized() { return framebufferResized; };
-		void ResetResized() { framebufferResized = false; };
+		bool WasResized() { return m_FramebufferResized; };
+		void ResetResized() { m_FramebufferResized = false; };
 
-		void* GetNativeWindow() const { return window; };
-		GraphicsContext* GetGraphicsContext() const { return graphicsContext; };
+		VkExtent2D GetExtent() const { return { m_Data.width, m_Data.height }; }
+		unsigned int GetWidth() const override { return m_Data.width; }
+		unsigned int GetHeight() const override { return m_Data.height; }
+		void* GetNativeWindow() const { return m_Window; };
+		GraphicsContext* GetGraphicsContext() const { return m_GraphicsContext; };
 
 	private:
-		virtual void Init(const WindowInfo& info);
-		virtual void Shutdown();
-		static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
-
-		GLFWwindow* window;
-		GraphicsContext* graphicsContext;
-
 		struct WindowData
 		{
 			std::string title;
@@ -46,8 +39,14 @@ namespace MyFirstEngine
 			unsigned int height;
 			EventCallbackFn eventCallback;
 		};
-		bool framebufferResized = false;
 
-		WindowData data;
+		virtual void Init(const WindowInfo& info);
+		virtual void Shutdown();
+		static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
+
+		WindowData m_Data;
+		GLFWwindow* m_Window;
+		GraphicsContext* m_GraphicsContext;
+		bool m_FramebufferResized = false;
 	};
 }

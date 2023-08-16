@@ -29,7 +29,7 @@ namespace std
 namespace MyFirstEngine
 {
 	VulkanModel::VulkanModel(Device& device, const VulkanModelData& builder)
-		: device(device)
+		: m_Device(device)
 	{
 		CreateVertexBuffer(builder.vertices);
 		CreateIndexBuffer(builder.indices);
@@ -75,18 +75,19 @@ namespace MyFirstEngine
 
 	void VulkanModel::Bind() const
 	{
-		if (vertexBuffer == nullptr)
-			return;
+		if (m_VertexBuffer == nullptr) { return; }
 
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
-		VkBuffer vertexBuffers[] = { vertexBuffer->getBuffer() };
+		VkBuffer vertexBuffers[] = { m_VertexBuffer->GetBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-		if (hasIndexBuffer)
-			vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		if (m_HasIndexBuffer)
+		{
+			vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		}
 	}
 
 	void VulkanModel::Draw() const
@@ -94,67 +95,69 @@ namespace MyFirstEngine
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
-		if (hasIndexBuffer)
-			vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
-		else
-			vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+		if (m_HasIndexBuffer)
+		{
+			vkCmdDrawIndexed(commandBuffer, m_IndexCount, 1, 0, 0, 0);
+		}
+		else 
+		{
+			vkCmdDraw(commandBuffer, m_VertexCount, 1, 0, 0);
+		}
 	}
 
 	void VulkanModel::CreateVertexBuffer(const VulkanVertexArray vertices)
 	{
-		vertexCount = vertices.count;
+		m_VertexCount = vertices.count;
 		uint32_t vertexSize = vertices.layout.GetStride();
-		VkDeviceSize bufferSize = vertexSize * vertexCount;
+		VkDeviceSize bufferSize = vertexSize * m_VertexCount;
 
-		if (bufferSize == 0)
-			return;
+		if (bufferSize == 0) { return; }
 
 		Buffer stagingBuffer
 		{
-			device, vertexSize, vertexCount,
+			m_Device, vertexSize, m_VertexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT 
 		};
 
-		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void*)vertices.GetDataBuffer().data());
+		stagingBuffer.Map();
+		stagingBuffer.WriteToBuffer((void*)vertices.GetDataBuffer().data());
 
-		vertexBuffer = std::make_unique<Buffer>(
-			device, vertexSize, vertexCount,
+		m_VertexBuffer = std::make_unique<Buffer>(
+			m_Device, vertexSize, m_VertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 		);
 
-		device.CopyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+		m_Device.CopyBuffer(stagingBuffer.GetBuffer(), m_VertexBuffer->GetBuffer(), bufferSize);
 	}
 
 	void VulkanModel::CreateIndexBuffer(const std::vector<uint32_t>& indices)
 	{
-		indexCount = static_cast<uint32_t>(indices.size());
-		hasIndexBuffer = indexCount > 0;
+		m_IndexCount = static_cast<uint32_t>(indices.size());
+		m_HasIndexBuffer = m_IndexCount > 0;
 
-		if (!hasIndexBuffer)
-			return;
+		if (!m_HasIndexBuffer) { return; }
 
 		uint32_t indexSize = sizeof(indices[0]);
-		VkDeviceSize bufferSize = indexSize * indexCount;
+		VkDeviceSize bufferSize = indexSize * m_IndexCount;
 
 		Buffer stagingBuffer
 		{
-			device, indexSize, indexCount,
+			m_Device, indexSize, m_IndexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 		};
 
-		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void*)indices.data());
+		stagingBuffer.Map();
+		stagingBuffer.WriteToBuffer((void*)indices.data());
 
-		indexBuffer = std::make_unique<Buffer>(
-			device, indexSize, indexCount,
+		m_IndexBuffer = std::make_unique<Buffer>(
+			m_Device, indexSize, m_IndexCount,
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		device.CopyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+		m_Device.CopyBuffer(stagingBuffer.GetBuffer(), m_IndexBuffer->GetBuffer(), bufferSize);
 	}
 
 	void VulkanModel::VulkanModelData::LoadModel(const std::string& filepath)
@@ -164,8 +167,7 @@ namespace MyFirstEngine
 		std::vector<tinyobj::material_t> materials;
 		std::string warn, err;
 
-		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str()))
-			throw std::runtime_error(warn + err);
+		MFE_CORE_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str()), warn + err);
 
 		vertices.data.clear();
 		indices.clear();
@@ -177,17 +179,12 @@ namespace MyFirstEngine
 		{
 			// Can't switch on strings
 			std::string elementName = vertices.layout.GetElements()[i].name;
-			if(elementName == "Position")
-				vertexAttribs[0] = i;
-			else if(elementName == "Color")
-				vertexAttribs[1] = i;
-			else if(elementName == "Normal")
-				vertexAttribs[2] = i;
-			else if(elementName == "TexCoord")
-				vertexAttribs[3] = i;
-
-			MFE_ASSERT(vertexAttribs[0] >= 0, "Vertex layout has no Position attribute");
+			if(elementName == "Position") { vertexAttribs[0] = i; }
+			else if(elementName == "Color") { vertexAttribs[1] = i; }
+			else if(elementName == "Normal") { vertexAttribs[2] = i; }	
+			else if(elementName == "TexCoord") { vertexAttribs[3] = i; }
 		}
+		MFE_ASSERT(vertexAttribs[0] >= 0, "Vertex layout has no Position attribute");
 
 		for (const auto& shape : shapes)
 		{

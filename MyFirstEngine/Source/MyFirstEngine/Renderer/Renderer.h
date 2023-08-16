@@ -28,15 +28,15 @@ namespace MyFirstEngine
 
 		struct SceneUBO
 		{
-			glm::mat4 projection{ 1.0f };
-			glm::mat4 view{ 1.0f };
-			glm::mat4 inverseView{ 1.0f };
-			glm::vec4 ambientColor{ 1.0f, 1.0f, 1.0f, 0.1f };
-			PointLight pointLights[MAX_LIGHTS];
-			int numLights;
+			glm::mat4 m_Projection{ 1.0f };
+			glm::mat4 m_View{ 1.0f };
+			glm::mat4 m_InverseView{ 1.0f };
+			glm::vec4 m_AmbientColor{ 1.0f, 1.0f, 1.0f, 0.1f };
+			PointLight m_PointLights[MAX_LIGHTS];
+			int m_NumLights;
 		};
 
 	private:
-		static SceneUBO* sceneUBO;
+		static SceneUBO* m_SceneUBO;
 	};
 }

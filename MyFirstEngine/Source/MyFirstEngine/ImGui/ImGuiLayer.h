@@ -20,8 +20,5 @@ namespace MyFirstEngine
 		void Begin();
 		void End();
 		void SetImguiStyle();
-
-	private:
-		float time = 0.0f;
 	};
 }

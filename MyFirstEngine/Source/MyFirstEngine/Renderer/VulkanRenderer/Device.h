@@ -2,7 +2,6 @@
 
 #include "Platform/VulkanGlfwWindow.h"
 
-// std lib headers
 #include <string>
 #include <vector>
 
@@ -38,25 +37,10 @@ namespace MyFirstEngine
 		Device(VulkanGlfwWindow& window);
 		~Device();
 
-		// Not copyable or movable
 		Device(const Device&) = delete;
 		void operator=(const Device&) = delete;
 		Device(Device&&) = delete;
 		Device& operator=(Device&&) = delete;
-
-		VkCommandPool GetCommandPool() { return commandPool; }
-		VkDevice device() { return device_; }
-		VkPhysicalDevice physicalDevice() { return physicalDevice_; }
-		VkSurfaceKHR surface() { return surface_; }
-		VkQueue graphicsQueue() { return graphicsQueue_; }
-		VkQueue presentQueue() { return presentQueue_; }
-		VkInstance instance() { return instance_; }
-
-		SwapChainSupportDetails GetSwapChainSupport() { return QuerySwapChainSupport(physicalDevice_); }
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-		QueueFamilyIndices FindPhysicalQueueFamilies() { return FindQueueFamilies(physicalDevice_); }
-		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-		VkSampleCountFlagBits GetMaxUsableSampleCount();
 
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		VkCommandBuffer BeginSingleTimeCommands();
@@ -65,6 +49,20 @@ namespace MyFirstEngine
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
 		void CreateImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 		VkImageView CreateImageView(VkImage image, VkFormat format, uint32_t mipLevels);
+
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		SwapChainSupportDetails GetSwapChainSupport() { return QuerySwapChainSupport(m_PhysicalDevice); }
+		QueueFamilyIndices FindPhysicalQueueFamilies() { return FindQueueFamilies(m_PhysicalDevice); }
+		VkSampleCountFlagBits GetMaxUsableSampleCount();
+
+		VkCommandPool GetCommandPool() { return m_CommandPool; }
+		VkDevice GetLogicalDevice() { return m_Device; }
+		VkPhysicalDevice GetPhysicalDevice() { return m_PhysicalDevice; }
+		VkSurfaceKHR GetSurface() { return m_Surface; }
+		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
+		VkQueue GetPresentQueue() { return m_PresentQueue; }
+		VkInstance GetInstance() { return m_Instance; }
 
 		VkPhysicalDeviceProperties properties;
 
@@ -76,30 +74,28 @@ namespace MyFirstEngine
 		void CreateLogicalDevice();
 		void CreateCommandPool();
 
-		bool IsDeviceSuitable(VkPhysicalDevice device);
-		std::vector<const char*> GetRequiredExtensions();
-		bool CheckValidationLayerSupport();
-		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+
 		void HasGflwRequiredInstanceExtensions();
+		bool IsDeviceSuitable(VkPhysicalDevice device);
+		bool CheckValidationLayerSupport();
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+		std::vector<const char*> GetRequiredExtensions();
+		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+		
+		VulkanGlfwWindow& m_Window;
 
-		VkInstance instance_;
-		VkDebugUtilsMessengerEXT debugMessenger;
-		VkPhysicalDevice physicalDevice_ = VK_NULL_HANDLE;
-		VulkanGlfwWindow& window;
-		VkCommandPool commandPool;
+		VkInstance m_Instance;
+		VkDevice m_Device;
+		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
+		VkCommandPool m_CommandPool;
+		VkSurfaceKHR m_Surface;
+		VkQueue m_GraphicsQueue;
+		VkQueue m_PresentQueue;
+		VkDebugUtilsMessengerEXT m_DebugMessenger;
 
-		VkDevice device_;
-		VkSurfaceKHR surface_;
-		VkQueue graphicsQueue_;
-		VkQueue presentQueue_;
-
-		const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-
-		const char* extension1 = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
-		const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		const std::vector<const char*> m_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
+		const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	};
-
 }

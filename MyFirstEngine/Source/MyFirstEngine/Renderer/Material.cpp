@@ -11,9 +11,9 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-		case RendererAPI::SelectedAPI::None: return nullptr;
-		case RendererAPI::SelectedAPI::Vulkan: 
-			return VulkanMaterial::CreateMatFromShader(shader);
+			case RendererAPI::SelectedAPI::None: return nullptr;
+			case RendererAPI::SelectedAPI::Vulkan: 
+				return VulkanMaterial::CreateMatFromShader(shader);
 		}
 
 		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");
@@ -24,8 +24,8 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-		case RendererAPI::SelectedAPI::None: break;
-		case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? pushConstants[id] = { name, data } : uniforms[id] = { name, data }; break;
+			case RendererAPI::SelectedAPI::None: break;
+			case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? m_PushConstants[id] = { name, data } : m_Uniforms[id] = { name, data }; break;
 		}
 	}
 
@@ -33,8 +33,8 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-		case RendererAPI::SelectedAPI::None: break;
-		case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? pushConstants[id].data = data : uniforms[id].data = data; break;
+			case RendererAPI::SelectedAPI::None: break;
+			case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? m_PushConstants[id].data = data : m_Uniforms[id].data = data; break;
 		}
 	}
 
@@ -42,8 +42,8 @@ namespace MyFirstEngine
 	{
 		switch (Renderer::GetSelectedAPI())
 		{
-		case RendererAPI::SelectedAPI::None: break;
-		case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? pushConstants.erase(id) : uniforms.erase(id); break;
+			case RendererAPI::SelectedAPI::None: break;
+			case RendererAPI::SelectedAPI::Vulkan: (isPushConstant) ? m_PushConstants.erase(id) : m_Uniforms.erase(id); break;
 		}
 	}
 }

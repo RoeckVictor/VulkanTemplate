@@ -6,5 +6,5 @@
 
 namespace MyFirstEngine
 {
-	RendererAPI* RenderCommand::rendererAPI = new VulkanRendererAPI();
+	RendererAPI* RenderCommand::m_RendererAPI = new VulkanRendererAPI();
 }

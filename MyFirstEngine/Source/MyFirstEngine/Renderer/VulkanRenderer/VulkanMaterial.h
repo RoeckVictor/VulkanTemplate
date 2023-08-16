@@ -21,20 +21,19 @@ namespace MyFirstEngine
 
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 		void CreatePipeline(VertexArray vertexArray);
-
 		static std::unique_ptr<Material> CreateMatFromShader(const std::shared_ptr<Shader> shader);
 
 	private:
 		void CreateTexturesSet();
 		uint32_t GetPushConstantsSize() const;
 
-		VkShaderModule vertShaderModule;
-		VkShaderModule fragShaderModule;
+		VkShaderModule m_VertShaderModule;
+		VkShaderModule m_FragShaderModule;
 
-		VkDescriptorSet textureSet{ VK_NULL_HANDLE };
+		VkDescriptorSet m_TextureSet{ VK_NULL_HANDLE };
 
-		Device& device;
-		std::unique_ptr<Pipeline> pipeline;
-		VkPipelineLayout pipelineLayout;
+		Device& m_Device;
+		std::unique_ptr<Pipeline> m_Pipeline;
+		VkPipelineLayout m_PipelineLayout;
 	};
 }

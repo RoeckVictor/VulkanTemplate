@@ -23,7 +23,6 @@ namespace MyFirstEngine
 	struct PointLightComponent 
 	{
 		float lightIntensity = 1.0f;
-		// glm::vec3 color{};
 	};
 
 	class GameObject
@@ -38,18 +37,18 @@ namespace MyFirstEngine
 
 		static GameObject CreateGameObject();
 		static GameObject MakePointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.0f));
-		unsigned int GetId() const { return id; }
+		unsigned int GetId() const { return m_id; }
 		
-		glm::vec3 color{};
-		TransformComponent transform{};
+		glm::vec3 m_Color{};
+		TransformComponent m_Transform{};
 
-		std::shared_ptr<Model> model{};
-		std::shared_ptr<Material> material;
-		std::unique_ptr<PointLightComponent> pointLight = nullptr;
+		std::shared_ptr<Model> m_Model{};
+		std::shared_ptr<Material> m_Material;
+		std::unique_ptr<PointLightComponent> m_PointLight = nullptr;
 
 	private:
-		GameObject(unsigned int objId) : id(objId) {}
+		GameObject(unsigned int objId) : m_id(objId) {}
 
-		unsigned int id;
+		unsigned int m_id;
 	};
 }

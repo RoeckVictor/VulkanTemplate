@@ -7,10 +7,10 @@
 namespace MyFirstEngine
 {
 	VulkanRenderer::VulkanRenderer(VulkanGlfwWindow& window, Device& device)
-		: window(window),
-		  device(device),
-		  isFrameStarted(false),
-		  currentFrameIndex(0)
+		: m_Window(window),
+		  m_Device(device),
+		  m_IsFrameStarted(false),
+		  m_CurrentFrameIndex(0)
 	{
 		RecreateSwapchain();
 		CreateCommandBuffers();
@@ -23,21 +23,18 @@ namespace MyFirstEngine
 
 	VkCommandBuffer VulkanRenderer::BeginFrame()
 	{
-		assert(!isFrameStarted && "Cannot start frame when frame is already in progress");
+		MFE_CORE_ASSERT(!m_IsFrameStarted, "Cannot start frame when frame is already in progress");
 
-		VkResult result = swapchain->AcquireNextImage(&currentImageIndex);
-
+		VkResult result = m_Swapchain->AcquireNextImage(&m_CurrentImageIndex);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR)
 		{
 			RecreateSwapchain();
 			return nullptr;
 		}
 
-		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-			throw std::runtime_error("Failed to acquire swap chain image");
+		MFE_CORE_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR, "Failed to acquire swap chain image");
 
-		isFrameStarted = true;
-
+		m_IsFrameStarted = true;
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 
 		VkCommandBufferBeginInfo beginInfo = {};
@@ -45,46 +42,47 @@ namespace MyFirstEngine
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 		beginInfo.pInheritanceInfo = nullptr;
 
-		if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-			throw std::runtime_error("Failed to begin recording command buffer");
+		MFE_CORE_ASSERT(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS, "Failed to begin recording command buffer");
 
 		return commandBuffer;
 	}
 
 	void VulkanRenderer::EndFrame()
 	{
-		assert(isFrameStarted && "Cannot end frame when frame is not in progress");
+		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot end frame when frame is not in progress");
 
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
 		if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
 			throw std::runtime_error("Failed to record command buffer");
 
-		VkResult result = swapchain->SubmitCommandBuffers(&commandBuffer, &currentImageIndex);
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.WasResized())
+		VkResult result = m_Swapchain->SubmitCommandBuffers(&commandBuffer, &m_CurrentImageIndex);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_Window.WasResized())
 		{
-			window.ResetResized();
+			m_Window.ResetResized();
 			RecreateSwapchain();
 		}
-		else if (result != VK_SUCCESS)
-			throw std::runtime_error("Failed to present swap chain image");
+		else
+		{
+			MFE_CORE_ASSERT(result == VK_SUCCESS, "Failed to present swap chain image");
+		}
 
-		isFrameStarted = false;
-		currentFrameIndex = (currentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
+		m_IsFrameStarted = false;
+		m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void VulkanRenderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 	{
-		assert(isFrameStarted && "Cannot create new frame is old frame is still in progress");
-		assert(commandBuffer == GetCurrentCommandBuffer() && "Can't begin render poss on command buffer from a different frame");
+		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot create new frame is old frame is still in progress");
+		MFE_CORE_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin render poss on command buffer from a different frame");
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = swapchain->GetRenderPass();
-		renderPassInfo.framebuffer = swapchain->GetFrameBuffer(currentImageIndex);
+		renderPassInfo.renderPass = m_Swapchain->GetRenderPass();
+		renderPassInfo.framebuffer = m_Swapchain->GetFrameBuffer(m_CurrentImageIndex);
 		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = swapchain->GetSwapChainExtent();
+		renderPassInfo.renderArea.extent = m_Swapchain->GetSwapChainExtent();
 		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = clearColor;
+		clearValues[0].color = m_ClearColor;
 		clearValues[1].depthStencil = { 1.0f, 0 };
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassInfo.pClearValues = clearValues.data();
@@ -94,65 +92,63 @@ namespace MyFirstEngine
 		VkViewport viewport = {};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(swapchain->GetSwapChainExtent().width);
-		viewport.height = static_cast<float>(swapchain->GetSwapChainExtent().height);
+		viewport.width = static_cast<float>(m_Swapchain->GetSwapChainExtent().width);
+		viewport.height = static_cast<float>(m_Swapchain->GetSwapChainExtent().height);
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
-		VkRect2D scissor = { {0, 0}, swapchain->GetSwapChainExtent() };
+		VkRect2D scissor = { {0, 0}, m_Swapchain->GetSwapChainExtent() };
 		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 
 	void VulkanRenderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
 	{
-		assert(isFrameStarted && "Cannot end frame when frame is not in progress");
-		assert(commandBuffer == GetCurrentCommandBuffer() && "Can't end render pass on command buffer from a different frame");
+		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot end frame when frame is not in progress");
+		MFE_CORE_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't end render pass on command buffer from a different frame");
 
 		vkCmdEndRenderPass(commandBuffer);
 	}
 
 	void VulkanRenderer::CreateCommandBuffers()
 	{
-		commandBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
+		m_CommandBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = device.GetCommandPool();
-		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+		allocInfo.commandPool = m_Device.GetCommandPool();
+		allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-		if (vkAllocateCommandBuffers(device.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-			throw std::runtime_error("Failed to allocate command buffers");
+		MFE_CORE_ASSERT(vkAllocateCommandBuffers(m_Device.GetLogicalDevice(), &allocInfo, m_CommandBuffers.data()) == VK_SUCCESS,
+						"Failed to allocate command buffers");
 	}
 
 	void VulkanRenderer::FreeCommandBuffers()
 	{
-		vkFreeCommandBuffers(device.device(), device.GetCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
-		commandBuffers.clear();
+		vkFreeCommandBuffers(m_Device.GetLogicalDevice(), m_Device.GetCommandPool(), static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
+		m_CommandBuffers.clear();
 	}
 
 	void VulkanRenderer::RecreateSwapchain()
 	{
-		VkExtent2D extent = window.GetExtent();
+		VkExtent2D extent = m_Window.GetExtent();
 		while (extent.width == 0 || extent.height == 0)
 		{
-			extent = window.GetExtent();
+			extent = m_Window.GetExtent();
 			glfwWaitEvents();
 		}
 
-		vkDeviceWaitIdle(device.device());
+		vkDeviceWaitIdle(m_Device.GetLogicalDevice());
 
-		if (swapchain == nullptr)
-			swapchain = std::make_unique<SwapChain>(device, extent);
+		if (m_Swapchain == nullptr)
+		{
+			m_Swapchain = std::make_unique<SwapChain>(m_Device, extent);
+		}	
 		else
 		{
-			std::shared_ptr<SwapChain> oldSwapchain = std::move(swapchain);
-			swapchain = std::make_unique<SwapChain>(device, extent, oldSwapchain);
+			std::shared_ptr<SwapChain> oldSwapchain = std::move(m_Swapchain);
+			m_Swapchain = std::make_unique<SwapChain>(m_Device, extent, oldSwapchain);
 
-			if (!oldSwapchain->CompareSwapFormats(*swapchain.get()))
-				throw std::runtime_error("Swapchain image format or depth format has changed");
+			MFE_CORE_ASSERT(oldSwapchain->CompareSwapFormats(*m_Swapchain.get()), "Swapchain image format or depth format has changed");
 		}
-
-		// Todo: If the render pass is compatible with the new swap chain we don't need to recreate it
-		// CreatePipeline();
 	}
 }

@@ -13,7 +13,7 @@
 namespace MyFirstEngine 
 {
 	VulkanTexture::VulkanTexture(const std::string& filename)
-		: device{ static_cast<MyFirstEngine::VulkanContext*>(MyFirstEngine::Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice() }
+		: m_Device{ static_cast<MyFirstEngine::VulkanContext*>(MyFirstEngine::Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice() }
 	{
 		int texWidth, texHeight, texChannels;
 		stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -22,20 +22,19 @@ namespace MyFirstEngine
 		uint32_t pixelCount = texWidth * texHeight;
 		VkDeviceSize imageSize = pixelSize * pixelCount;
 
-		mipLevels = static_cast<uint32_t>(std::float_denorm_style(std::log2(std::max(texWidth, texHeight)))) + 1;
+		m_MipLevels = static_cast<uint32_t>(std::float_denorm_style(std::log2(std::max(texWidth, texHeight)))) + 1;
 
-		if (!pixels)
-			throw std::runtime_error("Failed to load texture image!");
+		MFE_CORE_ASSERT(pixels, "Failed to load texture image!");
 
 		Buffer stagingBuffer
 		{
-			device, pixelSize, pixelCount,
+			m_Device, pixelSize, pixelCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 		};
 
-		stagingBuffer.map();
-		stagingBuffer.writeToBuffer((void*)pixels);
+		stagingBuffer.Map();
+		stagingBuffer.WriteToBuffer((void*)pixels);
 
 		stbi_image_free(pixels);
 
@@ -45,7 +44,7 @@ namespace MyFirstEngine
 		imageCreateInfo.extent.width = texWidth;
 		imageCreateInfo.extent.height = texHeight;
 		imageCreateInfo.extent.depth = 1;
-		imageCreateInfo.mipLevels = mipLevels;
+		imageCreateInfo.mipLevels = m_MipLevels;
 		imageCreateInfo.arrayLayers = 1;
 		imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
 		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -55,30 +54,30 @@ namespace MyFirstEngine
 		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		imageCreateInfo.flags = 0;
 
-		device.CreateImageWithInfo(imageCreateInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+		m_Device.CreateImageWithInfo(imageCreateInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_TextureImage, m_TexImageMemory);
 
-		textureImageView = device.CreateImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, mipLevels);
+		m_TexImageView = m_Device.CreateImageView(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, m_MipLevels);
 		CreateTextureSampler();
 
-		TransitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels);
 
-		device.CopyBufferToImage(stagingBuffer.getBuffer(), textureImage, texWidth, texHeight, 1);
+		m_Device.CopyBufferToImage(stagingBuffer.GetBuffer(), m_TextureImage, texWidth, texHeight, 1);
 
-		GenerateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
+		GenerateMipmaps(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, m_MipLevels);
 
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = textureImageView;
-		imageInfo.sampler = textureSampler;
+		m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ImageInfo.imageView = m_TexImageView;
+		m_ImageInfo.sampler = m_TexSampler;
 	}
 
 	VulkanTexture::~VulkanTexture()
 	{
-		vkDestroySampler(device.device(), textureSampler, nullptr);
+		vkDestroySampler(m_Device.GetLogicalDevice(), m_TexSampler, nullptr);
 
-		vkDestroyImageView(device.device(), textureImageView, nullptr);
+		vkDestroyImageView(m_Device.GetLogicalDevice(), m_TexImageView, nullptr);
 
-		vkDestroyImage(device.device(), textureImage, nullptr);
-		vkFreeMemory(device.device(), textureImageMemory, nullptr);
+		vkDestroyImage(m_Device.GetLogicalDevice(), m_TextureImage, nullptr);
+		vkFreeMemory(m_Device.GetLogicalDevice(), m_TexImageMemory, nullptr);
 	}
 
 	std::shared_ptr<Texture> VulkanTexture::CreateTextureFromFile(const std::string& filepath)
@@ -88,7 +87,7 @@ namespace MyFirstEngine
 
 	void VulkanTexture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
 	{
-		VkCommandBuffer commandBuffer = device.BeginSingleTimeCommands();
+		VkCommandBuffer commandBuffer = m_Device.BeginSingleTimeCommands();
 
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -124,9 +123,10 @@ namespace MyFirstEngine
 			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
-		else
-			throw std::invalid_argument("unsupported layout transition!");
-
+		else 
+		{
+			MFE_CORE_ASSERT(false, "unsupported layout transition!");
+		}
 
 		vkCmdPipelineBarrier(
 			commandBuffer,
@@ -137,7 +137,7 @@ namespace MyFirstEngine
 			1, &barrier
 		);
 
-		device.EndSingleTimeCommands(commandBuffer);
+		m_Device.EndSingleTimeCommands(commandBuffer);
 	}
 
 	void VulkanTexture::CreateTextureSampler()
@@ -150,7 +150,7 @@ namespace MyFirstEngine
 		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.anisotropyEnable = VK_TRUE;
-		samplerInfo.maxAnisotropy = device.properties.limits.maxSamplerAnisotropy;
+		samplerInfo.maxAnisotropy = m_Device.properties.limits.maxSamplerAnisotropy;
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 		samplerInfo.compareEnable = VK_FALSE;
@@ -158,20 +158,19 @@ namespace MyFirstEngine
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = static_cast<float>(mipLevels);
+		samplerInfo.maxLod = static_cast<float>(m_MipLevels);
 
-		if (vkCreateSampler(device.device(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
-			throw std::runtime_error("failed to create texture sampler!");
+		MFE_CORE_ASSERT(vkCreateSampler(m_Device.GetLogicalDevice(), &samplerInfo, nullptr, &m_TexSampler) == VK_SUCCESS, "failed to create texture sampler!");
 	}
 
 	void VulkanTexture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 	{
 		VkFormatProperties formatProperties;
-		vkGetPhysicalDeviceFormatProperties(device.physicalDevice(), imageFormat, &formatProperties);
-		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
-			throw std::runtime_error("texture image format does not support linear blitting!");
+		vkGetPhysicalDeviceFormatProperties(m_Device.GetPhysicalDevice(), imageFormat, &formatProperties);
 
-		VkCommandBuffer commandBuffer = device.BeginSingleTimeCommands();
+		MFE_CORE_ASSERT(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT, "texture image format does not support linear blitting!");
+
+		VkCommandBuffer commandBuffer = m_Device.BeginSingleTimeCommands();
 
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -252,8 +251,9 @@ namespace MyFirstEngine
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
-			1, &barrier);
+			1, &barrier
+		);
 
-		device.EndSingleTimeCommands(commandBuffer);
+		m_Device.EndSingleTimeCommands(commandBuffer);
 	}
 }

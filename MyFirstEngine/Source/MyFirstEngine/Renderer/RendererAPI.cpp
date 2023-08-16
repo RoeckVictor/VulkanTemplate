@@ -3,5 +3,5 @@
 
 namespace MyFirstEngine
 {
-	RendererAPI::SelectedAPI RendererAPI::selectedAPI = RendererAPI::SelectedAPI::Vulkan;
+	RendererAPI::SelectedAPI RendererAPI::m_SelectedAPI = RendererAPI::SelectedAPI::Vulkan;
 }

@@ -5,7 +5,7 @@
 
 namespace MyFirstEngine
 {
-	Input* Input::instance = new GlfwInput();
+	Input* Input::m_Instance = new GlfwInput();
 	bool GlfwInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow());

@@ -39,11 +39,11 @@ namespace MyFirstEngine
 		
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow()), true);
 		ImGui_ImplVulkan_InitInfo info = {};
-		info.Instance = graphicsContext->GetDevice().instance();
-		info.PhysicalDevice = graphicsContext->GetDevice().physicalDevice();
-		info.Device = graphicsContext->GetDevice().device();
+		info.Instance = graphicsContext->GetDevice().GetInstance();
+		info.PhysicalDevice = graphicsContext->GetDevice().GetPhysicalDevice();
+		info.Device = graphicsContext->GetDevice().GetLogicalDevice();
 		info.QueueFamily = vulkanQueueFamilies.graphicsFamily;
-		info.Queue = graphicsContext->GetDevice().graphicsQueue();
+		info.Queue = graphicsContext->GetDevice().GetGraphicsQueue();
 		info.PipelineCache = VK_NULL_HANDLE;
 		info.DescriptorPool = graphicsContext->GetGlobalPool().GetDescriptorPool();
 		info.Subpass = 0;
@@ -57,7 +57,7 @@ namespace MyFirstEngine
 		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 		graphicsContext->GetDevice().EndSingleTimeCommands(commandBuffer);
 		
-		vkDeviceWaitIdle(graphicsContext->GetDevice().device());
+		vkDeviceWaitIdle(graphicsContext->GetDevice().GetLogicalDevice());
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 

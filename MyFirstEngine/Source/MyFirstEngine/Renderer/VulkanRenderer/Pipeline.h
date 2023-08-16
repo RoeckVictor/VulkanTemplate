@@ -43,14 +43,12 @@ namespace MyFirstEngine
 		void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 		void BindCommandBuffer(VkCommandBuffer commandBuffer);
 
-		VkSampleCountFlagBits GetMsaaSamples() const { return msaaSamples; }
+		VkSampleCountFlagBits GetMsaaSamples() const { return m_MsaaSamples; }
 
 	private:
-		static std::vector<char> ReadFile(const std::string& path);
+		Device& m_Device;
+		VkPipeline m_GraphicsPipeline;
 
-		Device& device;
-		VkPipeline graphicsPipeline;
-
-		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+		VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
 	};
 }

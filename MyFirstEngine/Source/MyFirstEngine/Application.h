@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core.h"
+#include "MyFirstEngine/Core.h"
 
 #include "Window.h"
 #include "Platform/VulkanGlfwWindow.h"
@@ -27,22 +27,21 @@ namespace MyFirstEngine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		inline static Application& GetInstance() { return *instance; }
-		inline VulkanGlfwWindow& GetWindow() { return *window; }
+		inline static Application& GetInstance() { return *m_Instance; }
+		inline VulkanGlfwWindow& GetWindow() { return *m_Window; }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
-		VulkanGlfwWindow* window;
-		ImGuiLayer* imguiLayer;
+		VulkanGlfwWindow* m_Window;
+		ImGuiLayer* m_ImguiLayer;
 
-		bool isRunning = true;
-		LayerStack layerStack;
-		Timestep timeStep;
+		bool m_IsRunning = true;
+		LayerStack m_LayerStack;
+		Timestep m_TimeStep;
 
-		static Application* instance;
+		static Application* m_Instance;
 	};
 
-	// To be defined in CLIENT
 	Application* CreateApplication();
 }

@@ -30,22 +30,21 @@ namespace MyFirstEngine
 
 		VulkanModel(Device& device, const VulkanModelData& builder);
 		~VulkanModel();
-
 		VulkanModel(const VulkanModel&) = delete;
 		VulkanModel& operator=(const VulkanModel&) = delete;
 
-		static std::unique_ptr<Model> CreateModelFromFile(const std::string& filepath, const VertexLayout layout);
-		static std::unique_ptr<Model> CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices);
-
 		void Bind() const override;
 		void Draw() const override;
+
+		static std::unique_ptr<Model> CreateModelFromFile(const std::string& filepath, const VertexLayout layout);
+		static std::unique_ptr<Model> CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices);
 
 	private:
 		void CreateVertexBuffer(const VulkanVertexArray vertices);
 		void CreateIndexBuffer(const std::vector<uint32_t>& indices);
 
-		Device& device;
-		std::unique_ptr<Buffer> vertexBuffer;
-		std::unique_ptr<Buffer> indexBuffer;
+		Device& m_Device;
+		std::unique_ptr<Buffer> m_VertexBuffer;
+		std::unique_ptr<Buffer> m_IndexBuffer;
 	};
 }

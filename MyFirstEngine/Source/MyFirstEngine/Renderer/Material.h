@@ -24,14 +24,12 @@ namespace MyFirstEngine
 		void AddUniform(const uint32_t id, const std::string& name, const std::vector<uint8_t>& data, const bool isPushConstant = false);
 		void UpdateUniform(const uint32_t id, const std::vector<uint8_t>& data, const bool isPushConstant = false);
 		void RemoveUniform(const uint32_t id, const bool isPushConstant = false);
-
-		void AddTexture(const uint32_t id, const std::string& name, const std::shared_ptr<Texture>& texture) { textures[id] = texture; }
+		void AddTexture(const uint32_t id, const std::string& name, const std::shared_ptr<Texture>& texture) { m_Textures[id] = texture; }
 
 	protected:
-		std::unordered_map<uint32_t, Uniform> uniforms;
-		std::unordered_map<uint32_t, Uniform> pushConstants;
-		std::unordered_map<uint32_t, std::shared_ptr<Texture>> textures;
-
-		std::shared_ptr<Shader> shader;
+		std::shared_ptr<Shader> m_Shader;
+		std::unordered_map<uint32_t, Uniform> m_Uniforms;
+		std::unordered_map<uint32_t, Uniform> m_PushConstants;
+		std::unordered_map<uint32_t, std::shared_ptr<Texture>> m_Textures;
 	};
 }

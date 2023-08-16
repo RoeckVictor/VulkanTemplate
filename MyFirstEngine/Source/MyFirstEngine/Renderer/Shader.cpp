@@ -9,8 +9,8 @@
 namespace MyFirstEngine
 {
 	Shader::Shader(std::vector<char> vertCode, std::vector<char> fragCode)
-		: vertCode(vertCode),
-		  fragCode(fragCode)
+		: m_VertCode(vertCode),
+		  m_FragCode(fragCode)
 	{
 	}
 
@@ -30,8 +30,7 @@ namespace MyFirstEngine
 	{
 		std::ifstream file(path, std::ios::ate | std::ios::binary);
 
-		if (!file.is_open())
-			throw std::runtime_error("Failed to open file: " + path);
+		MFE_CORE_ASSERT(file.is_open(), "Failed to open file: " + path);
 
 		size_t fileSize = (size_t)file.tellg();
 		std::vector<char> buffer(fileSize);

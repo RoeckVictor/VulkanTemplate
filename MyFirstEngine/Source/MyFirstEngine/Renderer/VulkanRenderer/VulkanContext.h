@@ -28,22 +28,22 @@ namespace MyFirstEngine
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
 
-		inline Device& GetDevice() { return device; }
-		inline VulkanRenderer& GetRenderer() { return renderer; }
-		inline DescriptorPool& GetGlobalPool() { return *globalPool; }
-		inline VkDescriptorSet GetGlobalSet(uint32_t index) { return globalDescriptorSets[index]; }
-		inline Buffer& GetUniformBuffer(uint32_t index) { return *uniformBuffers[index]; }
-		inline std::vector<std::unique_ptr<DescriptorSetLayout>>& GetGlobalSetLayout() { return globalSetLayouts; }
+		inline Device& GetDevice() { return m_Device; }
+		inline VulkanRenderer& GetRenderer() { return m_Renderer; }
+		inline DescriptorPool& GetGlobalPool() { return *m_GlobalPool; }
+		inline VkDescriptorSet GetGlobalSet(uint32_t index) { return m_GlobalDescriptorSets[index]; }
+		inline Buffer& GetUniformBuffer(uint32_t index) { return *m_UniformBuffers[index]; }
+		inline std::vector<std::unique_ptr<DescriptorSetLayout>>& GetGlobalSetLayout() { return m_GlobalSetLayouts; }
 
 	private:
-		VulkanGlfwWindow* window;
+		VulkanGlfwWindow* m_Window;
 
-		Device device;
-		VulkanRenderer renderer;
+		Device m_Device;
+		VulkanRenderer m_Renderer;
 
-		std::unique_ptr<DescriptorPool> globalPool{};
-		std::vector<std::unique_ptr<DescriptorSetLayout>> globalSetLayouts;
-		std::vector<VkDescriptorSet> globalDescriptorSets;
-		std::vector<std::unique_ptr<Buffer>> uniformBuffers;
+		std::unique_ptr<DescriptorPool> m_GlobalPool{};
+		std::vector<std::unique_ptr<DescriptorSetLayout>> m_GlobalSetLayouts;
+		std::vector<VkDescriptorSet> m_GlobalDescriptorSets;
+		std::vector<std::unique_ptr<Buffer>> m_UniformBuffers;
 	};
 }

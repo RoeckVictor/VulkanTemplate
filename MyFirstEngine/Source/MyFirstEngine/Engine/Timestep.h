@@ -8,7 +8,7 @@ namespace MyFirstEngine
 		Timestep()
 		{
 			lastTime = std::chrono::high_resolution_clock::now();
-			float deltaTime = 0.0f;
+			deltaTime = 0.0f;
 		}
 
 		void UpdateTime()

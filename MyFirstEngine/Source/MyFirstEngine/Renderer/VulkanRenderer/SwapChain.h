@@ -2,10 +2,8 @@
 
 #include "Device.h"
 
-// vulkan headers
 #include <vulkan/vulkan.h>
 
-// std lib headers
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,26 +22,24 @@ namespace MyFirstEngine
 		SwapChain(const SwapChain&) = delete;
 		SwapChain& operator=(const SwapChain&) = delete;
 
-		VkFramebuffer GetFrameBuffer(int index) { return swapChainFramebuffers[index]; }
-		VkRenderPass GetRenderPass() { return renderPass; }
-		VkImageView GetImageView(int index) { return swapChainImageViews[index]; }
-		size_t ImageCount() { return swapChainImages.size(); }
-		VkFormat GetSwapChainImageFormat() { return swapChainImageFormat; }
-		VkExtent2D GetSwapChainExtent() { return swapChainExtent; }
-		uint32_t Width() { return swapChainExtent.width; }
-		uint32_t Height() { return swapChainExtent.height; }
-		float ExtentAspectRatio() { return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);}
-
-		VkFormat FindDepthFormat();
-
 		VkResult AcquireNextImage(uint32_t* imageIndex);
 		VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
 		bool CompareSwapFormats(const SwapChain& swapChain) const
 		{
-			return swapChain.swapChainDepthFormat == swapChainDepthFormat &&
-				swapChain.swapChainImageFormat == swapChainImageFormat;
+			return swapChain.m_ScDepthFormat == m_ScDepthFormat && swapChain.m_ScImageFormat == m_ScImageFormat;
 		}
+		VkFormat FindDepthFormat();
+		size_t ImageCount() { return m_ScImages.size(); }
+		uint32_t Width() { return m_ScExtent.width; }
+		uint32_t Height() { return m_ScExtent.height; }
+		float ExtentAspectRatio() { return static_cast<float>(m_ScExtent.width) / static_cast<float>(m_ScExtent.height);}
+
+		VkFramebuffer GetFrameBuffer(int index) { return m_ScFramebuffers[index]; }
+		VkRenderPass GetRenderPass() { return m_RenderPass; }
+		VkImageView GetImageView(int index) { return m_ScImageViews[index]; }
+		VkFormat GetSwapChainImageFormat() { return m_ScImageFormat; }
+		VkExtent2D GetSwapChainExtent() { return m_ScExtent; }
 
 	private:
 		void Init();
@@ -59,34 +55,34 @@ namespace MyFirstEngine
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-		VkFormat swapChainImageFormat;
-		VkFormat swapChainDepthFormat;
-		VkExtent2D swapChainExtent;
+		VkFormat m_ScImageFormat;
+		VkFormat m_ScDepthFormat;
+		VkExtent2D m_ScExtent;
 
-		std::vector<VkFramebuffer> swapChainFramebuffers;
-		VkRenderPass renderPass;
+		std::vector<VkFramebuffer> m_ScFramebuffers;
+		VkRenderPass m_RenderPass;
 
-		std::vector<VkImage> depthImages;
-		std::vector<VkDeviceMemory> depthImageMemorys;
-		std::vector<VkImageView> depthImageViews;
+		std::vector<VkImage> m_DepthImages;
+		std::vector<VkDeviceMemory> m_DepthImageMemorys;
+		std::vector<VkImageView> m_DepthImageViews;
 
-		std::vector<VkImage> colorImages;
-		std::vector<VkDeviceMemory> colorImageMemorys;
-		std::vector<VkImageView> colorImageViews;
+		std::vector<VkImage> m_ColorImages;
+		std::vector<VkDeviceMemory> m_ColorImageMemorys;
+		std::vector<VkImageView> m_ColorImageViews;
 
-		std::vector<VkImage> swapChainImages;
-		std::vector<VkImageView> swapChainImageViews;
+		std::vector<VkImage> m_ScImages;
+		std::vector<VkImageView> m_ScImageViews;
 
-		Device& device;
-		VkExtent2D windowExtent;
+		Device& m_Device;
+		VkExtent2D m_WindowExtent;
 
-		VkSwapchainKHR swapChain;
-		std::shared_ptr<SwapChain> oldSwapChain = nullptr;
+		VkSwapchainKHR m_SwapChain;
+		std::shared_ptr<SwapChain> m_OldSwapChain = nullptr;
 
-		std::vector<VkSemaphore> imageAvailableSemaphores;
-		std::vector<VkSemaphore> renderFinishedSemaphores;
-		std::vector<VkFence> inFlightFences;
-		std::vector<VkFence> imagesInFlight;
-		size_t currentFrame = 0;
+		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
+		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
+		std::vector<VkFence> m_InFlightFences;
+		std::vector<VkFence> m_ImagesInFlight;
+		size_t m_CurrentFrame = 0;
 	};
 }

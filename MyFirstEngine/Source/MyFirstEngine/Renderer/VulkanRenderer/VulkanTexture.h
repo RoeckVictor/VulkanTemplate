@@ -24,16 +24,16 @@ namespace MyFirstEngine
 		// [TODO] When making a game engine, mip maps should be generated offline
 		void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
-		VkDescriptorImageInfo GetImageInfo() { return imageInfo; }
+		VkDescriptorImageInfo GetImageInfo() { return m_ImageInfo; }
 
 	private:
-		Device& device;
+		Device& m_Device;
 
-		uint32_t mipLevels;
-		VkImage textureImage;
-		VkDeviceMemory textureImageMemory;
-		VkImageView textureImageView;
-		VkSampler textureSampler;
-		VkDescriptorImageInfo imageInfo;
+		uint32_t m_MipLevels;
+		VkImage m_TextureImage;
+		VkDeviceMemory m_TexImageMemory;
+		VkImageView m_TexImageView;
+		VkSampler m_TexSampler;
+		VkDescriptorImageInfo m_ImageInfo;
 	};
 }

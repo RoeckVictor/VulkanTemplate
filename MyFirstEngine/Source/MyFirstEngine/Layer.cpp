@@ -4,7 +4,7 @@
 namespace MyFirstEngine
 {
 	Layer::Layer(const std::string& name)
-	: layerName(name)
+	: m_LayerName(name)
 	{
 	}
 

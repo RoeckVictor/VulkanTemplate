@@ -7,19 +7,19 @@
 namespace MyFirstEngine
 {
 	MyFirstEngine::VulkanMaterial::VulkanMaterial(const std::shared_ptr<Shader> shader)
-		: device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
+		: m_Device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
 	{
-		this->shader = shader;
+		this->m_Shader = shader;
 
-		CreateShaderModule(shader->GetVertCode(), &vertShaderModule);
-		CreateShaderModule(shader->GetFragCode(), &fragShaderModule);
+		CreateShaderModule(shader->GetVertCode(), &m_VertShaderModule);
+		CreateShaderModule(shader->GetFragCode(), &m_FragShaderModule);
 	}
 
 	MyFirstEngine::VulkanMaterial::~VulkanMaterial()
 	{
-		vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
-		vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
-		vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
+		vkDestroyShaderModule(m_Device.GetLogicalDevice(), m_FragShaderModule, nullptr);
+		vkDestroyShaderModule(m_Device.GetLogicalDevice(), m_VertShaderModule, nullptr);
+		vkDestroyPipelineLayout(m_Device.GetLogicalDevice(), m_PipelineLayout, nullptr);
 	}
 
 	void MyFirstEngine::VulkanMaterial::Bind() const
@@ -27,19 +27,19 @@ namespace MyFirstEngine
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
-		pipeline->BindCommandBuffer(commandBuffer);
+		m_Pipeline->BindCommandBuffer(commandBuffer);
 
 		VkDescriptorSet globalSet = graphicsContext->GetGlobalSet(graphicsContext->GetRenderer().GetFrameIndex());
 		vkCmdBindDescriptorSets(
-			commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
+			commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout,
 			0, 1, &globalSet, 0, nullptr
 		);
 
-		if (textureSet != VK_NULL_HANDLE)
+		if (m_TextureSet != VK_NULL_HANDLE)
 		{
 			vkCmdBindDescriptorSets(
-				commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout,
-				1, 1, &textureSet, 0, nullptr
+				commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout,
+				1, 1, &m_TextureSet, 0, nullptr
 			);
 		}
 
@@ -48,12 +48,12 @@ namespace MyFirstEngine
 
 
 		std::vector<uint8_t> pushConstantData;
-		for (auto& [key, value] : pushConstants) 
+		for (auto& [key, value] : m_PushConstants) 
 		{ 
 			pushConstantData.insert(pushConstantData.end(), value.data.begin(), value.data.end());
 		}
 
-		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, GetPushConstantsSize(), pushConstantData.data());
+		vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, GetPushConstantsSize(), pushConstantData.data());
 	}
 
 
@@ -65,7 +65,7 @@ namespace MyFirstEngine
 	uint32_t VulkanMaterial::GetPushConstantsSize() const
 	{
 		uint32_t size = 0;
-		for (auto& [key, value] : pushConstants)
+		for (auto& [key, value] : m_PushConstants)
 		{
 			size += static_cast<uint32_t>(value.data.size());
 		}
@@ -82,7 +82,9 @@ namespace MyFirstEngine
 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		for (int i = 0; i < graphicsContext->GetGlobalSetLayout().size(); i++)
+		{
 			descriptorSetLayouts.push_back(graphicsContext->GetGlobalSetLayout()[i]->GetDescriptorSetLayout());
+		}
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -105,17 +107,16 @@ namespace MyFirstEngine
 			pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 		}
 
-		if (vkCreatePipelineLayout(device.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create pipeline layout");
+		MFE_CORE_ASSERT(vkCreatePipelineLayout(m_Device.GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) == VK_SUCCESS, "Failed to create pipeline layout");
 
 		PipelineConfig pipelineConfig{};
 		Pipeline::DefaultConfigInfo(pipelineConfig);
 		pipelineConfig.bindingDescriptions = static_cast<VulkanVertexArray*>(&vertexArray)->GetBindingDescriptions();
 		pipelineConfig.attributeDescriptions = static_cast<VulkanVertexArray*>(&vertexArray)->GetAttributeDescriptions();
 		pipelineConfig.renderPass = renderPass;
-		pipelineConfig.pipelineLayout = pipelineLayout;
-		pipelineConfig.multisampling.rasterizationSamples = device.GetMaxUsableSampleCount();
-		pipeline = std::make_unique<Pipeline>(device, vertShaderModule, fragShaderModule, pipelineConfig);
+		pipelineConfig.pipelineLayout = m_PipelineLayout;
+		pipelineConfig.multisampling.rasterizationSamples = m_Device.GetMaxUsableSampleCount();
+		m_Pipeline = std::make_unique<Pipeline>(m_Device, m_VertShaderModule, m_FragShaderModule, pipelineConfig);
 	}
 
 	void VulkanMaterial::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
@@ -125,8 +126,7 @@ namespace MyFirstEngine
 		createInfo.codeSize = code.size();
 		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-		if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create shader module!");
+		MFE_CORE_ASSERT(vkCreateShaderModule(m_Device.GetLogicalDevice(), &createInfo, nullptr, shaderModule) == VK_SUCCESS, "Failed to create shader module!");
 	}
 
 	std::unique_ptr<Material> VulkanMaterial::CreateMatFromShader(const std::shared_ptr<Shader> shader)
@@ -139,11 +139,11 @@ namespace MyFirstEngine
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
 		DescriptorWriter descriptorWritter = DescriptorWriter(*graphicsContext->GetGlobalSetLayout()[1], graphicsContext->GetGlobalPool());
-		for (auto texture : textures)
+		for (auto texture : m_Textures)
 		{
 			VkDescriptorImageInfo imageInfo = static_cast<VulkanTexture*>(texture.second.get())->GetImageInfo();
 			descriptorWritter.WriteImage(0, &imageInfo);
 		}
-		descriptorWritter.Build(textureSet);
+		descriptorWritter.Build(m_TextureSet);
 	}
 }

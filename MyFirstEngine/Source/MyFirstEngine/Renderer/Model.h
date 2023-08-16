@@ -22,8 +22,8 @@ namespace MyFirstEngine
 		virtual void Draw() const = 0;
 
 	protected:
-		uint32_t vertexCount;
-		uint32_t indexCount;
-		bool hasIndexBuffer = false;
+		uint32_t m_VertexCount;
+		uint32_t m_IndexCount;
+		bool m_HasIndexBuffer = false;
 	};
 }

@@ -38,51 +38,51 @@ namespace MyFirstEngine
 	{
 	public:
 		VertexLayout(const std::initializer_list<VertexElement>& elements)
-			: elements(elements)
+			: m_Elements(elements)
 		{
-			stride = 0;
+			m_Stride = 0;
 			for (VertexElement element : elements)
 			{
-				stride += element.size;
+				m_Stride += element.size;
 			}
 		}
 
-	inline const std::vector<VertexElement>& GetElements() const { return elements; }
-	inline const uint32_t GetStride() const { return stride; }
+	inline const std::vector<VertexElement>& GetElements() const { return m_Elements; }
+	inline const uint32_t GetStride() const { return m_Stride; }
+
 	private:
-		std::vector<VertexElement> elements;
-		uint32_t stride;
+		std::vector<VertexElement> m_Elements;
+		uint32_t m_Stride;
 	};
 
 	class VertexAttribute
 	{
 	public:
-		VertexAttribute() : data(), dataSize(0){}
+		VertexAttribute() : m_Data(), m_DataSize(0){}
 
 		VertexAttribute(void* data, size_t dataSize)
-			: data(data),
-			  dataSize(dataSize)
+			: m_Data(data),
+			  m_DataSize(dataSize)
 		{
 		}
 
 		template <typename T>
-		T GetData() const { return *(T*)data; }
+		T GetData() const { return *(T*)m_Data; }
 
-		void* GetDataPointer() const { return data; }
+		void* GetDataPointer() const { return m_Data; }
 
-		size_t GetDataSize() const { return dataSize; }
+		size_t GetDataSize() const { return m_DataSize; }
 
 		bool operator==(const VertexAttribute& other) const
 		{
-			if (dataSize != other.dataSize)
-				return false;
+			if (m_DataSize != other.m_DataSize) { return false; }
 
 			// Cast data pointers to the appropriate type
-			char* dataPtr = static_cast<char*>(data);
-			char* otherDataPtr = static_cast<char*>(other.data);
+			char* dataPtr = static_cast<char*>(m_Data);
+			char* otherDataPtr = static_cast<char*>(other.m_Data);
 
 			// Compare the data byte by byte
-			for (size_t i = 0; i < dataSize; ++i)
+			for (size_t i = 0; i < m_DataSize; ++i)
 			{
 				if (dataPtr[i] != otherDataPtr[i])
 					return false;
@@ -92,8 +92,8 @@ namespace MyFirstEngine
 		}
 
 	private:
-		size_t dataSize;
-		void* data;
+		size_t m_DataSize;
+		void* m_Data;
 	};
 
 	struct VertexArray
@@ -104,7 +104,7 @@ namespace MyFirstEngine
 
 		VertexArray(const VertexLayout& layout)
 			: layout(layout),
-			count(0)
+			  count(0)
 		{
 			for (uint32_t i = 0; i < layout.GetElements().size(); i++)
 			{

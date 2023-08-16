@@ -15,11 +15,10 @@ namespace MyFirstEngine
 		};
 
 		virtual void SetClearColor(const glm::vec4& color) = 0;
-
 		virtual void DrawObject(const GameObject& object) = 0;
 
-		inline static SelectedAPI GetSelectedAPI() { return selectedAPI; }
+		inline static SelectedAPI GetSelectedAPI() { return m_SelectedAPI; }
 	private:
-		static SelectedAPI selectedAPI;
+		static SelectedAPI m_SelectedAPI;
 	};
 }

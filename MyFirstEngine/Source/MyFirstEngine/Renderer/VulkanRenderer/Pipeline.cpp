@@ -8,14 +8,14 @@
 namespace MyFirstEngine
 {
 	Pipeline::Pipeline(Device& device, VkShaderModule vertShader, VkShaderModule fragShader, const PipelineConfig& config)
-		: device(device)
+		: m_Device(device)
 	{
 		CreateGraphicsPipeline(vertShader, fragShader, config);
 	}
 
 	Pipeline::~Pipeline()
 	{
-		vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
+		vkDestroyPipeline(m_Device.GetLogicalDevice(), m_GraphicsPipeline, nullptr);
 	}
 
 	void Pipeline::DefaultConfigInfo(PipelineConfig& configInfo)
@@ -138,8 +138,8 @@ namespace MyFirstEngine
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineInfo.basePipelineIndex = -1;
 
-		if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create graphics pipeline!");
+		MFE_CORE_ASSERT(vkCreateGraphicsPipelines(m_Device.GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) == VK_SUCCESS,
+						"Failed to create graphics pipeline!");
 	}
 
 	void Pipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
@@ -149,28 +149,11 @@ namespace MyFirstEngine
 		createInfo.codeSize = code.size();
 		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-		if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
-			throw std::runtime_error("Failed to create shader module!");
+		MFE_CORE_ASSERT(vkCreateShaderModule(m_Device.GetLogicalDevice(), &createInfo, nullptr, shaderModule) == VK_SUCCESS, "Failed to create shader module!");
 	}
 
 	void Pipeline::BindCommandBuffer(VkCommandBuffer commandBuffer)
 	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-	}
-
-	std::vector<char> Pipeline::ReadFile(const std::string& path)
-	{
-		std::ifstream file(path, std::ios::ate | std::ios::binary);
-
-		if (!file.is_open())
-			throw std::runtime_error("Failed to open file: " + path);
-
-		size_t fileSize = (size_t)file.tellg();
-		std::vector<char> buffer(fileSize);
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
-
-		return buffer;
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 	}
 }

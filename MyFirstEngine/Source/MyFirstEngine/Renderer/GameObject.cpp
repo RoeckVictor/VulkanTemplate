@@ -68,9 +68,9 @@ namespace MyFirstEngine
 
 	void GameObject::Render() const
 	{
-		material->Bind();
-		model->Bind();
-		model->Draw();
+		m_Material->Bind();
+		m_Model->Bind();
+		m_Model->Draw();
 	}
 
 	GameObject GameObject::CreateGameObject()
@@ -83,23 +83,23 @@ namespace MyFirstEngine
 	{
 		GameObject gameObj = CreateGameObject();
 
-		gameObj.color = color;
-		gameObj.transform.scale.x = radius;
-		gameObj.pointLight = std::make_unique<PointLightComponent>();
-		gameObj.pointLight->lightIntensity = intensity;
+		gameObj.m_Color = color;
+		gameObj.m_Transform.scale.x = radius;
+		gameObj.m_PointLight = std::make_unique<PointLightComponent>();
+		gameObj.m_PointLight->lightIntensity = intensity;
 
 		VertexArray vertices = VertexArray(VertexLayout({}));
 		vertices.count = 6;
 		std::shared_ptr<Model> model = Model::CreateModelFromData(vertices, std::vector<uint32_t>());
-		gameObj.model = model;
+		gameObj.m_Model = model;
 
 		std::shared_ptr<Shader> shader = Shader::CreateShaderFromCompiledFiles("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
-		gameObj.material = Material::CreateMatFromShader(shader);
-		gameObj.material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.transform.translation, 1.0)), true);
-		gameObj.material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.color, intensity)), true);
-		gameObj.material->AddUniform(2, "radius", ConvertToBytes(radius), true);
-		gameObj.material->AddTexture(0, "AlbedoMap", Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
-		gameObj.material->CreatePipeline(vertices);
+		gameObj.m_Material = Material::CreateMatFromShader(shader);
+		gameObj.m_Material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.m_Transform.translation, 1.0)), true);
+		gameObj.m_Material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.m_Color, intensity)), true);
+		gameObj.m_Material->AddUniform(2, "radius", ConvertToBytes(radius), true);
+		gameObj.m_Material->AddTexture(0, "AlbedoMap", Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
+		gameObj.m_Material->CreatePipeline(vertices);
 
 		return gameObj;
 	}
