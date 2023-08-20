@@ -11,3 +11,6 @@
 	path = MyFirstEngine/Libs/ImGui/imgui
 	url = git@github.com:ocornut/imgui.git
 	branch = docking
+[submodule "MyFirstEngine/Libs/SPIRV-Reflect/SPIRV-Reflect"]
+	path = MyFirstEngine/Libs/SPIRV-Reflect/SPIRV-Reflect
+	url = git@github.com:KhronosGroup/SPIRV-Reflect.git

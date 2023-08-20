@@ -17,7 +17,7 @@ IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/glfw/include"
 IncludeDirs["ImGui"] = "MyFirstEngine/Libs/ImGui"
 IncludeDirs["VulkanSDK"] = "MyFirstEngine/Libs/VulkanSDK/1.3.243.0"
 IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm/glm/glm"
-IncludeDirs["SpirvReflect"] = "MyFirstEngine/Libs/SPIRV-Reflect/SpirvReflect"
+IncludeDirs["SpirvReflect"] = "MyFirstEngine/Libs/SPIRV-Reflect/SPIRV-Reflect"
 IncludeDirs["Spdlog"] = "MyFirstEngine/Libs/Spdlog/spdlog/include"
 IncludeDirs["Other"] = "MyFirstEngine/Libs/Other"
 

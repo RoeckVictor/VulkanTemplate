@@ -9,8 +9,8 @@ project "SpirvReflect"
 
 	files
 	{
-		"SpirvReflect/spirv_reflect.h",
-		"SpirvReflect/spirv_reflect.c"
+		"SPIRV-Reflect/spirv_reflect.h",
+		"SPIRV-Reflect/spirv_reflect.c"
 	}
 
 	filter "system:linux"
