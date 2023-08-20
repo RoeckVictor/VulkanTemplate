@@ -26,7 +26,8 @@ public:
 
 		gameObjTest.m_Model = MyFirstEngine::Model::CreateModelFromFile("../Resources/Models/smooth_vase.obj", vertexLayout);
 
-		std::shared_ptr<MyFirstEngine::Shader> shader = MyFirstEngine::Shader::CreateShaderFromCompiledFiles("../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv");
+		const std::vector<std::string> shaderFiles = { "../Resources/Shaders/texture_test.vert.spv", "../Resources/Shaders/texture_test.frag.spv" };
+		std::shared_ptr<MyFirstEngine::Shader> shader = MyFirstEngine::Shader::CreateShaderFromCompiledFiles(shaderFiles);
 		gameObjTest.m_Material = MyFirstEngine::Material::CreateMatFromShader(shader);
 		glm::mat4 modelMatrix{ 1.0f };
 		glm::mat4 normalMatrix{ 1.0f };

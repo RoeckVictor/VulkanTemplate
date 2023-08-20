@@ -17,12 +17,14 @@ IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/glfw/include"
 IncludeDirs["ImGui"] = "MyFirstEngine/Libs/ImGui"
 IncludeDirs["VulkanSDK"] = "MyFirstEngine/Libs/VulkanSDK/1.3.243.0"
 IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm/glm/glm"
+IncludeDirs["SpirvReflect"] = "MyFirstEngine/Libs/SPIRV-Reflect/SpirvReflect"
 IncludeDirs["Spdlog"] = "MyFirstEngine/Libs/Spdlog/spdlog/include"
 IncludeDirs["Other"] = "MyFirstEngine/Libs/Other"
 
 group "Dependencies"
 	include "MyFirstEngine/Libs/Glfw"
 	include "MyFirstEngine/Libs/ImGui"
+	include "MyFirstEngine/Libs/SPIRV-Reflect"
 group ""
 
 project "MyFirstEngine"
@@ -52,6 +54,7 @@ project "MyFirstEngine"
 		"%{IncludeDirs.GLFW}",
 		"%{IncludeDirs.ImGui}/imgui",
 		"%{IncludeDirs.VulkanSDK}/Include",
+		"%{IncludeDirs.SpirvReflect}",
 		"%{IncludeDirs.Glm}",
 		"%{IncludeDirs.Other}"
 	}
@@ -60,7 +63,8 @@ project "MyFirstEngine"
 	{
 		"GLFW",
 		"ImGui",
-		"vulkan-1.lib"
+		"vulkan-1.lib",
+		"SpirvReflect"
 	}
 	
 	libdirs
@@ -115,7 +119,8 @@ project "Sandbox"
 		"%{IncludeDirs.ImGui}/imgui",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",
-		"%{IncludeDirs.VulkanSDK}/Include"
+		"%{IncludeDirs.VulkanSDK}/Include",
+		"%{IncludeDirs.SpirvReflect}"
 	}
 
 	links

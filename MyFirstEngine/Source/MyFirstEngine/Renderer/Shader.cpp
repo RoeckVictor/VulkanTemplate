@@ -1,32 +1,37 @@
 #include "Mfepch.h"
 #include "Shader.h"
 
-#include <shaderc/shaderc.h>
+#include "Renderer.h"
 
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
+#include "VulkanRenderer\VulkanShader.h"
 
 namespace MyFirstEngine
 {
-	Shader::Shader(std::vector<char> vertCode, std::vector<char> fragCode)
-		: m_VertCode(vertCode),
-		  m_FragCode(fragCode)
+	std::shared_ptr<Shader> Shader::CreateShaderFromFiles(const std::vector<std::string> shaderFiles)
 	{
+		switch (Renderer::GetSelectedAPI())
+		{
+			case RendererAPI::SelectedAPI::None: return nullptr;
+			case RendererAPI::SelectedAPI::Vulkan: return VulkanShader::CreateShaderFromFiles(shaderFiles);
+		}
+
+		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");
+		return nullptr;
 	}
 
-	std::shared_ptr<Shader> Shader::CreateShaderFromFiles(const std::string& vertFilepath, const std::string& fragFilepath)
+	std::shared_ptr<Shader> Shader::CreateShaderFromCompiledFiles(const std::vector<std::string> compiledShaderFiles)
 	{
-		// shaderc::Compiler compiler;
-		return std::make_shared<Shader>(std::vector<char>(), std::vector<char>());
+		switch (Renderer::GetSelectedAPI())
+		{
+			case RendererAPI::SelectedAPI::None: return nullptr;
+			case RendererAPI::SelectedAPI::Vulkan: return VulkanShader::CreateShaderFromCompiledFiles(compiledShaderFiles);
+		}
+
+		MFE_CORE_ASSERT(false, "Unknown RenderAPI!");
+		return nullptr;
 	}
 
-	std::shared_ptr<Shader> Shader::CreateShaderFromCompiledFiles(const std::string& vertFilepath, const std::string& fragFilepath)
-	{
-
-		return std::make_shared<Shader>(GetFileData(vertFilepath), GetFileData(fragFilepath));
-	}
-
-	std::vector<char> Shader::GetFileData(const std::string& path)
+	std::vector<char> Shader::GetFileData(const std::string path)
 	{
 		std::ifstream file(path, std::ios::ate | std::ios::binary);
 

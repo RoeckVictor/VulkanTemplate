@@ -3,6 +3,7 @@
 
 #include "MyFirstEngine/Application.h"
 #include "VulkanContext.h"
+#include "VulkanShader.h"
 
 namespace MyFirstEngine
 {
@@ -10,15 +11,10 @@ namespace MyFirstEngine
 		: m_Device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
 	{
 		this->m_Shader = shader;
-
-		CreateShaderModule(shader->GetVertCode(), &m_VertShaderModule);
-		CreateShaderModule(shader->GetFragCode(), &m_FragShaderModule);
 	}
 
 	MyFirstEngine::VulkanMaterial::~VulkanMaterial()
 	{
-		vkDestroyShaderModule(m_Device.GetLogicalDevice(), m_FragShaderModule, nullptr);
-		vkDestroyShaderModule(m_Device.GetLogicalDevice(), m_VertShaderModule, nullptr);
 		vkDestroyPipelineLayout(m_Device.GetLogicalDevice(), m_PipelineLayout, nullptr);
 	}
 
@@ -116,7 +112,7 @@ namespace MyFirstEngine
 		pipelineConfig.renderPass = renderPass;
 		pipelineConfig.pipelineLayout = m_PipelineLayout;
 		pipelineConfig.multisampling.rasterizationSamples = m_Device.GetMaxUsableSampleCount();
-		m_Pipeline = std::make_unique<Pipeline>(m_Device, m_VertShaderModule, m_FragShaderModule, pipelineConfig);
+		m_Pipeline = std::make_unique<Pipeline>(m_Device, static_cast<VulkanShader*>(&(*m_Shader))->GetShaderModule(0), static_cast<VulkanShader*>(&(*m_Shader))->GetShaderModule(1), pipelineConfig);
 	}
 
 	void VulkanMaterial::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)

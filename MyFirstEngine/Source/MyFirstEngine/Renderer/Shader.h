@@ -5,18 +5,14 @@ namespace MyFirstEngine
 	class Shader 
 	{
 	public:
-		Shader(std::vector<char> vertCode, std::vector<char> fragCode);
+		static std::shared_ptr<Shader> CreateShaderFromFiles(const std::vector<std::string> shaderFiles);
+		static std::shared_ptr<Shader> CreateShaderFromCompiledFiles(const std::vector<std::string> compiledShaderFiles);
 
-		static std::shared_ptr<Shader> CreateShaderFromFiles(const std::string& vertFilepath, const std::string& fragFilepath);
-		static std::shared_ptr<Shader> CreateShaderFromCompiledFiles(const std::string& vertFilepath, const std::string& fragFilepath);
+		std::vector<char> GetShaderCode(uint32_t index) { return m_ShaderCodes[index]; };
 
-		std::vector<char> GetVertCode() { return m_VertCode; };
-		std::vector<char> GetFragCode() { return m_FragCode; };
+	protected:
+		static std::vector<char> GetFileData(const std::string path);
 
-	private:
-		static std::vector<char> GetFileData(const std::string& path);
-
-		std::vector<char> m_VertCode;
-		std::vector<char> m_FragCode;
+		std::vector<std::vector<char>> m_ShaderCodes;
 	};
 }

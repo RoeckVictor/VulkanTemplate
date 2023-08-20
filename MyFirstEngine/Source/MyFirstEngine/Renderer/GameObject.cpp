@@ -93,7 +93,8 @@ namespace MyFirstEngine
 		std::shared_ptr<Model> model = Model::CreateModelFromData(vertices, std::vector<uint32_t>());
 		gameObj.m_Model = model;
 
-		std::shared_ptr<Shader> shader = Shader::CreateShaderFromCompiledFiles("../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv");
+		const std::vector<std::string> shaderFiles = { "../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv" };
+		std::shared_ptr<MyFirstEngine::Shader> shader = Shader::CreateShaderFromCompiledFiles(shaderFiles);
 		gameObj.m_Material = Material::CreateMatFromShader(shader);
 		gameObj.m_Material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.m_Transform.translation, 1.0)), true);
 		gameObj.m_Material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.m_Color, intensity)), true);

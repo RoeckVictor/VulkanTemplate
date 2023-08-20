@@ -27,9 +27,6 @@ namespace MyFirstEngine
 		void CreateTexturesSet();
 		uint32_t GetPushConstantsSize() const;
 
-		VkShaderModule m_VertShaderModule;
-		VkShaderModule m_FragShaderModule;
-
 		VkDescriptorSet m_TextureSet{ VK_NULL_HANDLE };
 
 		Device& m_Device;
