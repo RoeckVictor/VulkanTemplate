@@ -2,31 +2,20 @@
 #include "Application.h"
 
 #include "Log.h"
-#include "Input.h"
 
 namespace MyFirstEngine
 {
-	Application* Application::instance = nullptr;
+	Application* Application::m_Instance = nullptr;
 
 	Application::Application()
-		: window((VulkanGlfwWindow*)VulkanGlfwWindow::Create()),
-		  device(*window),
-		  renderer(*window, device),
-		  imguiLayer(new ImGuiLayer())
+		: m_Window((VulkanGlfwWindow*)VulkanGlfwWindow::Create()),
+		  m_ImguiLayer(new ImGuiLayer())
 	{
-		MFE_CORE_ASSERT(!instance, "Application already exists!");
-		instance = this;
-		window->SetEventCallback(MFE_BIND_EVENT_FN(Application::OnEvent));
+		MFE_CORE_ASSERT(!m_Instance, "Application already exists!");
+		m_Instance = this;
+		m_Window->SetEventCallback(MFE_BIND_EVENT_FN(Application::OnEvent));
 
-		globalPool = DescriptorPool::Builder(device)
-			.SetMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.SetPoolFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
-			.Build();
-
-		globalSetLayouts.push_back(DescriptorSetLayout::Builder(device).Build());
-
-		PushOverlay(imguiLayer);
+		PushOverlay(m_ImguiLayer);
 	}
 
 	Application::~Application()
@@ -35,17 +24,23 @@ namespace MyFirstEngine
 
 	void Application::Run()
 	{
-		while (isRunning)
+		while (m_IsRunning)
 		{
-			for (Layer* layer : layerStack)
-				layer->OnUpdate();
+			m_TimeStep.UpdateTime();
 
-			imguiLayer->Begin();
-			for (Layer* layer : layerStack)
+			for (Layer* layer : m_LayerStack)
+			{
+				layer->OnUpdate(m_TimeStep);
+			}
+				
+			m_ImguiLayer->Begin();
+			for (Layer* layer : m_LayerStack)
+			{
 				layer->OnImGuiRender();
-			imguiLayer->End();
+			}	
+			m_ImguiLayer->End();
 
-			window->OnUpdate();
+			m_Window->EndUpdate();
 		}
 	}
 
@@ -54,29 +49,29 @@ namespace MyFirstEngine
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(MFE_BIND_EVENT_FN(Application::OnWindowClose));
 		
-		for (auto it = layerStack.end(); it != layerStack.begin();)
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
 		{
 			(*--it)->OnEvent(e);
-			if (e.isHandeld)
-				break;
+			if (e.isHandeld) { break; }
+				
 		}
 	}
 
 	void Application::PushLayer(Layer* layer)
 	{
-		layerStack.PushLayer(layer);
+		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
-		layerStack.PushOverlay(overlay);
+		m_LayerStack.PushOverlay(overlay);
 		overlay->OnAttach();
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
-		isRunning = false;
+		m_IsRunning = false;
 		return true;
 	}
 }

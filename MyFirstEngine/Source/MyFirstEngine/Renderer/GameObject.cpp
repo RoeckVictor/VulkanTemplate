@@ -1,9 +1,10 @@
 #include "Mfepch.h"
 #include "GameObject.h"
+#include "Utils.h"
 
 namespace MyFirstEngine
 {
-	glm::mat4 TransformComponent::transform() 
+	glm::mat4 TransformComponent::transform() const
 	{
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
@@ -35,7 +36,7 @@ namespace MyFirstEngine
 		};
 	}
 
-	glm::mat3 TransformComponent::normalMatrix()
+	glm::mat3 TransformComponent::normalMatrix() const
 	{
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
@@ -65,6 +66,13 @@ namespace MyFirstEngine
 		};
 	}
 
+	void GameObject::Render() const
+	{
+		m_Material->Bind();
+		m_Model->Bind();
+		m_Model->Draw();
+	}
+
 	GameObject GameObject::CreateGameObject()
 	{
 		static unsigned int currentId = 0;
@@ -74,10 +82,26 @@ namespace MyFirstEngine
 	GameObject GameObject::MakePointLight(float intensity, float radius, glm::vec3 color)
 	{
 		GameObject gameObj = CreateGameObject();
-		gameObj.color = color;
-		gameObj.transform.scale.x = radius;
-		gameObj.pointLight = std::make_unique<PointLightComponent>();
-		gameObj.pointLight->lightIntensity = intensity;
+
+		gameObj.m_Color = color;
+		gameObj.m_Transform.scale.x = radius;
+		gameObj.m_PointLight = std::make_unique<PointLightComponent>();
+		gameObj.m_PointLight->lightIntensity = intensity;
+
+		VertexArray vertices = VertexArray(VertexLayout({}));
+		vertices.count = 6;
+		std::shared_ptr<Model> model = Model::CreateModelFromData(vertices, std::vector<uint32_t>());
+		gameObj.m_Model = model;
+
+		const std::vector<std::string> shaderFiles = { "../Resources/Shaders/billboard.vert.spv", "../Resources/Shaders/billboard.frag.spv" };
+		std::shared_ptr<MyFirstEngine::Shader> shader = Shader::CreateShaderFromCompiledFiles(shaderFiles);
+		gameObj.m_Material = Material::CreateMatFromShader(shader);
+		gameObj.m_Material->AddUniform(0, "position", ConvertToBytes(glm::vec4(gameObj.m_Transform.translation, 1.0)), true);
+		gameObj.m_Material->AddUniform(1, "color", ConvertToBytes(glm::vec4(gameObj.m_Color, intensity)), true);
+		gameObj.m_Material->AddUniform(2, "radius", ConvertToBytes(radius), true);
+		gameObj.m_Material->AddTexture(0, "AlbedoMap", Texture::CreateFromFile("../Resources/Textures/PointLight.png"));
+		gameObj.m_Material->CreatePipeline(vertices);
+
 		return gameObj;
 	}
 }

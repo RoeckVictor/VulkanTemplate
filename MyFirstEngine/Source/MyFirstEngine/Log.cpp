@@ -5,16 +5,16 @@
 
 namespace MyFirstEngine
 {
-	std::shared_ptr<spdlog::logger> Log::coreLogger;
-	std::shared_ptr<spdlog::logger> Log::clientLogger;
+	std::shared_ptr<spdlog::logger> Log::m_CoreLogger;
+	std::shared_ptr<spdlog::logger> Log::m_ClientLogger;
 
 	void Log::Init()
 	{
 		spdlog::set_pattern("%^[%T] %n: %v%$");
-		coreLogger = spdlog::stdout_color_mt("ENGINE");
-		coreLogger->set_level(spdlog::level::trace);
+		m_CoreLogger = spdlog::stdout_color_mt("ENGINE");
+		m_CoreLogger->set_level(spdlog::level::trace);
 
-		clientLogger = spdlog::stdout_color_mt("APP");
-		clientLogger->set_level(spdlog::level::trace);
+		m_ClientLogger = spdlog::stdout_color_mt("APP");
+		m_ClientLogger->set_level(spdlog::level::trace);
 	}
 }

@@ -11,12 +11,12 @@ namespace MyFirstEngine
 	public:
 		static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return coreLogger; }
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return clientLogger; }
+		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; }
+		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_ClientLogger; }
 
 	private:
-		static std::shared_ptr<spdlog::logger> coreLogger;
-		static std::shared_ptr<spdlog::logger> clientLogger;
+		static std::shared_ptr<spdlog::logger> m_CoreLogger;
+		static std::shared_ptr<spdlog::logger> m_ClientLogger;
 	};
 }
 

@@ -6,21 +6,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Model.h"
+#include "VulkanRenderer/VulkanMaterial.h"
 
 namespace MyFirstEngine
 {
-	struct TransformComponent {
+	struct TransformComponent 
+	{
 		glm::vec3 translation{};
 		glm::vec3 scale{ 1.0f };
 		glm::vec3 rotation{ 0.0f };
 
-		glm::mat4 transform();
-		glm::mat3 normalMatrix();
+		glm::mat4 transform() const;
+		glm::mat3 normalMatrix() const;
 	};
 
-	struct PointLightComponent {
+	struct PointLightComponent 
+	{
 		float lightIntensity = 1.0f;
-		// glm::vec3 color{};
 	};
 
 	class GameObject
@@ -31,22 +33,22 @@ namespace MyFirstEngine
 		GameObject(GameObject&&) = default;
 		GameObject& operator=(GameObject&&) = default;
 
+		void Render() const;
+
 		static GameObject CreateGameObject();
 		static GameObject MakePointLight(float intensity = 1.0f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.0f));
-		unsigned int GetId() const { return id; }
-
+		unsigned int GetId() const { return m_id; }
 		
-		glm::vec3 color{};
-		TransformComponent transform{};
+		glm::vec3 m_Color{};
+		TransformComponent m_Transform{};
 
-		std::shared_ptr<Model> model{};
-		std::unique_ptr<PointLightComponent> pointLight = nullptr;
-
-		
+		std::shared_ptr<Model> m_Model{};
+		std::shared_ptr<Material> m_Material;
+		std::unique_ptr<PointLightComponent> m_PointLight = nullptr;
 
 	private:
-		GameObject(unsigned int objId) : id(objId) {}
+		GameObject(unsigned int objId) : m_id(objId) {}
 
-		unsigned int id;
+		unsigned int m_id;
 	};
 }

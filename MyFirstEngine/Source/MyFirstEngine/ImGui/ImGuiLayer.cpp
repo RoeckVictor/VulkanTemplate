@@ -2,18 +2,14 @@
 #include "ImGuiLayer.h"
 #include "MyFirstEngine/Application.h"
 
+#include <imgui.h>
 #include <vulkan/vulkan.h>
-#include <imconfig.h>
-#include <imgui_tables.cpp>
-#include <imgui_internal.h>
-#include <imgui.cpp>
-#include <imgui_draw.cpp>
-#include <imgui_widgets.cpp>
-#include <imgui_demo.cpp>
 #include <backends/imgui_impl_glfw.cpp>
-#include <imgui_impl_vulkan_but_better.h>
+#include <backends/imgui_impl_vulkan.cpp>
 
 #include <GLFW/glfw3.h>
+
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
 
 namespace MyFirstEngine
 {
@@ -28,40 +24,41 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::OnAttach()
 	{
-		ImGui::CreateContext();
-		SetImguiStyle();
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+		VkCommandBuffer commandBuffer = graphicsContext->GetDevice().BeginSingleTimeCommands();
+		QueueFamilyIndices vulkanQueueFamilies = graphicsContext->GetDevice().FindPhysicalQueueFamilies();
 
+		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		// I can't get this to work, need to find more info on multi-viewport support for Vulkan
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		SetImguiStyle();
 		
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::GetInstance().GetWindow().GetNativeWindow()), true);
-		
-		ImGui_ImplVulkan_InitInfo info;
-		info.DescriptorPool = Application::GetInstance().GetGlobalPool().GetDescriptorPool();
-		info.RenderPass = Application::GetInstance().GetRenderer().GetSwapChainRenderPass();
-		info.Device = Application::GetInstance().GetDevice().device();
-		info.PhysicalDevice = Application::GetInstance().GetDevice().physicalDevice();
+		ImGui_ImplVulkan_InitInfo info = {};
+		info.Instance = graphicsContext->GetDevice().GetInstance();
+		info.PhysicalDevice = graphicsContext->GetDevice().GetPhysicalDevice();
+		info.Device = graphicsContext->GetDevice().GetLogicalDevice();
+		info.QueueFamily = vulkanQueueFamilies.graphicsFamily;
+		info.Queue = graphicsContext->GetDevice().GetGraphicsQueue();
+		info.PipelineCache = VK_NULL_HANDLE;
+		info.DescriptorPool = graphicsContext->GetGlobalPool().GetDescriptorPool();
+		info.Subpass = 0;
+		info.MinImageCount = 2;
 		info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
-		info.MsaaSamples = VK_SAMPLE_COUNT_8_BIT;
-
-		ImGui_ImplVulkan_Init(&info);
+		info.MSAASamples = graphicsContext->GetDevice().GetMaxUsableSampleCount();
+		info.Allocator = nullptr;
+		info.CheckVkResultFn = nullptr;
+		ImGui_ImplVulkan_Init(&info, graphicsContext->GetRenderer().GetSwapChainRenderPass());
 		
-		VkCommandBuffer commandBuffer = Application::GetInstance().GetDevice().BeginSingleTimeCommands();
 		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-		Application::GetInstance().GetDevice().EndSingleTimeCommands(commandBuffer);
+		graphicsContext->GetDevice().EndSingleTimeCommands(commandBuffer);
 		
-		vkDeviceWaitIdle(Application::GetInstance().GetDevice().device());
+		vkDeviceWaitIdle(graphicsContext->GetDevice().GetLogicalDevice());
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
-	}
-
-	void ImGuiLayer::OnImGuiRender()
-	{
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
 	}
 
 	void ImGuiLayer::Begin()
@@ -69,36 +66,39 @@ namespace MyFirstEngine
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+	}
+	void ImGuiLayer::OnImGuiRender()
+	{
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
 	}
 
 	void ImGuiLayer::End()
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::GetInstance();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		VulkanGlfwWindow& window = static_cast<VulkanGlfwWindow&>(Application::GetInstance().GetWindow());
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(window.GetGraphicsContext());
+		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
-		VkCommandBuffer commandBuffer = Application::GetInstance().GetRenderer().BeginFrame();
-		Application::GetInstance().GetRenderer().BeginSwapChainRenderPass(commandBuffer);
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)window.GetWidth(), (float)window.GetHeight());
 
 		ImGui::Render();
-		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer, 0, nullptr);
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
 
-		/* I can't get this to work, need to find more info on multi-viewport support for Vulkan
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+			// GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backupCurrentContext);
+			// glfwMakeContextCurrent(backupCurrentContext);
 		}
-		*/
-
-		Application::GetInstance().GetRenderer().EndSwapChainRenderPass(commandBuffer);
-		Application::GetInstance().GetRenderer().EndFrame();
 	}
 
 	void ImGuiLayer::OnDetach()
 	{
+		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
+
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

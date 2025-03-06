@@ -1,57 +1,42 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-#include <memory>
-#include <vector>
-#include <cassert>
+#include "RenderCommand.h"
 
-#include "Platform/VulkanGlfwWindow.h"
-#include "Device.h"
-#include "Swapchain.h"
+#include "Camera.h"
+#include "MyFirstEngine/Application.h"
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
 
-namespace MyFirstEngine
+namespace MyFirstEngine 
 {
 	class Renderer
 	{
 	public:
-		Renderer(VulkanGlfwWindow& window, Device& device);
-		~Renderer();
+		static void BeginScene(Camera& camera, const std::unordered_map<unsigned int, MyFirstEngine::GameObject>& gameObjects);
+		static void EndScene();
 
-		Renderer(const Renderer&) = delete;
-		Renderer& operator=(const Renderer&) = delete;
+		static void Submit(const GameObject& object);
 
-		VkRenderPass GetSwapChainRenderPass() const { return swapchain->GetRenderPass(); }
-		float GetAspectRatio() const { return swapchain->ExtentAspectRatio(); }
-		bool IsFrameInProgress() const { return isFrameStarted; }
-		VkCommandBuffer GetCurrentCommandBuffer() const 
-		{ 
-			assert(isFrameStarted && "Cannot get command buffer when frame is not in progress");
-			return commandBuffers[currentFrameIndex];
-		}
+		inline static RendererAPI::SelectedAPI GetSelectedAPI() { return RendererAPI::GetSelectedAPI(); }
 
-		int GetFrameIndex() const 
-		{ 
-			assert(isFrameStarted && "Cannot get frame index when frame is not in progress");
-			return currentFrameIndex; 
-		}
+		#define MAX_LIGHTS 100
 
-		VkCommandBuffer BeginFrame();
-		void EndFrame();
-		void BeginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-		void EndSwapChainRenderPass(VkCommandBuffer commandBuffer);
+		struct PointLight
+		{
+			glm::vec3 position{};
+			alignas(16) glm::vec4 color{};
+		};
+
+		struct SceneUBO
+		{
+			glm::mat4 m_Projection{ 1.0f };
+			glm::mat4 m_View{ 1.0f };
+			glm::mat4 m_InverseView{ 1.0f };
+			glm::vec4 m_AmbientColor{ 1.0f, 1.0f, 1.0f, 0.1f };
+			PointLight m_PointLights[MAX_LIGHTS];
+			int m_NumLights;
+		};
 
 	private:
-		void CreateCommandBuffers();
-		void FreeCommandBuffers();
-		void RecreateSwapchain();
-
-		VulkanGlfwWindow& window;
-		Device& device;
-		std::unique_ptr<SwapChain> swapchain;
-		std::vector<VkCommandBuffer> commandBuffers;
-
-		uint32_t currentImageIndex;
-		int currentFrameIndex;
-		bool isFrameStarted;
+		static SceneUBO* m_SceneUBO;
 	};
 }

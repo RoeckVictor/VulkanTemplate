@@ -13,15 +13,14 @@ namespace MyFirstEngine
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		virtual void OnDetach() override;
 		virtual void OnAttach() override;
+		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;
 
 		void Begin();
 		void End();
-		void SetImguiStyle();
 
 	private:
-		float time = 0.0f;
+		void SetImguiStyle();
 	};
 }

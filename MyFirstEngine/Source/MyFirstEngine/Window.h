@@ -2,7 +2,7 @@
 
 #include "Mfepch.h"
 
-#include "Core.h"
+#include "MyFirstEngine/Core.h"
 #include "Events/Event.h"
 
 namespace MyFirstEngine
@@ -21,15 +21,15 @@ namespace MyFirstEngine
 
 		virtual ~Window() = default;
 
-		virtual void OnUpdate() = 0;
+		static Window* Create(const WindowInfo& info = WindowInfo());
+
+		virtual void BeginUpdate() = 0;
+		virtual void EndUpdate() = 0;
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
-
-		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-
 		virtual void* GetNativeWindow() const = 0;
 
-		static Window* Create(const WindowInfo& info = WindowInfo());
+		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 	};
 }

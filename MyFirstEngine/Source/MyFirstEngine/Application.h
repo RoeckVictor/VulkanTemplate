@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core.h"
+#include "MyFirstEngine/Core.h"
 
 #include "Window.h"
 #include "Platform/VulkanGlfwWindow.h"
@@ -8,12 +8,7 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 
-#include "Renderer/Device.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Descriptors.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/Texture.h"
-#include "Renderer/systems/RenderSystem.h"
+#include "MyFirstEngine/Engine/Timestep.h"
 
 #include "ImGui/ImGuiLayer.h"
 
@@ -32,29 +27,21 @@ namespace MyFirstEngine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 
-		inline static Application& GetInstance() { return *instance; }
-		inline VulkanGlfwWindow& GetWindow() { return *window; }
-		inline Device& GetDevice() { return device; }
-		inline Renderer& GetRenderer() { return renderer; }
-		inline DescriptorPool& GetGlobalPool() { return *globalPool; }
+		inline static Application& GetInstance() { return *m_Instance; }
+		inline VulkanGlfwWindow& GetWindow() { return *m_Window; }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
-		VulkanGlfwWindow* window;
-		ImGuiLayer* imguiLayer;
-		Device device;
-		Renderer renderer;
+		VulkanGlfwWindow* m_Window;
+		ImGuiLayer* m_ImguiLayer;
 
-		bool isRunning = true;
-		LayerStack layerStack;
+		bool m_IsRunning = true;
+		LayerStack m_LayerStack;
+		Timestep m_TimeStep;
 
-		std::unique_ptr<DescriptorPool> globalPool{};
-		std::vector<std::unique_ptr<DescriptorSetLayout>> globalSetLayouts;
-
-		static Application* instance;
+		static Application* m_Instance;
 	};
 
-	// To be defined in CLIENT
 	Application* CreateApplication();
 }

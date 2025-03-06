@@ -13,16 +13,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDirs	= {}
-IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/include"
+IncludeDirs["GLFW"] = "MyFirstEngine/Libs/Glfw/glfw/include"
 IncludeDirs["ImGui"] = "MyFirstEngine/Libs/ImGui"
 IncludeDirs["VulkanSDK"] = "MyFirstEngine/Libs/VulkanSDK/1.3.243.0"
 IncludeDirs["Glm"] = "MyFirstEngine/Libs/Glm/glm/glm"
+IncludeDirs["SpirvReflect"] = "MyFirstEngine/Libs/SPIRV-Reflect/SPIRV-Reflect"
 IncludeDirs["Spdlog"] = "MyFirstEngine/Libs/Spdlog/spdlog/include"
 IncludeDirs["Other"] = "MyFirstEngine/Libs/Other"
 
 group "Dependencies"
 	include "MyFirstEngine/Libs/Glfw"
 	include "MyFirstEngine/Libs/ImGui"
+	include "MyFirstEngine/Libs/SPIRV-Reflect"
 group ""
 
 project "MyFirstEngine"
@@ -30,7 +32,7 @@ project "MyFirstEngine"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -50,9 +52,9 @@ project "MyFirstEngine"
 		"%{prj.name}/Source/MyFirstEngine/Renderer",
 		"%{IncludeDirs.Spdlog}",
 		"%{IncludeDirs.GLFW}",
-		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.ImGui}/imgui",
 		"%{IncludeDirs.VulkanSDK}/Include",
+		"%{IncludeDirs.SpirvReflect}",
 		"%{IncludeDirs.Glm}",
 		"%{IncludeDirs.Other}"
 	}
@@ -61,7 +63,15 @@ project "MyFirstEngine"
 	{
 		"GLFW",
 		"ImGui",
-		"vulkan-1.lib"
+		"vulkan-1",
+		"SpirvReflect",
+		"spirv-cross-core",
+		"spirv-cross-cpp",
+		"spirv-cross-glsl",
+		"spirv-cross-hlsl",
+		"spirv-cross-msl",
+		"spirv-cross-reflect",
+		"spirv-cross-util"
 	}
 	
 	libdirs
@@ -80,7 +90,7 @@ project "MyFirstEngine"
 
 	filter "configurations:Debug"
 		defines "MFE_DEBUG"
-		runtime "Debug"
+		runtime "Release"
 		symbols "On"
 
 	filter "configurations:Release"
@@ -98,7 +108,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -112,9 +122,12 @@ project "Sandbox"
 	includedirs
 	{
 		"%{IncludeDirs.Spdlog}",
+		"%{IncludeDirs.GLFW}",
+		"%{IncludeDirs.ImGui}/imgui",
 		"MyFirstEngine/Source",
 		"MyFirstEngine/Source/MyFirstEngine/Renderer",
-		"%{IncludeDirs.VulkanSDK}/Include"
+		"%{IncludeDirs.VulkanSDK}/Include",
+		"%{IncludeDirs.SpirvReflect}"
 	}
 
 	links
@@ -132,7 +145,7 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "MFE_DEBUG"
-		runtime "Debug"
+		runtime "Release"
 		symbols "On"
 
 	filter "configurations:Release"

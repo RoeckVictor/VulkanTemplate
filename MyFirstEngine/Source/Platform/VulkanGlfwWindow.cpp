@@ -6,6 +6,8 @@
 #include "MyFirstEngine/Events/KeyEvent.h"
 #include "MyFirstEngine/Events/MouseEvent.h"
 
+#include "MyFirstEngine/Renderer/VulkanRenderer/VulkanContext.h"
+
 namespace MyFirstEngine
 {
 	static bool isGLFWInitialized = false;
@@ -32,11 +34,9 @@ namespace MyFirstEngine
 
 	void VulkanGlfwWindow::Init(const WindowInfo& info)
 	{
-		data.title = info.title;
-		data.width = info.width;
-		data.height = info.height;
-
-		MFE_CORE_INFO("Creating window {0} ({1}, {2})", info.title, info.width, info.height);
+		m_Data.title = info.title;
+		m_Data.width = info.width;
+		m_Data.height = info.height;
 
 		if (!isGLFWInitialized)
 		{
@@ -50,22 +50,13 @@ namespace MyFirstEngine
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-		window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
-		glfwSetWindowUserPointer(window, &data);
-		glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+		m_Window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
+		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		// Set GLFW callbacks
-		glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.width = width;
-			data.height = height;
+		m_GraphicsContext = new VulkanContext(this);
+		m_GraphicsContext->Init();
 
-			WindowResizeEvent event(width, height);
-			data.eventCallback(event);
-		});
-
-		glfwSetWindowCloseCallback(window, [](GLFWwindow* window)
+		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -73,7 +64,7 @@ namespace MyFirstEngine
 			data.eventCallback(event);
 		});
 
-		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -100,14 +91,15 @@ namespace MyFirstEngine
 			}
 		});
 
-		glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int keycode) {
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			KeyTypedEvent event(keycode);
 			data.eventCallback(event);
 		});
 
-		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods)
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			switch (action)
@@ -127,7 +119,7 @@ namespace MyFirstEngine
 			}
 		});
 
-		glfwSetScrollCallback(window, [](GLFWwindow* window, double xOffset, double yOffset)
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -135,7 +127,7 @@ namespace MyFirstEngine
 			data.eventCallback(event);
 		});
 
-		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xPos, double yPos)
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			MouseMovedEvent event((float)xPos, (float)yPos);
@@ -145,31 +137,37 @@ namespace MyFirstEngine
 
 	void VulkanGlfwWindow::Shutdown()
 	{
-		glfwDestroyWindow(window);
+		glfwDestroyWindow(m_Window);
 		glfwTerminate();
 	}
 
 	void VulkanGlfwWindow::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
 	{
 		VulkanGlfwWindow* newWindow = reinterpret_cast<VulkanGlfwWindow*>(glfwGetWindowUserPointer(window));
-		newWindow->framebufferResized = true;
-		newWindow->data.width = width;
-		newWindow->data.height = height;
+		newWindow->m_FramebufferResized = true;
+		newWindow->m_Data.width = width;
+		newWindow->m_Data.height = height;
 	}
 
-	void VulkanGlfwWindow::OnUpdate()
+	void VulkanGlfwWindow::BeginUpdate()
 	{
 		glfwPollEvents();
+		m_GraphicsContext->BeginFrame();
+	}
+
+	void VulkanGlfwWindow::EndUpdate()
+	{
+		m_GraphicsContext->EndFrame();
 	}
 
 	void VulkanGlfwWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
 	{
-		VkResult success = glfwCreateWindowSurface(instance, window, nullptr, surface);
+		VkResult success = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
 		MFE_CORE_ASSERT(success == VK_SUCCESS, "Failed to create window surface");
 	}
 
 	bool VulkanGlfwWindow::IsOpen() const
 	{
-		return !glfwWindowShouldClose(window);
+		return !glfwWindowShouldClose(m_Window);
 	}
 }
