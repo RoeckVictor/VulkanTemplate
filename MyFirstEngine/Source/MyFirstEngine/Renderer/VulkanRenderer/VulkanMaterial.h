@@ -23,6 +23,8 @@ namespace MyFirstEngine
 		void CreatePipeline(VertexArray vertexArray);
 		static std::unique_ptr<Material> CreateMatFromShader(const std::shared_ptr<Shader> shader);
 
+		void PrintShaderProperties() const;
+
 	private:
 		void CreateTexturesSet();
 		uint32_t GetPushConstantsSize() const;

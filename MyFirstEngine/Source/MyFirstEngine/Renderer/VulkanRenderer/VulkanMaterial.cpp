@@ -1,5 +1,6 @@
 #include "Mfepch.h"
 #include "VulkanMaterial.h"
+#include <spirv_cross/spirv_cross.hpp>
 
 #include "MyFirstEngine/Application.h"
 #include "VulkanContext.h"
@@ -127,7 +128,9 @@ namespace MyFirstEngine
 
 	std::unique_ptr<Material> VulkanMaterial::CreateMatFromShader(const std::shared_ptr<Shader> shader)
 	{
-		return std::make_unique<VulkanMaterial>(shader);
+		auto material = std::make_unique<VulkanMaterial>(shader);
+		material->PrintShaderProperties();
+		return material;
 	}
 
 	void VulkanMaterial::CreateTexturesSet()
@@ -141,5 +144,61 @@ namespace MyFirstEngine
 			descriptorWritter.WriteImage(0, &imageInfo);
 		}
 		descriptorWritter.Build(m_TextureSet);
+	}
+
+	void PrintStructMember(const ShaderProperty::StructMember& member, int indent = 0) {
+		std::string indentation(indent * 2, ' ');
+		
+		if (member.type == ShaderProperty::Type::Array) {
+			std::string arrayDims;
+			for (uint32_t dim : member.arraySizes) {
+				arrayDims += "[" + std::to_string(dim) + "]";
+			}
+			MFE_CORE_INFO("{}Array{} of:", indentation, arrayDims);
+			PrintStructMember(member.members[0], indent + 1);
+		}
+		else if (member.type == ShaderProperty::Type::Struct) {
+			MFE_CORE_INFO("{}Struct containing:", indentation);
+			for (const auto& submember : member.members) {
+				MFE_CORE_INFO("{}  {}: ", indentation, submember.name);
+				PrintStructMember(submember, indent + 2);
+			}
+		}
+		else {
+			MFE_CORE_INFO("{}{}", indentation, static_cast<int>(member.type));
+		}
+	}
+
+	void VulkanMaterial::PrintShaderProperties() const
+	{
+		auto* shader = static_cast<VulkanShader*>(m_Shader.get());
+		if (!shader) {
+			MFE_CORE_ERROR("No shader attached to material");
+			return;
+		}
+
+		const auto& properties = shader->GetProperties();
+		MFE_CORE_INFO("Shader Properties:");
+		for (const auto& [name, prop] : properties) {
+			MFE_CORE_INFO("  Property: {0}", name);
+			MFE_CORE_INFO("    Type: {0}", static_cast<int>(prop.type));
+			MFE_CORE_INFO("    Stage: 0x{0:X} ({1})", prop.stages, 
+				prop.stages == VK_SHADER_STAGE_VERTEX_BIT ? "Vertex" : 
+				prop.stages == VK_SHADER_STAGE_FRAGMENT_BIT ? "Fragment" : 
+				prop.stages == (VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT) ? "Vertex|Fragment" : 
+				"Unknown");
+			MFE_CORE_INFO("    Set: {0}, Binding: {1}", prop.set, prop.binding);
+			MFE_CORE_INFO("    Is Push Constant: {0}", prop.isPushConstant);
+			MFE_CORE_INFO("    Usage: {0}", 
+				prop.usage == ShaderProperty::Usage::Input ? "Input" :
+				prop.usage == ShaderProperty::Usage::Output ? "Output" :
+				prop.usage == ShaderProperty::Usage::Uniform ? "Uniform" :
+				prop.usage == ShaderProperty::Usage::PushConstant ? "Push Constant" :
+				prop.usage == ShaderProperty::Usage::Sampler ? "Sampler" : "Unknown");
+			if (prop.type == ShaderProperty::Type::Struct || prop.type == ShaderProperty::Type::Array) {
+				MFE_CORE_INFO("    Members:");
+				PrintStructMember(ShaderProperty::StructMember{prop.name, prop.type, prop.arraySizes, prop.members}, 3);
+			}
+		}
 	}
 }

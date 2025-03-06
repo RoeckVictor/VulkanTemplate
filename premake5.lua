@@ -32,7 +32,7 @@ project "MyFirstEngine"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -63,8 +63,15 @@ project "MyFirstEngine"
 	{
 		"GLFW",
 		"ImGui",
-		"vulkan-1.lib",
-		"SpirvReflect"
+		"vulkan-1",
+		"SpirvReflect",
+		"spirv-cross-core",
+		"spirv-cross-cpp",
+		"spirv-cross-glsl",
+		"spirv-cross-hlsl",
+		"spirv-cross-msl",
+		"spirv-cross-reflect",
+		"spirv-cross-util"
 	}
 	
 	libdirs
@@ -83,7 +90,7 @@ project "MyFirstEngine"
 
 	filter "configurations:Debug"
 		defines "MFE_DEBUG"
-		runtime "Debug"
+		runtime "Release"
 		symbols "On"
 
 	filter "configurations:Release"
@@ -101,7 +108,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("Bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("Intermediate/" .. outputdir .. "/%{prj.name}")
@@ -138,7 +145,7 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "MFE_DEBUG"
-		runtime "Debug"
+		runtime "Release"
 		symbols "On"
 
 	filter "configurations:Release"
