@@ -42,7 +42,6 @@ namespace MyFirstEngine
 
 		virtual void Init(const WindowInfo& info);
 		virtual void Shutdown();
-		static void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 		WindowData m_Data;
 		GLFWwindow* m_Window;

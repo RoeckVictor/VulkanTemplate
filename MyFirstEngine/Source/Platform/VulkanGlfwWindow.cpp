@@ -50,6 +50,7 @@ namespace MyFirstEngine
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		
 		m_Window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -133,20 +134,19 @@ namespace MyFirstEngine
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.eventCallback(event);
 		});
+
+		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data.width = width;
+			data.height = height;
+		});
 	}
 
 	void VulkanGlfwWindow::Shutdown()
 	{
 		glfwDestroyWindow(m_Window);
 		glfwTerminate();
-	}
-
-	void VulkanGlfwWindow::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
-	{
-		VulkanGlfwWindow* newWindow = reinterpret_cast<VulkanGlfwWindow*>(glfwGetWindowUserPointer(window));
-		newWindow->m_FramebufferResized = true;
-		newWindow->m_Data.width = width;
-		newWindow->m_Data.height = height;
 	}
 
 	void VulkanGlfwWindow::BeginUpdate()
