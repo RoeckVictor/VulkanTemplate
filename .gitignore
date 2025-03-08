@@ -442,4 +442,5 @@ FodyWeavers.xsd
 *.vcxproj.user
 */imgui.ini
 !Libs/Premake/*
+Sandbox/Logging/*
 # ----- !MYFIRSTENGINE GITIGNORE -----

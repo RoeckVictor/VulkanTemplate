@@ -29,10 +29,12 @@ namespace MyFirstEngine
 		VulkanVertexArray(const VertexLayout& layout)
 			: VertexArray(layout)
 		{
+			MFE_PROFILE_FUNCTION();
 		}
 
 		std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
 		{
+			MFE_PROFILE_FUNCTION();
 			std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
 			bindingDescriptions[0].binding = 0;
 			bindingDescriptions[0].stride = layout.GetStride();
@@ -42,6 +44,7 @@ namespace MyFirstEngine
 
 		std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
 		{
+			MFE_PROFILE_FUNCTION();
 			std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 
 			uint32_t offset = 0;
@@ -56,6 +59,7 @@ namespace MyFirstEngine
 
 		std::vector<char> GetDataBuffer() const
 		{
+			MFE_PROFILE_FUNCTION();
 			std::vector<char> buffer;
 
 			for (const auto& vertex : data)

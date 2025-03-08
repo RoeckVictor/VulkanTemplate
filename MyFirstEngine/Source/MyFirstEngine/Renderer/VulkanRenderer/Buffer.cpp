@@ -8,6 +8,7 @@ namespace MyFirstEngine
 {
     VkDeviceSize Buffer::GetAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment)
     {
+        MFE_PROFILE_FUNCTION();
         if (minOffsetAlignment > 0)
         {
             return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
@@ -24,6 +25,7 @@ namespace MyFirstEngine
           m_UsageFlags{ usageFlags },
           m_MemoryPropertyFlags{ memoryPropertyFlags } 
     {
+        MFE_PROFILE_FUNCTION();
         m_AlignmentSize = GetAlignment(instanceSize, minOffsetAlignment);
         m_BufferSize = m_AlignmentSize * instanceCount;
         m_Device.CreateBuffer(m_BufferSize, usageFlags, memoryPropertyFlags, m_Buffer, m_Memory);
@@ -31,6 +33,7 @@ namespace MyFirstEngine
 
     Buffer::~Buffer() 
     {
+        MFE_PROFILE_FUNCTION();
         Unmap();
         vkDestroyBuffer(m_Device.GetLogicalDevice(), m_Buffer, nullptr);
         vkFreeMemory(m_Device.GetLogicalDevice(), m_Memory, nullptr);
@@ -38,12 +41,14 @@ namespace MyFirstEngine
 
     VkResult Buffer::Map(VkDeviceSize size, VkDeviceSize offset)
     {
+        MFE_PROFILE_FUNCTION();
         MFE_CORE_ASSERT(m_Buffer && m_Memory, "Called Map on buffer before create");
         return vkMapMemory(m_Device.GetLogicalDevice(), m_Memory, offset, size, 0, &m_Mapped);
     }
 
     void Buffer::Unmap()
     {
+        MFE_PROFILE_FUNCTION();
         if (m_Mapped)
         {
             vkUnmapMemory(m_Device.GetLogicalDevice(), m_Memory);
@@ -53,6 +58,7 @@ namespace MyFirstEngine
 
     void Buffer::WriteToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset)
     {
+        MFE_PROFILE_FUNCTION();
         MFE_CORE_ASSERT(m_Mapped, "Cannot copy to unmapped buffer");
 
         if (size == VK_WHOLE_SIZE) 
@@ -69,6 +75,7 @@ namespace MyFirstEngine
 
     VkResult Buffer::Flush(VkDeviceSize size, VkDeviceSize offset)
     {
+        MFE_PROFILE_FUNCTION();
         VkMappedMemoryRange mappedRange = {};
         mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
         mappedRange.memory = m_Memory;
@@ -79,6 +86,7 @@ namespace MyFirstEngine
 
     VkResult Buffer::Invalidate(VkDeviceSize size, VkDeviceSize offset)
     {
+        MFE_PROFILE_FUNCTION();
         VkMappedMemoryRange mappedRange = {};
         mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
         mappedRange.memory = m_Memory;
@@ -89,11 +97,13 @@ namespace MyFirstEngine
 
     VkDescriptorBufferInfo Buffer::DescriptorInfo(VkDeviceSize size, VkDeviceSize offset)
     {
+        MFE_PROFILE_FUNCTION();
         return VkDescriptorBufferInfo{ m_Buffer, offset, size };
     }
 
 	void Buffer::WriteToIndex(void* data, int index)
     {
+        MFE_PROFILE_FUNCTION();
         WriteToBuffer(data, m_InstanceSize, index * m_AlignmentSize);
     }
 

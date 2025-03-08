@@ -8,7 +8,7 @@ namespace MyFirstEngine
 		  m_Device(*window),
 		  m_Renderer(*window, m_Device)
 	{
-		
+		MFE_PROFILE_FUNCTION();
 	}
 
 	VulkanContext::~VulkanContext()
@@ -18,6 +18,7 @@ namespace MyFirstEngine
 
 	void VulkanContext::Init()
 	{
+		MFE_PROFILE_FUNCTION();
 		m_UniformBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 		for (int i = 0; i < m_UniformBuffers.size(); i++)
 		{
@@ -65,12 +66,14 @@ namespace MyFirstEngine
 
 	void VulkanContext::BeginFrame()
 	{
+		MFE_PROFILE_FUNCTION();
 		VkCommandBuffer commandBuffer = GetRenderer().BeginFrame();
 		GetRenderer().BeginSwapChainRenderPass(commandBuffer);
 	}
 
 	void VulkanContext::EndFrame()
 	{
+		MFE_PROFILE_FUNCTION();
 		GetRenderer().EndSwapChainRenderPass(GetRenderer().GetCurrentCommandBuffer());
 		GetRenderer().EndFrame();
 	}

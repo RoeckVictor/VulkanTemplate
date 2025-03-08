@@ -15,6 +15,7 @@ namespace MyFirstEngine
 	VulkanTexture::VulkanTexture(const std::string& filename)
 		: m_Device{ static_cast<MyFirstEngine::VulkanContext*>(MyFirstEngine::Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice() }
 	{
+		MFE_PROFILE_FUNCTION();
 		int texWidth, texHeight, texChannels;
 		stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
@@ -71,7 +72,8 @@ namespace MyFirstEngine
 	}
 
 	VulkanTexture::~VulkanTexture()
-	{
+	{	
+		MFE_PROFILE_FUNCTION();
 		vkDestroySampler(m_Device.GetLogicalDevice(), m_TexSampler, nullptr);
 
 		vkDestroyImageView(m_Device.GetLogicalDevice(), m_TexImageView, nullptr);
@@ -82,11 +84,13 @@ namespace MyFirstEngine
 
 	std::shared_ptr<Texture> VulkanTexture::CreateTextureFromFile(const std::string& filepath)
 	{
+		MFE_PROFILE_FUNCTION();
 		return std::make_shared<VulkanTexture>(filepath);
 	}
 
 	void VulkanTexture::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
 	{
+		MFE_PROFILE_FUNCTION();
 		VkCommandBuffer commandBuffer = m_Device.BeginSingleTimeCommands();
 
 		VkImageMemoryBarrier barrier{};
@@ -142,6 +146,7 @@ namespace MyFirstEngine
 
 	void VulkanTexture::CreateTextureSampler()
 	{
+		MFE_PROFILE_FUNCTION();
 		VkSamplerCreateInfo samplerInfo{};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -165,6 +170,7 @@ namespace MyFirstEngine
 
 	void VulkanTexture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 	{
+		MFE_PROFILE_FUNCTION();
 		VkFormatProperties formatProperties;
 		vkGetPhysicalDeviceFormatProperties(m_Device.GetPhysicalDevice(), imageFormat, &formatProperties);
 

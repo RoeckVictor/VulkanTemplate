@@ -6,6 +6,7 @@ namespace MyFirstEngine
 {
 	glm::mat4 TransformComponent::transform() const
 	{
+		MFE_PROFILE_FUNCTION();
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
 		const float c2 = glm::cos(rotation.x);
@@ -38,6 +39,7 @@ namespace MyFirstEngine
 
 	glm::mat3 TransformComponent::normalMatrix() const
 	{
+		MFE_PROFILE_FUNCTION();
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
 		const float c2 = glm::cos(rotation.x);
@@ -68,6 +70,7 @@ namespace MyFirstEngine
 
 	void GameObject::Render() const
 	{
+		MFE_PROFILE_FUNCTION();
 		m_Material->Bind();
 		m_Model->Bind();
 		m_Model->Draw();
@@ -75,12 +78,14 @@ namespace MyFirstEngine
 
 	GameObject GameObject::CreateGameObject()
 	{
+		MFE_PROFILE_FUNCTION();
 		static unsigned int currentId = 0;
 		return GameObject(currentId++);
 	}
 
 	GameObject GameObject::MakePointLight(float intensity, float radius, glm::vec3 color)
 	{
+		MFE_PROFILE_FUNCTION();
 		GameObject gameObj = CreateGameObject();
 
 		gameObj.m_Color = color;

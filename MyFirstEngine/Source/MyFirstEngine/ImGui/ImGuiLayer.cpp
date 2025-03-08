@@ -16,6 +16,7 @@ namespace MyFirstEngine
 	ImGuiLayer::ImGuiLayer()
 	: Layer("ImGuiLayer")
 	{
+		MFE_PROFILE_FUNCTION();
 	}
 
 	ImGuiLayer::~ImGuiLayer()
@@ -24,6 +25,7 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::OnAttach()
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetDevice().BeginSingleTimeCommands();
 		QueueFamilyIndices vulkanQueueFamilies = graphicsContext->GetDevice().FindPhysicalQueueFamilies();
@@ -63,6 +65,7 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::Begin()
 	{
+		MFE_PROFILE_FUNCTION();
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -70,12 +73,14 @@ namespace MyFirstEngine
 	}
 	void ImGuiLayer::OnImGuiRender()
 	{
+		MFE_PROFILE_FUNCTION();
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
 	}
 
 	void ImGuiLayer::End()
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanGlfwWindow& window = static_cast<VulkanGlfwWindow&>(Application::GetInstance().GetWindow());
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(window.GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
@@ -97,6 +102,7 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::OnDetach()
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
 		ImGui_ImplVulkan_Shutdown();
@@ -106,6 +112,7 @@ namespace MyFirstEngine
 
 	void ImGuiLayer::SetImguiStyle()
 	{
+		MFE_PROFILE_FUNCTION();
 		ImGuiStyle& style = ImGui::GetStyle();
 
 		style.WindowMinSize = ImVec2(160, 20);

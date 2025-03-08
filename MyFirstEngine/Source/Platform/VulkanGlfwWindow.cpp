@@ -34,12 +34,14 @@ namespace MyFirstEngine
 
 	void VulkanGlfwWindow::Init(const WindowInfo& info)
 	{
+		MFE_PROFILE_FUNCTION();
 		m_Data.title = info.title;
 		m_Data.width = info.width;
 		m_Data.height = info.height;
 
 		if (!isGLFWInitialized)
 		{
+			MFE_PROFILE_SCOPE("glfwInit");
 			int success = glfwInit();
 			MFE_CORE_ASSERT(success, "Could not initialize GLFW!");
 
@@ -51,8 +53,14 @@ namespace MyFirstEngine
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		
-		m_Window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
-		glfwSetWindowUserPointer(m_Window, &m_Data);
+		{
+			MFE_PROFILE_SCOPE("glfwCreateWindow");
+			m_Window = glfwCreateWindow((int)info.width, (int)info.height, info.title.c_str(), nullptr, nullptr);
+		}
+		{
+			MFE_PROFILE_SCOPE("glfwSetWindowUserPointer");
+			glfwSetWindowUserPointer(m_Window, &m_Data);
+		}
 
 		m_GraphicsContext = new VulkanContext(this);
 		m_GraphicsContext->Init();
@@ -145,13 +153,23 @@ namespace MyFirstEngine
 
 	void VulkanGlfwWindow::Shutdown()
 	{
-		glfwDestroyWindow(m_Window);
-		glfwTerminate();
+		{
+			MFE_PROFILE_SCOPE("glfwDestroyWindow");
+			glfwDestroyWindow(m_Window);
+		}
+		{
+			MFE_PROFILE_SCOPE("glfwTerminate");
+			glfwTerminate();
+		}
 	}
 
 	void VulkanGlfwWindow::BeginUpdate()
-	{
-		glfwPollEvents();
+	{	
+		{
+			MFE_PROFILE_SCOPE("glfwPollEvents");
+			glfwPollEvents();
+		}
+		
 		m_GraphicsContext->BeginFrame();
 	}
 
@@ -162,12 +180,14 @@ namespace MyFirstEngine
 
 	void VulkanGlfwWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
 	{
+		MFE_PROFILE_FUNCTION();
 		VkResult success = glfwCreateWindowSurface(instance, m_Window, nullptr, surface);
 		MFE_CORE_ASSERT(success == VK_SUCCESS, "Failed to create window surface");
 	}
 
 	bool VulkanGlfwWindow::IsOpen() const
 	{
+		MFE_PROFILE_FUNCTION();
 		return !glfwWindowShouldClose(m_Window);
 	}
 }

@@ -40,6 +40,7 @@ namespace MyFirstEngine
 		VertexLayout(const std::initializer_list<VertexElement>& elements)
 			: m_Elements(elements)
 		{
+			MFE_PROFILE_FUNCTION();
 			m_Stride = 0;
 			for (VertexElement element : elements)
 			{

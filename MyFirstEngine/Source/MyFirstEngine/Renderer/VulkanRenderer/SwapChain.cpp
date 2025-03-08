@@ -31,6 +31,7 @@ namespace MyFirstEngine
 
 	void SwapChain::Init() 
 	{
+		MFE_PROFILE_FUNCTION();
 		CreateSwapChain();
 		CreateImageViews();
 		CreateRenderPass();
@@ -42,6 +43,7 @@ namespace MyFirstEngine
 
 	SwapChain::~SwapChain() 
 	{
+		MFE_PROFILE_FUNCTION();
 		for (auto framebuffer : m_ScFramebuffers)
 		{
 			vkDestroyFramebuffer(m_Device.GetLogicalDevice(), framebuffer, nullptr);
@@ -86,6 +88,7 @@ namespace MyFirstEngine
 
 	VkResult SwapChain::AcquireNextImage(uint32_t* imageIndex) 
 	{
+		MFE_PROFILE_FUNCTION();
 		vkWaitForFences(m_Device.GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
 		VkResult result = vkAcquireNextImageKHR(
@@ -101,6 +104,7 @@ namespace MyFirstEngine
 
 	VkResult SwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex) 
 	{
+		MFE_PROFILE_FUNCTION();
 		if (m_ImagesInFlight[*imageIndex] != VK_NULL_HANDLE)
 		{
 			vkWaitForFences(m_Device.GetLogicalDevice(), 1, &m_ImagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
@@ -149,6 +153,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateSwapChain() 
 	{
+		MFE_PROFILE_FUNCTION();
 		SwapChainSupportDetails swapChainSupport = m_Device.GetSwapChainSupport();
 
 		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -213,6 +218,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateImageViews() 
 	{
+		MFE_PROFILE_FUNCTION();
 		m_ScImageViews.resize(m_ScImages.size());
 		for (size_t i = 0; i < m_ScImages.size(); i++)
 		{
@@ -222,6 +228,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateRenderPass() 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = FindDepthFormat();
 		depthAttachment.samples = m_Device.GetMaxUsableSampleCount();
@@ -294,6 +301,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateFramebuffers() 
 	{
+		MFE_PROFILE_FUNCTION();
 		m_ScFramebuffers.resize(ImageCount());
 		for (size_t i = 0; i < ImageCount(); i++) 
 		{
@@ -316,6 +324,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateDepthResources() 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkFormat depthFormat = FindDepthFormat();
 		m_ScDepthFormat = depthFormat;
 		VkExtent2D swapChainExtent = GetSwapChainExtent();
@@ -366,6 +375,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateColorResources()
 	{
+		MFE_PROFILE_FUNCTION();
 		VkFormat colorFormat = GetSwapChainImageFormat();
 		VkExtent2D swapChainExtent = GetSwapChainExtent();
 		m_ColorImages.resize(ImageCount());
@@ -411,6 +421,7 @@ namespace MyFirstEngine
 
 	void SwapChain::CreateSyncObjects() 
 	{
+		MFE_PROFILE_FUNCTION();
 		m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_RenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_InFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -436,6 +447,7 @@ namespace MyFirstEngine
 
 	VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 	{
+		MFE_PROFILE_FUNCTION();
 		for (const auto& availableFormat : availableFormats) 
 		{
 			if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -449,6 +461,7 @@ namespace MyFirstEngine
 
 	VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) 
 	{
+		MFE_PROFILE_FUNCTION();
 		for (const VkPresentModeKHR& availablePresentMode : availablePresentModes) 
 		{
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) 
@@ -462,6 +475,7 @@ namespace MyFirstEngine
 
 	VkExtent2D SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) 
 	{
+		MFE_PROFILE_FUNCTION();
 		if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 		{
 			return capabilities.currentExtent;
@@ -478,6 +492,7 @@ namespace MyFirstEngine
 
 	VkFormat SwapChain::FindDepthFormat() 
 	{
+		MFE_PROFILE_FUNCTION();
 		return m_Device.FindSupportedFormat(
 			{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
 			VK_IMAGE_TILING_OPTIMAL,

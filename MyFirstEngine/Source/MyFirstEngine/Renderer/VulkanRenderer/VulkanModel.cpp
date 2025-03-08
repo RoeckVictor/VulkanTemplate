@@ -31,16 +31,19 @@ namespace MyFirstEngine
 	VulkanModel::VulkanModel(Device& device, const VulkanModelData& builder)
 		: m_Device(device)
 	{
+		MFE_PROFILE_FUNCTION();
 		CreateVertexBuffer(builder.vertices);
 		CreateIndexBuffer(builder.indices);
 	}
 
 	VulkanModel::~VulkanModel()
 	{
+		MFE_PROFILE_FUNCTION();
 	}
 
 	std::unique_ptr<Model> VulkanModel::CreateModelFromFile(const std::string& filepath, const VertexLayout layout)
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
 		VulkanModelData data{VulkanVertexArray(layout)};
@@ -51,6 +54,7 @@ namespace MyFirstEngine
 
 	std::unique_ptr<Model> VulkanModel::CreateModelFromData(const VertexArray vertices, const std::vector<uint32_t>& indices)
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
 		VulkanVertexArray vulkanVertices(vertices.layout);
@@ -75,6 +79,7 @@ namespace MyFirstEngine
 
 	void VulkanModel::Bind() const
 	{
+		MFE_PROFILE_FUNCTION();
 		if (m_VertexBuffer == nullptr) { return; }
 
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
@@ -92,6 +97,7 @@ namespace MyFirstEngine
 
 	void VulkanModel::Draw() const
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
@@ -107,6 +113,7 @@ namespace MyFirstEngine
 
 	void VulkanModel::CreateVertexBuffer(const VulkanVertexArray vertices)
 	{
+		MFE_PROFILE_FUNCTION();
 		m_VertexCount = vertices.count;
 		uint32_t vertexSize = vertices.layout.GetStride();
 		VkDeviceSize bufferSize = vertexSize * m_VertexCount;
@@ -134,6 +141,7 @@ namespace MyFirstEngine
 
 	void VulkanModel::CreateIndexBuffer(const std::vector<uint32_t>& indices)
 	{
+		MFE_PROFILE_FUNCTION();
 		m_IndexCount = static_cast<uint32_t>(indices.size());
 		m_HasIndexBuffer = m_IndexCount > 0;
 
@@ -162,6 +170,7 @@ namespace MyFirstEngine
 
 	void VulkanModel::VulkanModelData::LoadModel(const std::string& filepath)
 	{
+		MFE_PROFILE_FUNCTION();
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;

@@ -8,6 +8,7 @@ namespace MyFirstEngine
 
 	void Renderer::BeginScene(Camera& camera, const std::unordered_map<unsigned int, MyFirstEngine::GameObject>& gameObjects)
 	{
+		MFE_PROFILE_FUNCTION();
 		Application::GetInstance().GetWindow().BeginUpdate();
 
 		m_SceneUBO->m_Projection = camera.GetProjectionMatrix();
@@ -34,11 +35,12 @@ namespace MyFirstEngine
 
 	void Renderer::EndScene()
 	{
-
+		MFE_PROFILE_FUNCTION();
 	}
 
 	void Renderer::Submit(const GameObject& object)
 	{
+		MFE_PROFILE_FUNCTION();
 		if(object.m_PointLight == nullptr)
 		{
 			object.m_Material->UpdateUniform(0, ConvertToBytes(object.m_Transform.transform()), true);

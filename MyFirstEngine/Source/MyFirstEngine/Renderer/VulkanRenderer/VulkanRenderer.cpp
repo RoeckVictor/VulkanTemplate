@@ -12,17 +12,20 @@ namespace MyFirstEngine
 		  m_IsFrameStarted(false),
 		  m_CurrentFrameIndex(0)
 	{
+		MFE_PROFILE_FUNCTION();
 		RecreateSwapchain();
 		CreateCommandBuffers();
 	}
 
 	VulkanRenderer::~VulkanRenderer()
 	{
+		MFE_PROFILE_FUNCTION();
 		FreeCommandBuffers();
 	}
 
 	VkCommandBuffer VulkanRenderer::BeginFrame()
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(!m_IsFrameStarted, "Cannot start frame when frame is already in progress");
 
 		VkResult result = m_Swapchain->AcquireNextImage(&m_CurrentImageIndex);
@@ -49,6 +52,7 @@ namespace MyFirstEngine
 
 	void VulkanRenderer::EndFrame()
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot end frame when frame is not in progress");
 
 		VkCommandBuffer commandBuffer = GetCurrentCommandBuffer();
@@ -72,6 +76,7 @@ namespace MyFirstEngine
 
 	void VulkanRenderer::BeginSwapChainRenderPass(VkCommandBuffer commandBuffer)
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot create new frame is old frame is still in progress");
 		MFE_CORE_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't begin render poss on command buffer from a different frame");
 
@@ -103,6 +108,7 @@ namespace MyFirstEngine
 
 	void VulkanRenderer::EndSwapChainRenderPass(VkCommandBuffer commandBuffer)
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(m_IsFrameStarted, "Cannot end frame when frame is not in progress");
 		MFE_CORE_ASSERT(commandBuffer == GetCurrentCommandBuffer(), "Can't end render pass on command buffer from a different frame");
 
@@ -111,6 +117,7 @@ namespace MyFirstEngine
 
 	void VulkanRenderer::CreateCommandBuffers()
 	{
+		MFE_PROFILE_FUNCTION();
 		m_CommandBuffers.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -124,12 +131,14 @@ namespace MyFirstEngine
 
 	void VulkanRenderer::FreeCommandBuffers()
 	{
+		MFE_PROFILE_FUNCTION();
 		vkFreeCommandBuffers(m_Device.GetLogicalDevice(), m_Device.GetCommandPool(), static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
 		m_CommandBuffers.clear();
 	}
 
 	void VulkanRenderer::RecreateSwapchain()
 	{
+		MFE_PROFILE_FUNCTION();
 		VkExtent2D extent = m_Window.GetExtent();
 		while (extent.width == 0 || extent.height == 0)
 		{

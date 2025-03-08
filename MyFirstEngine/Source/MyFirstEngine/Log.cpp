@@ -10,6 +10,7 @@ namespace MyFirstEngine
 
 	void Log::Init()
 	{
+		MFE_PROFILE_FUNCTION();
 		spdlog::set_pattern("%^[%T] %n: %v%$");
 		m_CoreLogger = spdlog::stdout_color_mt("ENGINE");
 		m_CoreLogger->set_level(spdlog::level::trace);

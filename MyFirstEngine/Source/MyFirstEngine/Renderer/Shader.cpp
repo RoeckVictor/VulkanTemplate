@@ -33,6 +33,7 @@ namespace MyFirstEngine
 
 	std::vector<char> Shader::GetFileData(const std::string path)
 	{
+		MFE_PROFILE_FUNCTION();
 		std::ifstream file(path, std::ios::ate | std::ios::binary);
 
 		MFE_CORE_ASSERT(file.is_open(), "Failed to open file: " + path);

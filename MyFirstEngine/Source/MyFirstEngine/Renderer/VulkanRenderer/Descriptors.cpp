@@ -10,6 +10,7 @@ namespace MyFirstEngine
     DescriptorSetLayout::Builder& DescriptorSetLayout::Builder::AddBinding(
         uint32_t binding, VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t count)
     {
+        MFE_PROFILE_FUNCTION();
         MFE_CORE_ASSERT(m_Bindings.count(binding) == 0, "Binding already in use");
 
         VkDescriptorSetLayoutBinding layoutBinding{};
@@ -25,6 +26,7 @@ namespace MyFirstEngine
 
     std::unique_ptr<DescriptorSetLayout> DescriptorSetLayout::Builder::Build() const
     {
+        MFE_PROFILE_FUNCTION();
         return std::make_unique<DescriptorSetLayout>(m_Device, m_Bindings);
     }
 
@@ -33,6 +35,7 @@ namespace MyFirstEngine
           m_Bindings{ bindings },
           m_DescriptorSetLayout{}
     {
+        MFE_PROFILE_FUNCTION();
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
         for (auto& kv : bindings)
         {
@@ -50,34 +53,40 @@ namespace MyFirstEngine
 
     DescriptorSetLayout::~DescriptorSetLayout() 
     {
+        MFE_PROFILE_FUNCTION();
         vkDestroyDescriptorSetLayout(m_Device.GetLogicalDevice(), m_DescriptorSetLayout, nullptr);
     }
 
     DescriptorPool::Builder& DescriptorPool::Builder::AddPoolSize(VkDescriptorType descriptorType, uint32_t count)
     {
+        MFE_PROFILE_FUNCTION();
         m_PoolSizes.push_back({ descriptorType, count });
         return *this;
     }
 
     DescriptorPool::Builder& DescriptorPool::Builder::SetPoolFlags(VkDescriptorPoolCreateFlags flags) 
     {
+        MFE_PROFILE_FUNCTION();
         m_PoolFlags = flags;
         return *this;
     }
     DescriptorPool::Builder& DescriptorPool::Builder::SetMaxSets(uint32_t count) 
     {
+        MFE_PROFILE_FUNCTION();
         m_MaxSets = count;
         return *this;
     }
 
     std::unique_ptr<DescriptorPool> DescriptorPool::Builder::Build() const 
     {
+        MFE_PROFILE_FUNCTION();
         return std::make_unique<DescriptorPool>(m_Device, m_MaxSets, m_PoolFlags, m_PoolSizes);
     }
 
     DescriptorPool::DescriptorPool(Device& device, uint32_t maxSets, VkDescriptorPoolCreateFlags poolFlags, const std::vector<VkDescriptorPoolSize>& poolSizes)
         : m_Device{ device } 
     {
+        MFE_PROFILE_FUNCTION();
         VkDescriptorPoolCreateInfo descriptorPoolInfo{};
         descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         descriptorPoolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
@@ -91,11 +100,13 @@ namespace MyFirstEngine
 
     DescriptorPool::~DescriptorPool()
     {
+        MFE_PROFILE_FUNCTION();
         vkDestroyDescriptorPool(m_Device.GetLogicalDevice(), m_DescriptorPool, nullptr);
     }
 
     bool DescriptorPool::AllocateDescriptor(const VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSet& descriptor) const 
     {
+        MFE_PROFILE_FUNCTION();
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = m_DescriptorPool;
@@ -108,11 +119,13 @@ namespace MyFirstEngine
 
     void DescriptorPool::FreeDescriptors(std::vector<VkDescriptorSet>& descriptors) const 
     {
+        MFE_PROFILE_FUNCTION();
         vkFreeDescriptorSets(m_Device.GetLogicalDevice(), m_DescriptorPool, static_cast<uint32_t>(descriptors.size()), descriptors.data());
     }
 
     void DescriptorPool::ResetPool() 
     {
+        MFE_PROFILE_FUNCTION();
         vkResetDescriptorPool(m_Device.GetLogicalDevice(), m_DescriptorPool, 0);
     }
 
@@ -120,7 +133,8 @@ namespace MyFirstEngine
         : m_SetLayout{ setLayout }, m_Pool{ pool } {}
 
     DescriptorWriter& DescriptorWriter::WriteBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo) 
-    {
+        {
+        MFE_PROFILE_FUNCTION();
         MFE_CORE_ASSERT(m_SetLayout.m_Bindings.count(binding) == 1, "Layout does not contain specified binding");
 
         auto& bindingDescription = m_SetLayout.m_Bindings[binding];
@@ -140,6 +154,7 @@ namespace MyFirstEngine
 
     DescriptorWriter& DescriptorWriter::WriteImage(uint32_t binding, VkDescriptorImageInfo* imageInfo) 
     {
+        MFE_PROFILE_FUNCTION();
         MFE_CORE_ASSERT(m_SetLayout.m_Bindings.count(binding) == 1, "Layout does not contain specified binding");
 
         auto& bindingDescription = m_SetLayout.m_Bindings[binding];
@@ -159,6 +174,7 @@ namespace MyFirstEngine
 
     bool DescriptorWriter::Build(VkDescriptorSet& set) 
     {
+        MFE_PROFILE_FUNCTION();
         bool success = m_Pool.AllocateDescriptor(m_SetLayout.GetDescriptorSetLayout(), set);
         if (success)
         {
@@ -170,6 +186,7 @@ namespace MyFirstEngine
 
     void DescriptorWriter::Overwrite(VkDescriptorSet& set) 
     {
+        MFE_PROFILE_FUNCTION();
         for (auto& write : m_Writes)
         {
             write.dstSet = set;

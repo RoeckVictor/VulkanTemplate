@@ -15,6 +15,7 @@ public:
 		m_CurrentTime(std::chrono::high_resolution_clock::now()),
 		m_GameObjects()
 	{	
+		MFE_PROFILE_FUNCTION();
 		MyFirstEngine::GameObject gameObjTest = MyFirstEngine::GameObject::CreateGameObject();
 
 		MyFirstEngine::VertexLayout vertexLayout = {
@@ -69,6 +70,7 @@ public:
 
 	void OnUpdate(MyFirstEngine::Timestep timeStep) override
 	{
+		MFE_PROFILE_FUNCTION();
 		MoveViewerObject(timeStep, m_ViewerObject);
 		m_Camera.SetViewYXZ(m_ViewerObject.m_Transform.translation, m_ViewerObject.m_Transform.rotation);
 
@@ -78,6 +80,7 @@ public:
 		// -- TODELETE --
 		for (auto& kv : m_GameObjects)
 		{
+			MFE_PROFILE_SCOPE("Rotate Light")
 			auto& obj = kv.second;
 			if (obj.m_PointLight == nullptr) { continue; }
 
@@ -92,6 +95,7 @@ public:
 
 		for (auto& kv : m_GameObjects)
 		{
+			MFE_PROFILE_SCOPE("Render Object")
 			auto& obj = kv.second;
 			if (obj.m_Model == nullptr) { continue; }
 
@@ -103,6 +107,7 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
+		MFE_PROFILE_FUNCTION();
 		ImGui::Begin("Settings");
 		ImGui::ColorEdit3("Light color", glm::value_ptr(m_LightColor));
 		ImGui::End();
@@ -110,11 +115,12 @@ public:
 
 	void OnEvent(MyFirstEngine::Event& event) override
 	{
-
+		MFE_PROFILE_FUNCTION();
 	}
 
 	void MoveViewerObject(float dt, MyFirstEngine::GameObject& gameObject)
 	{
+		MFE_PROFILE_FUNCTION();
 		float moveSpeed{ 3.0f };
 		float lookSpeed{ 1.5f };
 
@@ -174,5 +180,6 @@ public:
 
 MyFirstEngine::Application* MyFirstEngine::CreateApplication()
 {
+	MFE_PROFILE_FUNCTION();
 	return new Sandbox();
 }

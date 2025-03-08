@@ -10,6 +10,7 @@ namespace MyFirstEngine
 {
 	void Camera::SetOrthographicProjection(float left, float right, float top, float bottom, float nearPlane, float farPlane) 
 	{
+		MFE_PROFILE_FUNCTION();
 		// In Vulkan top and bottom are flipped, this works with Vulkan
 		m_ProjectionMatrix = glm::mat4{ 1.0f };
 		m_ProjectionMatrix[0][0] = 2.f / (right - left);
@@ -24,6 +25,7 @@ namespace MyFirstEngine
 
 	void Camera::SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane) 
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_ASSERT(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "Camera aspect ratio equal to 0");
 		// Will probably have the same problem as the orthographic projection
 		const float tanHalfFovy = tan(fovy / 2.f);
@@ -39,6 +41,7 @@ namespace MyFirstEngine
 
 	void Camera::SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) 
 	{
+		MFE_PROFILE_FUNCTION();
 		const glm::vec3 w{ glm::normalize(direction) };
 		const glm::vec3 u{ glm::normalize(glm::cross(w, up)) };
 		const glm::vec3 v{ glm::cross(w, u) };
@@ -79,6 +82,7 @@ namespace MyFirstEngine
 
 	void Camera::SetViewYXZ(glm::vec3 position, glm::vec3 rotation) 
 	{
+		MFE_PROFILE_FUNCTION();
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
 		const float c2 = glm::cos(rotation.x);

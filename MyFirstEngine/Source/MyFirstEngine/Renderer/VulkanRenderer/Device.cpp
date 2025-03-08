@@ -15,6 +15,7 @@ namespace MyFirstEngine
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData) 
 	{
+		MFE_PROFILE_FUNCTION();
 		switch (messageSeverity)
 		{
 			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: MFE_CORE_TRACE(pCallbackData->pMessage); break;
@@ -33,6 +34,7 @@ namespace MyFirstEngine
 		const VkAllocationCallbacks* pAllocator,
 		VkDebugUtilsMessengerEXT* pDebugMessenger) 
 	{
+		MFE_PROFILE_FUNCTION();
 		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 		if (func != nullptr)
 		{
@@ -46,6 +48,7 @@ namespace MyFirstEngine
 
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) 
 	{
+		MFE_PROFILE_FUNCTION();
 		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 		if (func != nullptr)
 		{
@@ -56,6 +59,7 @@ namespace MyFirstEngine
 	Device::Device(VulkanGlfwWindow& window)
 		: m_Window{ window }
 	{
+		MFE_PROFILE_FUNCTION();
 		CreateInstance();
 		SetupDebugMessenger();
 		CreateSurface();
@@ -66,6 +70,7 @@ namespace MyFirstEngine
 
 	Device::~Device() 
 	{
+		MFE_PROFILE_FUNCTION();
 		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
 		vkDestroyDevice(m_Device, nullptr);
 
@@ -80,6 +85,7 @@ namespace MyFirstEngine
 
 	void Device::CreateInstance() 
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(!enableValidationLayers || CheckValidationLayerSupport(), "validation layers requested, but not available!");
 
 		VkApplicationInfo appInfo = {};
@@ -121,6 +127,7 @@ namespace MyFirstEngine
 
 	void Device::PickPhysicalDevice() 
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
 		MFE_CORE_ASSERT(deviceCount != 0, "failed to find GPUs with Vulkan support!");
@@ -144,6 +151,7 @@ namespace MyFirstEngine
 
 	void Device::CreateLogicalDevice() 
 	{
+		MFE_PROFILE_FUNCTION();
 		QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -192,6 +200,7 @@ namespace MyFirstEngine
 
 	void Device::CreateCommandPool() 
 	{
+		MFE_PROFILE_FUNCTION();
 		QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
 
 		VkCommandPoolCreateInfo poolInfo = {};
@@ -206,6 +215,7 @@ namespace MyFirstEngine
 
 	bool Device::IsDeviceSuitable(VkPhysicalDevice device) 
 	{
+		MFE_PROFILE_FUNCTION();
 		QueueFamilyIndices indices = FindQueueFamilies(device);
 		bool extensionsSupported = CheckDeviceExtensionSupport(device);
 
@@ -224,6 +234,7 @@ namespace MyFirstEngine
 
 	void Device::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) 
 	{
+		MFE_PROFILE_FUNCTION();
 		createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 		createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -236,6 +247,7 @@ namespace MyFirstEngine
 
 	void Device::SetupDebugMessenger() 
 	{
+		MFE_PROFILE_FUNCTION();
 		if (!enableValidationLayers) { return; }
 			
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -246,6 +258,7 @@ namespace MyFirstEngine
 
 	bool Device::CheckValidationLayerSupport() 
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 		std::vector<VkLayerProperties> availableLayers(layerCount);
@@ -272,6 +285,7 @@ namespace MyFirstEngine
 
 	std::vector<const char*> Device::GetRequiredExtensions() 
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions;
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -288,6 +302,7 @@ namespace MyFirstEngine
 
 	void Device::HasGflwRequiredInstanceExtensions() 
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t extensionCount = 0;
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 		std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -308,6 +323,7 @@ namespace MyFirstEngine
 
 	bool Device::CheckDeviceExtensionSupport(VkPhysicalDevice device) 
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t extensionCount;
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -324,6 +340,7 @@ namespace MyFirstEngine
 
 	QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device) 
 	{
+		MFE_PROFILE_FUNCTION();
 		QueueFamilyIndices indices;
 
 		uint32_t queueFamilyCount = 0;
@@ -357,6 +374,7 @@ namespace MyFirstEngine
 
 	SwapChainSupportDetails Device::QuerySwapChainSupport(VkPhysicalDevice device) 
 	{
+		MFE_PROFILE_FUNCTION();
 		SwapChainSupportDetails details;
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
 
@@ -384,6 +402,7 @@ namespace MyFirstEngine
 
 	VkFormat Device::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) 
 	{
+		MFE_PROFILE_FUNCTION();
 		for (VkFormat format : candidates) 
 		{
 			VkFormatProperties props;
@@ -405,6 +424,7 @@ namespace MyFirstEngine
 
 	VkSampleCountFlagBits Device::GetMaxUsableSampleCount()
 	{
+		MFE_PROFILE_FUNCTION();
 		VkPhysicalDeviceProperties physicalDeviceProperties;
 		vkGetPhysicalDeviceProperties(m_PhysicalDevice, &physicalDeviceProperties);
 
@@ -422,6 +442,7 @@ namespace MyFirstEngine
 
 	uint32_t Device::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkPhysicalDeviceMemoryProperties memProperties;
 		vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
 
@@ -440,6 +461,7 @@ namespace MyFirstEngine
 
 	void Device::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
@@ -463,6 +485,7 @@ namespace MyFirstEngine
 
 	VkCommandBuffer Device::BeginSingleTimeCommands() 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -483,6 +506,7 @@ namespace MyFirstEngine
 
 	void Device::EndSingleTimeCommands(VkCommandBuffer commandBuffer) 
 	{
+		MFE_PROFILE_FUNCTION();
 		vkEndCommandBuffer(commandBuffer);
 
 		VkSubmitInfo submitInfo{};
@@ -498,6 +522,7 @@ namespace MyFirstEngine
 
 	void Device::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
 		VkBufferCopy copyRegion{};
@@ -511,6 +536,7 @@ namespace MyFirstEngine
 
 	void Device::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) 
 	{
+		MFE_PROFILE_FUNCTION();
 		VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
 		VkBufferImageCopy region{};
@@ -533,6 +559,7 @@ namespace MyFirstEngine
 
 	void Device::CreateImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory) 
 	{
+		MFE_PROFILE_FUNCTION();
 		MFE_CORE_ASSERT(vkCreateImage(m_Device, &imageInfo, nullptr, &image) == VK_SUCCESS, "failed to create image!");
 
 		VkMemoryRequirements memRequirements;
@@ -549,6 +576,7 @@ namespace MyFirstEngine
 
 	VkImageView Device::CreateImageView(VkImage image, VkFormat format, uint32_t mipLevels)
 	{
+		MFE_PROFILE_FUNCTION();
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		viewInfo.image = image;

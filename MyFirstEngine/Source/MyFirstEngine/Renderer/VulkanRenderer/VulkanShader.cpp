@@ -11,6 +11,7 @@ namespace MyFirstEngine
 	VulkanShader::VulkanShader(std::vector<std::vector<char>> shaderCodes)
 		: m_Device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
 	{
+		MFE_PROFILE_FUNCTION();
 		m_ShaderCodes = shaderCodes;
 		for(const std::vector<char>& code : m_ShaderCodes)
 		{
@@ -40,6 +41,7 @@ namespace MyFirstEngine
 
 	VulkanShader::~VulkanShader()
 	{
+		MFE_PROFILE_FUNCTION();
 		for (VkShaderModule shaderModule : m_ShaderModules)
 		{
 			vkDestroyShaderModule(m_Device.GetLogicalDevice(), shaderModule, nullptr);
@@ -53,12 +55,14 @@ namespace MyFirstEngine
 
 	std::shared_ptr<Shader> VulkanShader::CreateShaderFromFiles(const std::vector<std::string> shaderFiles)
 	{
+		MFE_PROFILE_FUNCTION();
 		// shaderc::Compiler compiler;
 		return std::make_shared<VulkanShader>(std::vector<std::vector<char>>());
 	}
 
 	std::shared_ptr<Shader> VulkanShader::CreateShaderFromCompiledFiles(const std::vector<std::string> compiledShaderFiles)
 	{
+		MFE_PROFILE_FUNCTION();
 		std::vector<std::vector<char>> filesData;
 		for (std::string filePath : compiledShaderFiles)
 		{
@@ -70,6 +74,7 @@ namespace MyFirstEngine
 
 	void VulkanShader::ReflectShaderProperties()
 	{
+		MFE_PROFILE_FUNCTION();
 		for (uint32_t stageIndex = 0; stageIndex < GetShaderStageCount(); stageIndex++)
 		{
 			// Determine shader stage
@@ -209,6 +214,7 @@ namespace MyFirstEngine
 	}
 
 	ShaderProperty::StructMember VulkanShader::ReflectType(const spirv_cross::SPIRType& type, const spirv_cross::Compiler& compiler, uint32_t memberIndex) const {
+		MFE_PROFILE_FUNCTION();
 		ShaderProperty::StructMember member;
 		
 		// Handle arrays (now supporting multiple dimensions)

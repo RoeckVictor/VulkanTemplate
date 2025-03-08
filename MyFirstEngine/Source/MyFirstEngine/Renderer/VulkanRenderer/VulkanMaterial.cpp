@@ -11,16 +11,19 @@ namespace MyFirstEngine
 	MyFirstEngine::VulkanMaterial::VulkanMaterial(const std::shared_ptr<Shader> shader)
 		: m_Device(static_cast<MyFirstEngine::VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext())->GetDevice())
 	{
+		MFE_PROFILE_FUNCTION();
 		this->m_Shader = shader;
 	}
 
 	MyFirstEngine::VulkanMaterial::~VulkanMaterial()
 	{
+		MFE_PROFILE_FUNCTION();
 		vkDestroyPipelineLayout(m_Device.GetLogicalDevice(), m_PipelineLayout, nullptr);
 	}
 
 	void MyFirstEngine::VulkanMaterial::Bind() const
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkCommandBuffer commandBuffer = graphicsContext->GetRenderer().GetCurrentCommandBuffer();
 
@@ -61,6 +64,7 @@ namespace MyFirstEngine
 
 	uint32_t VulkanMaterial::GetPushConstantsSize() const
 	{
+		MFE_PROFILE_FUNCTION();
 		uint32_t size = 0;
 		for (auto& [key, value] : m_PushConstants)
 		{
@@ -72,6 +76,7 @@ namespace MyFirstEngine
 
 	void VulkanMaterial::CreatePipeline(VertexArray vertexArray)
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 		VkRenderPass renderPass = graphicsContext->GetRenderer().GetSwapChainRenderPass();
 		
@@ -118,6 +123,7 @@ namespace MyFirstEngine
 
 	void VulkanMaterial::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
 	{
+		MFE_PROFILE_FUNCTION();
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		createInfo.codeSize = code.size();
@@ -128,6 +134,7 @@ namespace MyFirstEngine
 
 	std::unique_ptr<Material> VulkanMaterial::CreateMatFromShader(const std::shared_ptr<Shader> shader)
 	{
+		MFE_PROFILE_FUNCTION();
 		auto material = std::make_unique<VulkanMaterial>(shader);
 		material->PrintShaderProperties();
 		return material;
@@ -135,6 +142,7 @@ namespace MyFirstEngine
 
 	void VulkanMaterial::CreateTexturesSet()
 	{
+		MFE_PROFILE_FUNCTION();
 		VulkanContext* graphicsContext = static_cast<VulkanContext*>(Application::GetInstance().GetWindow().GetGraphicsContext());
 
 		DescriptorWriter descriptorWritter = DescriptorWriter(*graphicsContext->GetGlobalSetLayout()[1], graphicsContext->GetGlobalPool());
@@ -147,6 +155,7 @@ namespace MyFirstEngine
 	}
 
 	void PrintStructMember(const ShaderProperty::StructMember& member, int indent = 0) {
+		MFE_PROFILE_FUNCTION();
 		std::string indentation(indent * 2, ' ');
 		
 		if (member.type == ShaderProperty::Type::Array) {
@@ -171,6 +180,7 @@ namespace MyFirstEngine
 
 	void VulkanMaterial::PrintShaderProperties() const
 	{
+		MFE_PROFILE_FUNCTION();
 		auto* shader = static_cast<VulkanShader*>(m_Shader.get());
 		if (!shader) {
 			MFE_CORE_ERROR("No shader attached to material");

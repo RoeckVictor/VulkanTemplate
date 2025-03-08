@@ -13,6 +13,7 @@
 #include <unordered_set>
 
 #include "MyFirstEngine/Log.h"
+#include "MyFirstEngine/Debug/Instrumentor.h"
 
 #ifdef MFE_PLATFORM_WINDOWS
 	#include <Windows.h>
