@@ -1,3 +1,9 @@
+## Archived Project
+This repository contains a side project completed in 2024.
+
+It is preserved for historical and portfolio purposes. Development has ended, and the project is no longer maintained.
+No new features will be added. Issues won't be addressed and pull requests won't be reviewed or merged
+
 # VulkanTemplate
 Just figuring out how Vulkan works
 
